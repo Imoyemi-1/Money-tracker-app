@@ -9,6 +9,7 @@
 :root {
   --White: #fff;
   --light-black: rgba(0, 0, 0, 0.87);
+  --black-txt: #000000de;
   --grey-background: #e8e8e8;
   --primary-blue: #3f51b5;
   --grey-200: #bfbfbfde;
@@ -33,6 +34,55 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: var(--White);
   color: var(--light-black);
-  line-height: 1.4285em;
-  font-size: 1.4rem;
+  line-height: 1.25em;
+  font-size: 1.6rem;
+}
+
+.setup-header {
+  padding: 2.5rem 1.8rem;
+  border-bottom: 1px solid var(--grey-200);
+  align-items: center;
+}
+
+.icon {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem 0.1rem;
+  align-items: center;
+}
+
+.icon > .fa-lg {
+  grid-row: 1/3;
+  font-size: 3.5rem;
+}
+
+.icon > i {
+  font-size: 1.8rem;
+  color: var(--light-black);
+}
+
+#header-txt {
+  font-weight: 400;
+  margin: 0;
+}
+
+#setup-main {
+  padding: 2rem 1.8rem;
+  color: var(--black-txt);
+}
+
+#currencies-header {
+  font-weight: 400;
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+/* UTILITY STYLE */
+
+.flex {
+  display: flex;
+  flex: 1;
+}
+
+.grid {
+  display: grid;
 }
