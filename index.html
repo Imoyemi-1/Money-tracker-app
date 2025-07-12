@@ -105,6 +105,7 @@
                 type="text"
                 id="account-name-input"
                 placeholder="Account name"
+                required
               />
             </div>
             <div class="account-type-container">
@@ -127,13 +128,26 @@
             </div>
             <div class="account-setup-container flex">
               <div class="check-txt-container">
-                <input type="checkbox" name="usd" id="usd" />
-                <label for="usd">Us dollar</label>
+                <label class="custom-checkbox">
+                  <input type="checkbox" checked />
+                  <span class="checkmark"></span>
+                  Us dollar
+                </label>
               </div>
               <div class="account-amt-container flex">
-                <input type="number" />
+                <input type="number" placeholder="Balance" />
                 <p>USD</p>
               </div>
+            </div>
+            <div class="account-setup-container flex">
+              <div class="check-txt-container">
+                <label class="custom-checkbox">
+                  <input type="checkbox" checked />
+                  <span class="checkmark"></span>
+                  Show on Dashboard
+                </label>
+              </div>
+              <button id="save-account">Save Account</button>
             </div>
           </form>
         </section>
