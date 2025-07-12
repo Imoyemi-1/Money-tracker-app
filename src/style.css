@@ -38,7 +38,7 @@ body {
   background-color: var(--White);
   color: var(--light-black);
   line-height: 1.325em;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 300;
 }
 
@@ -106,15 +106,23 @@ body {
 }
 
 .currency-item-cons {
-  border: 1px solid var(--grey-background);
-  border-radius: 7px;
   height: 100%;
   background: var(--White);
+  position: relative;
+  font-size: 1.455rem;
 }
 
 .items-container {
-  padding: 1.2rem;
-  z-index: 999999;
+  padding: 1.1rem;
+  z-index: 99;
+  border: 1px solid var(--grey-300);
+  border-radius: 7px;
+}
+
+.items-container.open-border {
+  border: 1px solid var(--blue-border);
+  border-radius: 7px 7px 0 0;
+  border-bottom: none;
 }
 
 .selected {
@@ -125,7 +133,7 @@ body {
 
 .selected > img,
 .dropdown-item img {
-  max-width: 2.5rem;
+  max-width: 2rem;
   object-fit: cover;
   object-position: center;
 }
@@ -136,7 +144,7 @@ body {
   outline: none;
   border: none;
   background: none;
-  z-index: 99999;
+  z-index: 999;
 }
 
 .items-container > i {
@@ -148,22 +156,48 @@ body {
   left: 0;
   max-height: 0;
   overflow-y: scroll;
-  border-top: 1px solid var(--grey-100);
   scroll-behavior: smooth;
   transition: max-height 0.2s ease;
+  position: absolute;
+  z-index: 99999999;
+  background-color: var(--White);
 }
 
+.dropdown.border {
+  border: 1px solid var(--blue-border);
+  border-top: none;
+  border-radius: 0 0 7px 7px;
+}
 .dropdown.show {
-  max-height: 13.4rem;
+  max-height: 11.8rem;
 }
 
 .dropdown-item {
   align-items: center;
   gap: 1.2rem;
-  padding: 1.2rem;
+  padding: 0.9rem;
   border-bottom: 1px solid var(--grey-100);
   cursor: pointer;
   transition: background 0.2s ease;
+}
+
+.dropdown::-webkit-scrollbar {
+  width: 1rem;
+  border-radius: 5px;
+  background-color: rgb(250, 249, 249);
+  padding: 1px;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background-color: rgb(196, 194, 194);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.dropdown::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(112, 112, 112);
+  border-radius: 10px;
 }
 
 .dropdown-item.active {
