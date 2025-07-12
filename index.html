@@ -26,9 +26,9 @@
             You can also select any number of additional currencies, if you use
             them.
           </p>
-          <div class="select-currency-container flex">
+          <form class="select-currency-container flex">
             <div class="currency-container">
-              <label for="base" id="type-name">Base currency</label>
+              <label for="base" class="type-name">Base currency</label>
               <div class="currency-item-cons">
                 <div class="items-container flex">
                   <div class="select-input-wrapper flex">
@@ -44,18 +44,18 @@
                   <i class="fas fa-caret-down"></i>
                 </div>
                 <div class="dropdown dp-none">
-                  <div class="dropdown-item flex">
+                  <li class="dropdown-item flex">
                     <img src="./public/download.png" alt="usa-flag" />
                     <p class="currencies-name">
                       <span class="currencies-abb-name">USD,</span>
                       <span class="currencies-name-txt">US Dollar</span>
                     </p>
-                  </div>
+                  </li>
                 </div>
               </div>
             </div>
             <div class="currency-container">
-              <label for="base" id="type-name"
+              <label for="base" class="type-name"
                 >Additional Currencies(optional)</label
               >
               <div class="currency-item-cons">
@@ -87,7 +87,55 @@
                 </div>
               </div>
             </div>
-          </div>
+          </form>
+        </section>
+        <section id="accounts">
+          <h2 id="accounts-header">Accounts</h2>
+          <p id="accounts-txt">
+            Create accounts that you would like to keep track of. <br />
+            It could be cash in your wallet, bank accounts, credit cards or even
+            a loan to your friend.
+          </p>
+          <form class="set-account-container flex">
+            <div class="account-item-container">
+              <label for="name" class="type-name"
+                >Name <span id="important">*</span></label
+              >
+              <input
+                type="text"
+                id="account-name-input"
+                placeholder="Account name"
+              />
+            </div>
+            <div class="account-type-container">
+              <label for="base" class="type-name">Group</label>
+              <div class="currency-item-cons">
+                <div class="items-container flex">
+                  <div class="select-input-wrapper">
+                    <p>Cash</p>
+                  </div>
+                  <i class="fas fa-caret-down"></i>
+                </div>
+                <div class="dropdown dp-none">
+                  <li class="dropdown-item">Cash</li>
+                  <li class="dropdown-item">Bank Account</li>
+                  <li class="dropdown-item">Deposit</li>
+                  <li class="dropdown-item">Credit</li>
+                  <li class="dropdown-item">Asset</li>
+                </div>
+              </div>
+            </div>
+            <div class="account-setup-container flex">
+              <div class="check-txt-container">
+                <input type="checkbox" name="usd" id="usd" />
+                <label for="usd">Us dollar</label>
+              </div>
+              <div class="account-amt-container flex">
+                <input type="number" />
+                <p>USD</p>
+              </div>
+            </div>
+          </form>
         </section>
       </main>
     </div>
