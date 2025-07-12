@@ -5,6 +5,17 @@ import './style.css';
 const setupMainEl = document.getElementById('setup-main');
 const dropDownEl = document.querySelectorAll('.dropdown');
 
+// fetch country name flag
+
+const getCurrenciesInfo = async () => {
+  const res = await fetch(
+    'https://restcountries.com/v3.1/all?fields=currencies,flags'
+  );
+
+  const data = await res.json();
+  return data;
+};
+
 // display click dropdown
 
 const handleDropDown = (e) => {
