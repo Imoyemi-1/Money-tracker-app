@@ -205,8 +205,100 @@ body {
   outline: none;
 }
 
-.account-item-container input:focus {
+.account-item-container input:focus,
+.account-amt-container input:focus {
   border: 1px solid var(--blue-border);
+}
+
+.account-setup-container {
+  gap: 1rem;
+  align-items: center;
+}
+
+.check-txt-container {
+  width: 56.25%;
+}
+
+.custom-checkbox {
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  user-select: none;
+}
+
+/* Hide native checkbox */
+.custom-checkbox input[type='checkbox'] {
+  opacity: 0;
+  position: absolute;
+}
+
+/* Custom checkmark box */
+.custom-checkbox .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  border: 2px solid var(--grey-300);
+  background-color: transparent;
+  border-radius: 5px;
+}
+
+/* Checkmark style */
+.custom-checkbox .checkmark::after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 1px;
+  width: 8px;
+  height: 13px;
+  border: solid var(--light-black);
+  border-width: 0 4px 4px 0;
+  transform: rotate(45deg);
+}
+
+/* Show tick when checked */
+.custom-checkbox input:checked ~ .checkmark::after {
+  display: block;
+}
+
+.check-txt-container label {
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.account-amt-container {
+  flex: 1;
+  height: 100%;
+}
+
+.account-amt-container input {
+  width: 100%;
+  padding: 1.2rem;
+  border: 1px solid var(--grey-300);
+  text-align: end;
+  border-radius: 7px 0 0 7px;
+  outline: none;
+}
+
+.account-amt-container p {
+  padding: 1rem;
+  background-color: var(--grey-background);
+  border-radius: 0 7px 7px 0;
+}
+
+#save-account {
+  padding: 1.2rem;
+  flex: 1;
+  border: none;
+  background-color: var(--primary-blue);
+  color: var(--White);
+  border-radius: 7px;
+  cursor: pointer;
 }
 /* UTILITY STYLE */
 
@@ -237,4 +329,8 @@ li {
 
 #important {
   color: var(--red);
+}
+
+input::placeholder {
+  color: var(--grey-200);
 }
