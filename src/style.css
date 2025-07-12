@@ -16,6 +16,7 @@
   --grey-100: rgb(247, 247, 247);
   --red: #db2828;
   --grey-300: rgb(224, 224, 224);
+  --blue-border: rgb(133, 183, 217);
 }
 
 /* Reset style sheets */
@@ -36,7 +37,7 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: var(--White);
   color: var(--light-black);
-  line-height: 1.25em;
+  line-height: 1.325em;
   font-size: 1.6rem;
   font-weight: 300;
 }
@@ -66,6 +67,7 @@ body {
 #header-txt {
   font-weight: 400;
   margin: 0;
+  text-wrap: nowrap;
 }
 
 #setup-main {
@@ -73,26 +75,34 @@ body {
   color: var(--black-txt);
 }
 
-#currencies-header {
+#currencies {
+  margin-bottom: 3.5rem;
+}
+
+#currencies-header,
+#accounts-header {
   font-weight: 400;
-  font-size: 3rem;
+  font-size: 2.8rem;
   margin-bottom: 1.5rem;
 }
 
-#currencies-txt {
+#currencies-txt,
+#accounts-txt {
   margin-bottom: 1.5rem;
 }
 
-.select-currency-container {
+.select-currency-container,
+.set-account-container {
   flex-direction: column;
   gap: 1.5rem;
 }
 
-#type-name {
+.type-name {
   font-weight: 500;
   display: inline-block;
   margin-bottom: 0.4rem;
   font-size: 1.5rem;
+  width: 100%;
 }
 
 .currency-item-cons {
@@ -162,6 +172,7 @@ body {
 .select-input-wrapper {
   flex-wrap: wrap;
   gap: 1rem;
+  width: 100%;
 }
 
 .add-selected-currencies {
@@ -185,6 +196,18 @@ body {
 .add-selected-currencies > i:hover {
   color: var(--light-black);
 }
+
+.account-item-container input {
+  border: 1px solid var(--grey-300);
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: 7px;
+  outline: none;
+}
+
+.account-item-container input:focus {
+  border: 1px solid var(--blue-border);
+}
 /* UTILITY STYLE */
 
 .flex {
@@ -206,4 +229,12 @@ body {
 .remove-padding > i {
   padding: 0 1rem;
   margin-top: 0.7rem;
+}
+
+li {
+  list-style-type: none;
+}
+
+#important {
+  color: var(--red);
 }
