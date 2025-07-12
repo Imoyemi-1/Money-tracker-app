@@ -43,15 +43,7 @@
                   </div>
                   <i class="fas fa-caret-down"></i>
                 </div>
-                <div class="dropdown">
-                  <li class="dropdown-item flex">
-                    <img src="./public/download.png" alt="usa-flag" />
-                    <p class="currencies-name">
-                      <span class="currencies-abb-name">USD,</span>
-                      <span class="currencies-name-txt">US Dollar</span>
-                    </p>
-                  </li>
-                </div>
+                <ul class="dropdown" id="base-dropdown"></ul>
               </div>
             </div>
             <div class="currency-container">
@@ -76,15 +68,7 @@
                   </div>
                   <i class="fas fa-caret-down"></i>
                 </div>
-                <div class="dropdown">
-                  <li class="dropdown-item flex">
-                    <img src="./public/download.png" alt="usa-flag" />
-                    <p class="currencies-name">
-                      <span class="currencies-abb-name">USD,</span>
-                      <span class="currencies-name-txt">US Dollar</span>
-                    </p>
-                  </li>
-                </div>
+                <ul class="dropdown"></ul>
               </div>
             </div>
           </form>
@@ -117,13 +101,13 @@
                   </div>
                   <i class="fas fa-caret-down"></i>
                 </div>
-                <div class="dropdown">
+                <ul class="dropdown">
                   <li class="dropdown-item">Cash</li>
                   <li class="dropdown-item">Bank Account</li>
                   <li class="dropdown-item">Deposit</li>
                   <li class="dropdown-item">Credit</li>
                   <li class="dropdown-item">Asset</li>
-                </div>
+                </ul>
               </div>
             </div>
             <div class="account-setup-container flex">
@@ -151,6 +135,15 @@
             </div>
           </form>
         </section>
+        <template id="country-template">
+          <li class="dropdown-item flex">
+            <img src="" alt="" class="flag" />
+            <p class="currencies-name">
+              <span class="currencies-abb-name"></span>
+              <span class="currencies-name-txt"></span>
+            </p>
+          </li>
+        </template>
       </main>
     </div>
     <script type="module" src="/src/main.js"></script>
