@@ -113,16 +113,35 @@ const removeSelectedBaseCurrency = () => {
   });
 };
 
+// remove additional currency  if its selected
+
+const checkAddCurrency = (code) => {
+  const addSelectedCurrency = document.querySelectorAll(
+    '.add-selected-currencies'
+  );
+  if (addSelectedCurrency) {
+    addSelectedCurrency.forEach((item) => {
+      if (item.querySelector('p').textContent === code) {
+        item.remove();
+      }
+    });
+  }
+};
+
 // display selected base currency
 
 const selectBaseCurrency = (e) => {
   const dropDownItemEl = e.target.closest('.dropdown-item');
+  const code = dropDownItemEl
+    .querySelector('.currencies-abb-name')
+    .textContent.slice(0, 3);
   dropDownItemEl.parentElement
     .querySelectorAll('.dropdown-item')
     .forEach((item) => item.classList.remove('active'));
   dropDownItemEl.classList.add('active');
   displayBaseSelected();
   removeSelectedBaseCurrency();
+  checkAddCurrency(code);
 };
 
 // display additional currency
