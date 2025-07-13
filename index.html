@@ -31,7 +31,10 @@
               <label for="base" class="type-name">Base currency</label>
               <div class="currency-item-cons">
                 <div class="items-container flex">
-                  <div class="select-input-wrapper flex">
+                  <div
+                    class="select-input-wrapper flex"
+                    id="base-input-wrapper"
+                  >
                     <div class="selected flex">
                       <img src="./public/download.png" alt="usa-flag" />
                       <p class="currencies-name">
@@ -53,12 +56,8 @@
               <div class="currency-item-cons">
                 <div class="items-container flex">
                   <div class="select-input-wrapper flex">
-                    <div class="selected flex">
-                      <img src="./public/download.png" alt="usa-flag" />
-                      <p class="currencies-name">
-                        <span class="currencies-abb-name">USD,</span>
-                        <span class="currencies-name-txt">US Dollar</span>
-                      </p>
+                    <div class="selected flex label-add">
+                      Select additional currencies
                     </div>
                     <div class="add-selected-currencies flex dp-none">
                       <p>USD</p>
@@ -68,7 +67,7 @@
                   </div>
                   <i class="fas fa-caret-down"></i>
                 </div>
-                <ul class="dropdown"></ul>
+                <ul class="dropdown" id="add-dropdown"></ul>
               </div>
             </div>
           </form>
@@ -101,7 +100,7 @@
                   </div>
                   <i class="fas fa-caret-down"></i>
                 </div>
-                <ul class="dropdown">
+                <ul class="dropdown" id="group-dropdown">
                   <li class="dropdown-item">Cash</li>
                   <li class="dropdown-item">Bank Account</li>
                   <li class="dropdown-item">Deposit</li>

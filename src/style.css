@@ -131,6 +131,10 @@ body {
   position: absolute;
 }
 
+.selected.blur {
+  opacity: 0.6;
+}
+
 .selected > img,
 .dropdown-item img {
   max-width: 2rem;
@@ -149,6 +153,11 @@ body {
 
 .items-container > i {
   padding: 0 1rem;
+}
+
+.label-add {
+  color: var(--grey-200);
+  font-weight: 400;
 }
 
 .dropdown {
@@ -176,6 +185,7 @@ body {
   align-items: center;
   gap: 1.2rem;
   padding: 0.9rem;
+  font-size: 1.4rem;
   border-bottom: 1px solid var(--grey-100);
   cursor: pointer;
   transition: background 0.2s ease;
@@ -239,7 +249,7 @@ body {
 .account-item-container input {
   border: 1px solid var(--grey-300);
   width: 100%;
-  padding: 1.2rem;
+  padding: 1.1rem;
   border-radius: 7px;
   outline: none;
 }
@@ -317,7 +327,7 @@ body {
 
 .account-amt-container input {
   width: 100%;
-  padding: 1.2rem;
+  padding: 1.1rem;
   border: 1px solid var(--grey-300);
   text-align: end;
   border-radius: 7px 0 0 7px;
@@ -331,7 +341,7 @@ body {
 }
 
 #save-account {
-  padding: 1.2rem;
+  padding: 1.1rem;
   flex: 1;
   border: none;
   background-color: var(--primary-blue);
