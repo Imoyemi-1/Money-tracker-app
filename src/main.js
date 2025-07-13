@@ -16,15 +16,34 @@ const getCurrenciesInfo = async () => {
 
 // Create dropdown list
 
-const createDropDownList = ({ flag, currencyName, currencyCode }) => {
+const createDropDownList = (
+  { flag, currencyName, currencyCode },
+  base = false
+) => {
   const template = document.getElementById('country-template');
   const clone = template.content.cloneNode(true);
-  clone.querySelector('.flag').src = flag;
-  clone.querySelector('.flag').alt = currencyCode;
-  clone.querySelector('.currencies-abb-name').textContent = `${currencyCode},`;
-  clone.querySelector('.currencies-name-txt').textContent = currencyName;
+  const list = clone.querySelector('.dropdown-item');
+
+  list.querySelector('.flag').src = flag;
+  list.querySelector('.flag').alt = currencyCode;
+  list.querySelector('.currencies-abb-name').textContent = `${currencyCode},`;
+  list.querySelector('.currencies-name-txt').textContent = currencyName;
+
+  if (base && currencyCode === 'USD') {
+    list.classList.add('active');
+  }
 
   return clone;
+};
+
+// display and selected base currency
+
+// display selected dropdown
+
+const displayBaseSelected = () => {
+  const active = document.querySelector('#base-dropdown .active');
+  document.querySelector('#base-input-wrapper .selected').innerHTML =
+    active.innerHTML;
 };
 
 // display base currency
@@ -33,13 +52,15 @@ const displayBaseCurrencies = async () => {
   const currenciesData = await getCurrenciesInfo();
   currenciesData.forEach((data) => {
     const { code: currencyCode, name: currencyName, flag } = data;
-    const items = createDropDownList({ flag, currencyName, currencyCode });
+    const items = createDropDownList(
+      { flag, currencyName, currencyCode },
+      true
+    );
 
     document.getElementById('base-dropdown').appendChild(items);
   });
+  displayBaseSelected();
 };
-
-// display click dropdown
 
 // open and close of dropdown if the input is click
 const toggleDropDown = (e) => {
@@ -70,15 +91,40 @@ const toggleDropDown = (e) => {
   }
 };
 
-// select base currency from dropdown
+const selectBaseCurrency = (e) => {
+  const dropDownItemEl = e.target.closest('.dropdown-item');
+  dropDownItemEl.parentElement
+    .querySelectorAll('.dropdown-item')
+    .forEach((item) => item.classList.remove('active'));
+  dropDownItemEl.classList.add('active');
+  displayBaseSelected();
+};
+
+//  select  and display account group type item
+
+const displayAccountGroupSelected = () => {
+  const active = document.querySelector('#group-dropdown .active');
+  document.querySelector('.group-selected').textContent = active.textContent;
+};
+
+const selectGroupList = (e) => {
+  const dropDownItemEl = e.target.closest('.dropdown-item');
+  dropDownItemEl.parentElement
+    .querySelectorAll('.dropdown-item')
+    .forEach((item) => item.classList.remove('active'));
+  dropDownItemEl.classList.add('active');
+  displayAccountGroupSelected();
+};
+
+// select item and display from dropdown
 
 const selectListItem = (e) => {
   const dropDownItemEl = e.target.closest('.dropdown-item');
 
   if (dropDownItemEl) {
     const dropDownItemParentElID = dropDownItemEl.parentElement.id;
-    if (dropDownItemParentElID === 'base-dropdown') console.log('base');
-    else if (dropDownItemParentElID === 'group-dropdown') console.log('group');
+    if (dropDownItemParentElID === 'base-dropdown') selectBaseCurrency(e);
+    else if (dropDownItemParentElID === 'group-dropdown') selectGroupList(e);
     else console.log('add');
   }
 };
