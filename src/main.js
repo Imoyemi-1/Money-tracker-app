@@ -215,17 +215,38 @@ const selectListItem = (e) => {
   }
 };
 
+// remove selected additional currency
+
+const removeAdditionCurrency = (e) => {
+  if (e.target.classList.contains('fa-xmark')) {
+    e.target.parentElement.remove();
+  }
+};
+
+const handleSelectedAdditionCur = () => {
+  const selectedAddItems = document.querySelectorAll(
+    '.add-selected-currencies'
+  );
+
+  selectedAddItems.forEach((item) =>
+    item.addEventListener('click', removeAdditionCurrency)
+  );
+};
+
 // handle what handle dropdown and if its click
 
 const handleDropDown = (e) => {
+  if (e.target.closest('.add-selected-currencies')) return;
   toggleDropDown(e);
   selectListItem(e);
+  handleSelectedAdditionCur();
 };
 
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);
-document.addEventListener('click', () => {
+document.addEventListener('click', (e) => {
   const selectedEl = document.querySelectorAll('.selected');
+  if (e.target.closest('.add-selected-currencies')) return;
   dropDownEl.forEach((el) => {
     el.classList.remove('show');
     el.classList.remove('border');
