@@ -5,6 +5,7 @@ import './style.css';
 const setupMainEl = document.getElementById('setup-main');
 const dropDownEl = document.querySelectorAll('.dropdown');
 const itemContainerEl = document.querySelectorAll('.items-container');
+const searchAddEL = document.querySelector('.label-add');
 
 // fetch country name flag
 
@@ -90,6 +91,29 @@ const toggleDropDown = (e) => {
     parent.querySelector('.dropdown').classList.add('border');
   }
 };
+// remove selected base currency from add currencies
+
+const removeSelectedBaseCurrency = () => {
+  const selectedBase = document
+    .querySelector('#base-input-wrapper .currencies-abb-name')
+    .textContent.slice(0, 3);
+
+  const addDropdownList = document.querySelectorAll(
+    '#add-dropdown .dropdown-item'
+  );
+
+  addDropdownList.forEach((item) => {
+    item.classList.remove('dp-none');
+    if (
+      item.querySelector('.currencies-abb-name').textContent.slice(0, 3) ===
+      selectedBase
+    ) {
+      item.classList.add('dp-none');
+    }
+  });
+};
+
+// display selected base currency
 
 const selectBaseCurrency = (e) => {
   const dropDownItemEl = e.target.closest('.dropdown-item');
@@ -98,6 +122,49 @@ const selectBaseCurrency = (e) => {
     .forEach((item) => item.classList.remove('active'));
   dropDownItemEl.classList.add('active');
   displayBaseSelected();
+  removeSelectedBaseCurrency();
+};
+
+// display additional currency
+
+const displayAddCurrencies = async () => {
+  const currenciesData = await getCurrenciesInfo();
+
+  currenciesData.forEach((data) => {
+    const { code: currencyCode, name: currencyName, flag } = data;
+    const items = createDropDownList({ flag, currencyName, currencyCode });
+
+    document.getElementById('add-dropdown').appendChild(items);
+  });
+  removeSelectedBaseCurrency();
+};
+
+// display selected additional currency
+
+const selectAddCurrency = (e) => {
+  const dropDownItemEl = e.target.closest('.dropdown-item');
+  const dropDownParent = dropDownItemEl.parentElement.parentElement;
+
+  const dropDownInput =
+    dropDownItemEl.parentElement.parentElement.querySelector('input');
+
+  const code = dropDownItemEl
+    .querySelector('.currencies-abb-name')
+    .textContent.slice(0, 3);
+
+  const div = document.createElement('div');
+  div.className = 'add-selected-currencies flex';
+  div.innerHTML = `<p>${code}</p>
+  <i class="fas fa-xmark"></i>`;
+
+  dropDownParent
+    .querySelector('.select-input-wrapper')
+    .insertBefore(div, dropDownInput);
+  dropDownItemEl.classList.add('dp-none');
+  searchAddEL.classList.add('dp-none');
+  dropDownParent.parentElement
+    .querySelector('.items-container')
+    .classList.add('remove-padding');
 };
 
 //  select  and display account group type item
@@ -125,7 +192,7 @@ const selectListItem = (e) => {
     const dropDownItemParentElID = dropDownItemEl.parentElement.id;
     if (dropDownItemParentElID === 'base-dropdown') selectBaseCurrency(e);
     else if (dropDownItemParentElID === 'group-dropdown') selectGroupList(e);
-    else console.log('add');
+    else selectAddCurrency(e);
   }
 };
 
@@ -149,3 +216,4 @@ document.addEventListener('click', () => {
   selectedEl.forEach((item) => item.classList.remove('blur'));
 });
 displayBaseCurrencies();
+displayAddCurrencies();
