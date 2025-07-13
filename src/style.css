@@ -249,7 +249,7 @@ body {
 .account-item-container input {
   border: 1px solid var(--grey-300);
   width: 100%;
-  padding: 1.1rem;
+  padding: 1.074rem;
   border-radius: 7px;
   outline: none;
 }
@@ -261,6 +261,11 @@ body {
 
 .account-setup-container {
   gap: 1rem;
+  align-items: center;
+}
+
+.account-type-container .items-container {
+  padding: 0.945rem;
   align-items: center;
 }
 
