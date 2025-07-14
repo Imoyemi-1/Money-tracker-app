@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import './style.css';
 
 //
@@ -242,18 +243,93 @@ const handleDropDown = (e) => {
   handleSelectedAdditionCur();
 };
 
+//  handle search curency if display no result if no currency match search
+
+const handleSearchBase = () => {
+  const baseDropDownDpnone = document.querySelectorAll(
+    '#base-dropdown .dropdown-item.dp-none'
+  );
+  const baseDropDownListEl = document.querySelectorAll(
+    '#base-dropdown .dropdown-item'
+  );
+  const baseDropDownPa = document.querySelector('#base-dropdown');
+  const noResultEl = document.querySelector('.noresult');
+
+  if (baseDropDownDpnone.length === baseDropDownListEl.length) {
+    const li = document.createElement('li');
+    li.className = 'noresult';
+    li.textContent = 'No results found.';
+    if (noResultEl) {
+      noResultEl.remove();
+    }
+    baseDropDownPa.appendChild(li);
+  } else if (
+    noResultEl &&
+    baseDropDownDpnone.length !== baseDropDownListEl.length
+  ) {
+    noResultEl.remove();
+  }
+};
+
+// handle base currency  input
+
+const handleBaseInput = () => {
+  const input = document.querySelector('#base-input-wrapper input');
+  const selected = document.querySelector('#base-input-wrapper .selected');
+
+  input.addEventListener('input', () => {
+    const baseDropDownList = document.querySelectorAll(
+      '#base-dropdown .dropdown-item'
+    );
+
+    if (input.value.length > 0) {
+      // checking if base input is being type in
+
+      selected.classList.add('dp-none');
+      baseDropDownList.forEach((item) => {
+        item.classList.add('dp-none');
+
+        if (
+          // searching for currency in base currency
+          item.innerText
+            .toLowerCase()
+            .includes(input.value.toLowerCase().trim())
+        ) {
+          item.classList.remove('dp-none');
+        }
+      });
+    } else {
+      selected.classList.remove('dp-none');
+      baseDropDownList.forEach((item) => {
+        item.classList.remove('dp-none');
+      });
+    }
+
+    handleSearchBase();
+  });
+};
+
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);
 document.addEventListener('click', (e) => {
   const selectedEl = document.querySelectorAll('.selected');
+  const inputEl = document.querySelectorAll('input[type = "text"]');
+  const baseDropDownList = document.querySelectorAll(
+    '#base-dropdown .dropdown-item'
+  );
+
   if (e.target.closest('.add-selected-currencies')) return;
   dropDownEl.forEach((el) => {
     el.classList.remove('show');
     el.classList.remove('border');
   });
-
+  inputEl[0].value = '';
+  selectedEl[0].classList.remove('dp-none');
+  inputEl[1].value = '';
   itemContainerEl.forEach((item) => item.classList.remove('open-border'));
   selectedEl.forEach((item) => item.classList.remove('blur'));
+  baseDropDownList.forEach((item) => item.classList.remove('dp-none'));
 });
 displayBaseCurrencies();
 displayAddCurrencies();
+handleBaseInput();
