@@ -165,7 +165,7 @@ body {
   width: 100%;
   left: 0;
   max-height: 0;
-  overflow-y: scroll;
+  overflow-y: auto;
   scroll-behavior: smooth;
   transition: max-height 0.2s ease;
   position: absolute;
@@ -190,6 +190,12 @@ body {
   border-bottom: 1px solid var(--grey-100);
   cursor: pointer;
   transition: background 0.2s ease;
+}
+
+.noresult {
+  padding: 0.6rem 1rem;
+  color: var(--grey-200);
+  font-weight: 400;
 }
 
 .dropdown::-webkit-scrollbar {
