@@ -219,8 +219,32 @@ const selectListItem = (e) => {
 // remove selected additional currency
 
 const removeAdditionCurrency = (e) => {
+  const selectedAddition = document.querySelectorAll(
+    '.add-selected-currencies'
+  );
+  const addInputWrapper = document.querySelector(
+    '#additional-currency-wrapper .items-container'
+  );
+
+  const addDropdownList = document.querySelectorAll(
+    '#add-dropdown .dropdown-item.dp-none'
+  );
+
   if (e.target.classList.contains('fa-xmark')) {
     e.target.parentElement.remove();
+    addDropdownList.forEach((item) => {
+      if (
+        item.querySelector('.currencies-abb-name').textContent.slice(0, 3) ===
+        e.target.previousElementSibling.textContent
+      ) {
+        item.classList.remove('dp-none');
+      }
+    });
+
+    if (selectedAddition.length <= 1) {
+      addInputWrapper.classList.remove('remove-padding');
+      searchAddEL.classList.remove('dp-none');
+    }
   }
 };
 
