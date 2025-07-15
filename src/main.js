@@ -49,6 +49,19 @@ const displayBaseSelected = () => {
     active.innerHTML;
 };
 
+// display base selected in accounts setup
+
+const displayAccountBaseSelected = () => {
+  const active = document.querySelector('#base-dropdown .active');
+  const accountBaseSelected = document.querySelector('#acccount-base-selected');
+
+  accountBaseSelected.querySelector(
+    '.custom-checkbox .custom-checkbox-txt'
+  ).textContent = active.querySelector('.currencies-name-txt').textContent;
+  accountBaseSelected.querySelector('.account-amt-container p').textContent =
+    active.querySelector('.currencies-abb-name').textContent.slice(0, 3);
+};
+
 // display base currency
 
 const displayBaseCurrencies = async () => {
@@ -63,6 +76,7 @@ const displayBaseCurrencies = async () => {
     document.getElementById('base-dropdown').appendChild(items);
   });
   displayBaseSelected();
+  displayAccountBaseSelected();
 };
 
 // open and close of dropdown if the input is click
@@ -150,6 +164,7 @@ const selectBaseCurrency = (e) => {
     .forEach((item) => item.classList.remove('active'));
   dropDownItemEl.classList.add('active');
   displayBaseSelected();
+  displayAccountBaseSelected();
   removeSelectedBaseCurrency();
   checkAddCurrency(code);
 };
