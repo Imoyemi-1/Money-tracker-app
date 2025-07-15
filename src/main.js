@@ -264,6 +264,19 @@ const selectListItem = (e) => {
   }
 };
 
+// remove selected additional currency from account setup
+const removeAdditionFromAccount = (code) => {
+  const additionalAccounts = document.querySelectorAll(
+    '.account-setup-container.add-account'
+  );
+
+  additionalAccounts.forEach((item) => {
+    if (item.querySelector('.account-amt-container p').textContent === code) {
+      item.remove();
+    }
+  });
+};
+
 // remove selected additional currency
 
 const removeAdditionCurrency = (e) => {
@@ -284,7 +297,7 @@ const removeAdditionCurrency = (e) => {
 
   if (e.target.classList.contains('fa-xmark')) {
     e.target.parentElement.remove();
-    // removeAdditionFromAccount(e.target.previousElementSibling.textContent);
+    removeAdditionFromAccount(e.target.previousElementSibling.textContent);
     addDropdownList.forEach((item) => {
       if (
         item.querySelector('.currencies-abb-name').textContent.slice(0, 3) ===
