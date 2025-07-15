@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import './style.css';
 
+const apiKey = import.meta.env.VITE_EXCHANGE_API_KEY;
 //
 
 const setupMainEl = document.getElementById('setup-main');
@@ -9,6 +10,7 @@ const itemContainerEl = document.querySelectorAll('.items-container');
 const searchAddEL = document.querySelector('.label-add');
 const inputEl = document.querySelectorAll('input[type = "text"]');
 
+let exchangeRates = {};
 // fetch country name flag
 
 const getCurrenciesInfo = async () => {
@@ -167,6 +169,8 @@ const selectBaseCurrency = (e) => {
   displayAccountBaseSelected();
   removeSelectedBaseCurrency();
   checkAddCurrency(code);
+  removeAdditionFromAccount(code);
+  checkSelectedAdd();
 };
 
 // display additional currency
@@ -277,22 +281,33 @@ const removeAdditionFromAccount = (code) => {
   });
 };
 
-// remove selected additional currency
+// check additional selected currency if its the last one
 
-const removeAdditionCurrency = (e) => {
+const checkSelectedAdd = () => {
   const selectedAddition = document.querySelectorAll(
     '.add-selected-currencies'
   );
   const addInputWrapper = document.querySelector(
     '#additional-currency-wrapper .items-container'
   );
-
-  const addDropdownList = document.querySelectorAll(
-    '#add-dropdown .dropdown-item.dp-none'
-  );
-
   const addDropDownList = document.querySelectorAll(
     '#add-dropdown .dropdown-item'
+  );
+  if (selectedAddition.length < 1) {
+    addInputWrapper.classList.remove('remove-padding');
+    searchAddEL.classList.remove('dp-none');
+    searchAddEL.classList.remove('display-none');
+    inputEl[0].value = '';
+    inputEl[1].value = '';
+    addDropDownList.forEach((item) => item.classList.remove('display-none'));
+  }
+};
+
+// remove selected additional currency
+
+const removeAdditionCurrency = (e) => {
+  const addDropdownList = document.querySelectorAll(
+    '#add-dropdown .dropdown-item.dp-none'
   );
 
   if (e.target.classList.contains('fa-xmark')) {
@@ -306,15 +321,7 @@ const removeAdditionCurrency = (e) => {
         item.classList.remove('dp-none');
       }
     });
-
-    if (selectedAddition.length <= 1) {
-      addInputWrapper.classList.remove('remove-padding');
-      searchAddEL.classList.remove('dp-none');
-      searchAddEL.classList.remove('display-none');
-      inputEl[0].value = '';
-      inputEl[1].value = '';
-      addDropDownList.forEach((item) => item.classList.remove('display-none'));
-    }
+    checkSelectedAdd();
   }
 };
 
