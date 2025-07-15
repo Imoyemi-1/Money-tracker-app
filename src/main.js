@@ -183,6 +183,29 @@ const displayAddCurrencies = async () => {
   removeSelectedBaseCurrency();
 };
 
+// create account setup for additional currency
+
+const createAdditionAccountSelected = (code, name) => {
+  const accountContainer = document.querySelector('.set-account-container');
+
+  const div = document.createElement('div');
+  div.className = 'account-setup-container add-account flex';
+  div.innerHTML = `
+              <div class="check-txt-container">
+                <label class="custom-checkbox">
+                  <input type="checkbox" />
+                  <span class="checkmark"></span>
+                  <span class="custom-checkbox-txt">${name}</span>
+                </label>
+              </div>
+              <div class="account-amt-container flex">
+                <input type="number" placeholder="Balance" />
+                <p>${code}</p>
+              </div>`;
+
+  accountContainer.insertBefore(div, accountContainer.lastElementChild);
+};
+
 // display selected additional currency
 
 const selectAddCurrency = (e) => {
@@ -195,12 +218,13 @@ const selectAddCurrency = (e) => {
   const code = dropDownItemEl
     .querySelector('.currencies-abb-name')
     .textContent.slice(0, 3);
+  const name = dropDownItemEl.querySelector('.currencies-name-txt').textContent;
 
   const div = document.createElement('div');
   div.className = 'add-selected-currencies flex';
   div.innerHTML = `<p>${code}</p>
   <i class="fas fa-xmark"></i>`;
-
+  createAdditionAccountSelected(code, name);
   dropDownParent
     .querySelector('.select-input-wrapper')
     .insertBefore(div, dropDownInput);
@@ -260,6 +284,7 @@ const removeAdditionCurrency = (e) => {
 
   if (e.target.classList.contains('fa-xmark')) {
     e.target.parentElement.remove();
+    // removeAdditionFromAccount(e.target.previousElementSibling.textContent);
     addDropdownList.forEach((item) => {
       if (
         item.querySelector('.currencies-abb-name').textContent.slice(0, 3) ===
