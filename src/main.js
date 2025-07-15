@@ -7,6 +7,7 @@ const setupMainEl = document.getElementById('setup-main');
 const dropDownEl = document.querySelectorAll('.dropdown');
 const itemContainerEl = document.querySelectorAll('.items-container');
 const searchAddEL = document.querySelector('.label-add');
+const inputEl = document.querySelectorAll('input[type = "text"]');
 
 // fetch country name flag
 
@@ -68,6 +69,9 @@ const displayBaseCurrencies = async () => {
 const toggleDropDown = (e) => {
   const dropDownWrapper = e.target.closest('.items-container');
   const selectedEl = document.querySelectorAll('.selected');
+  const addDropDownList = document.querySelectorAll(
+    '#add-dropdown .dropdown-item'
+  );
   if (dropDownWrapper) {
     const dropDownInput = dropDownWrapper.querySelector('input');
     const dropDownItem = dropDownWrapper.querySelector('.selected');
@@ -90,6 +94,11 @@ const toggleDropDown = (e) => {
     parent.querySelector('.dropdown').classList.add('show');
     dropDownWrapper.classList.add('open-border');
     parent.querySelector('.dropdown').classList.add('border');
+
+    inputEl[0].value = '';
+    selectedEl[0].classList.remove('dp-none');
+    inputEl[1].value = '';
+    addDropDownList.forEach((item) => item.classList.remove('display-none'));
   }
 };
 // remove selected base currency from add currencies
@@ -230,6 +239,10 @@ const removeAdditionCurrency = (e) => {
     '#add-dropdown .dropdown-item.dp-none'
   );
 
+  const addDropDownList = document.querySelectorAll(
+    '#add-dropdown .dropdown-item'
+  );
+
   if (e.target.classList.contains('fa-xmark')) {
     e.target.parentElement.remove();
     addDropdownList.forEach((item) => {
@@ -244,6 +257,10 @@ const removeAdditionCurrency = (e) => {
     if (selectedAddition.length <= 1) {
       addInputWrapper.classList.remove('remove-padding');
       searchAddEL.classList.remove('dp-none');
+      searchAddEL.classList.remove('display-none');
+      inputEl[0].value = '';
+      inputEl[1].value = '';
+      addDropDownList.forEach((item) => item.classList.remove('display-none'));
     }
   }
 };
@@ -333,13 +350,83 @@ const handleBaseInput = () => {
   });
 };
 
+//  handle search curency if display no result if no currency match search
+
+const handleSearchAdd = () => {
+  const addDropDownDpnone = document.querySelectorAll(
+    '#add-dropdown .dropdown-item.display-none:not(.dp-none)'
+  );
+  const addDropDownListEl = document.querySelectorAll(
+    '#add-dropdown .dropdown-item:not(.dp-none)'
+  );
+  const addDropDownPa = document.querySelector('#add-dropdown');
+  const noResultEl = document.querySelector('.noresult');
+
+  if (addDropDownDpnone.length === addDropDownListEl.length) {
+    const li = document.createElement('li');
+    li.className = 'noresult';
+    li.textContent = 'No results found.';
+    if (noResultEl) {
+      noResultEl.remove();
+    }
+    addDropDownPa.appendChild(li);
+  } else if (
+    noResultEl &&
+    addDropDownDpnone.length !== addDropDownListEl.length
+  ) {
+    noResultEl.remove();
+  }
+};
+
+// handle base currency  input
+
+const handleAddInput = () => {
+  const input = document.querySelector('#additional-currency-wrapper input');
+  const selected = document.querySelector(
+    '#additional-currency-wrapper .selected'
+  );
+
+  input.addEventListener('input', () => {
+    const addDropDownList = document.querySelectorAll(
+      '#add-dropdown .dropdown-item'
+    );
+
+    if (input.value.length > 0) {
+      // checking if base input is being type in
+
+      selected.classList.add('display-none');
+      addDropDownList.forEach((item) => {
+        item.classList.add('display-none');
+
+        if (
+          // searching for currency in base currency
+          item.innerText
+            .toLowerCase()
+            .includes(input.value.toLowerCase().trim())
+        ) {
+          item.classList.remove('display-none');
+        }
+      });
+    } else {
+      selected.classList.remove('display-none');
+      addDropDownList.forEach((item) => {
+        item.classList.remove('display-none');
+      });
+    }
+
+    handleSearchAdd();
+  });
+};
+
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);
 document.addEventListener('click', (e) => {
   const selectedEl = document.querySelectorAll('.selected');
-  const inputEl = document.querySelectorAll('input[type = "text"]');
   const baseDropDownList = document.querySelectorAll(
     '#base-dropdown .dropdown-item'
+  );
+  const addDropDownList = document.querySelectorAll(
+    '#add-dropdown .dropdown-item'
   );
 
   if (e.target.closest('.add-selected-currencies')) return;
@@ -353,7 +440,10 @@ document.addEventListener('click', (e) => {
   itemContainerEl.forEach((item) => item.classList.remove('open-border'));
   selectedEl.forEach((item) => item.classList.remove('blur'));
   baseDropDownList.forEach((item) => item.classList.remove('dp-none'));
+  addDropDownList.forEach((item) => item.classList.remove('display-none'));
+  searchAddEL.classList.remove('display-none');
 });
 displayBaseCurrencies();
 displayAddCurrencies();
 handleBaseInput();
+handleAddInput();
