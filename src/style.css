@@ -364,6 +364,63 @@ body {
   border-radius: 7px;
   cursor: pointer;
 }
+
+/* for style table mobile first */
+.conversion-table {
+  margin-top: 1rem;
+}
+
+.mobile-rate-block {
+  margin-bottom: 1rem;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fafafa;
+  border-radius: 4px;
+}
+
+.mobile-rate-block p {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+th,
+td {
+  padding: 10px 14px;
+  text-align: center;
+  border: 1px solid #ccc;
+  font-size: 1.4rem;
+}
+
+th {
+  background-color: #f7f7f7;
+  font-weight: bold;
+}
+
+td:first-child,
+th:first-child {
+  text-align: left;
+  font-weight: bold;
+}
+
+td,
+th {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  table {
+    display: none; /* hide the full table on small screens (handled by mobile blocks) */
+  }
+}
+
 /* UTILITY STYLE */
 
 .flex {
