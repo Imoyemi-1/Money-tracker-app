@@ -10,7 +10,10 @@ const itemContainerEl = document.querySelectorAll('.items-container');
 const searchAddEL = document.querySelector('.label-add');
 const inputEl = document.querySelectorAll('input[type = "text"]');
 
+let baseCurrency = 'USD';
+let additionalCurrencies = [];
 let exchangeRates = {};
+
 // fetch country name flag
 
 const getCurrenciesInfo = async () => {
@@ -19,6 +22,86 @@ const getCurrenciesInfo = async () => {
   return data;
 };
 
+// // Fetch exchange rates based on base currency
+
+const updateBaseCurrency = async (newBase = 'USD') => {
+  baseCurrency = newBase;
+  const res = await fetch(
+    `https://v6.exchangerate-api.com/v6/${apiKey}/latest/${baseCurrency}`
+  );
+  const data = await res.json();
+  exchangeRates = data.conversion_rates;
+};
+
+// Add one currency at a time
+const addCurrency = (code) => {
+  if (!additionalCurrencies.includes(code)) {
+    additionalCurrencies.push(code);
+    generateConversionTable(); // Refresh table each time one is added
+  }
+};
+
+// Create currency conversion matrix
+function generateConversionTable() {
+  const container = document.querySelector('.conversion-table');
+  container.innerHTML = '';
+
+  if (window.innerWidth < 768) {
+    // Mobile view — show block rows
+    additionalCurrencies.forEach((currencyCode) => {
+      const rateFrom = exchangeRates[currencyCode];
+      const rateTo = 1 / rateFrom;
+
+      const block = document.createElement('div');
+      block.classList.add('mobile-rate-block');
+
+      block.innerHTML = `
+        <p>1 ${currencyCode} = ${rateFrom.toFixed(4)} ${baseCurrency}</p>
+        <p>1 ${baseCurrency} = ${rateTo.toFixed(4)} ${currencyCode}</p>
+      `;
+
+      container.appendChild(block);
+    });
+  } else {
+    // Desktop view — original matrix table
+    const all = [baseCurrency, ...additionalCurrencies];
+    const table = document.createElement('table');
+
+    const header = document.createElement('tr');
+    header.innerHTML = '<th></th>' + all.map((c) => `<th>${c}</th>`).join('');
+    table.appendChild(header);
+
+    all.forEach((from) => {
+      const row = document.createElement('tr');
+      row.innerHTML =
+        `<td>${from}</td>` +
+        all
+          .map((to) => {
+            const rate =
+              from === to ? 1 : exchangeRates[to] / exchangeRates[from];
+            return `<td>${rate.toFixed(4)}</td>`;
+          })
+          .join('');
+      table.appendChild(row);
+    });
+
+    container.appendChild(table);
+  }
+}
+
+// Change base currency dynamically
+const onBaseCurrencyChange = async (newBase) => {
+  removeCurFromArr(newBase);
+  await updateBaseCurrency(newBase);
+  if (additionalCurrencies.length > 0) generateConversionTable();
+  else document.querySelector('.conversion-table').innerHTML = '';
+};
+
+// remove currency from addiional list array
+
+const removeCurFromArr = (code) => {
+  additionalCurrencies = additionalCurrencies.filter((item) => item !== code);
+};
 // Create dropdown list
 
 const createDropDownList = (
@@ -171,6 +254,7 @@ const selectBaseCurrency = (e) => {
   checkAddCurrency(code);
   removeAdditionFromAccount(code);
   checkSelectedAdd();
+  onBaseCurrencyChange(code);
 };
 
 // display additional currency
@@ -237,6 +321,7 @@ const selectAddCurrency = (e) => {
   dropDownParent.parentElement
     .querySelector('.items-container')
     .classList.add('remove-padding');
+  addCurrency(code);
 };
 
 //  select  and display account group type item
@@ -311,17 +396,20 @@ const removeAdditionCurrency = (e) => {
   );
 
   if (e.target.classList.contains('fa-xmark')) {
+    const code = e.target.previousElementSibling.textContent;
     e.target.parentElement.remove();
-    removeAdditionFromAccount(e.target.previousElementSibling.textContent);
+    removeAdditionFromAccount(code);
     addDropdownList.forEach((item) => {
       if (
         item.querySelector('.currencies-abb-name').textContent.slice(0, 3) ===
-        e.target.previousElementSibling.textContent
+        code
       ) {
         item.classList.remove('dp-none');
       }
     });
     checkSelectedAdd();
+    removeCurFromArr(code);
+    onBaseCurrencyChange();
   }
 };
 
@@ -503,7 +591,11 @@ document.addEventListener('click', (e) => {
   addDropDownList.forEach((item) => item.classList.remove('display-none'));
   searchAddEL.classList.remove('display-none');
 });
+window.addEventListener('resize', () => {
+  generateConversionTable();
+});
 displayBaseCurrencies();
 displayAddCurrencies();
 handleBaseInput();
 handleAddInput();
+updateBaseCurrency();
