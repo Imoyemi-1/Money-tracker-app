@@ -13,10 +13,11 @@
   --grey-background: #e8e8e8;
   --primary-blue: #3f51b5;
   --grey-200: #bfbfbfde;
-  --grey-100: rgb(247, 247, 247);
+  --grey-100: rgb(246, 246, 246);
   --red: #db2828;
   --grey-300: rgb(224, 224, 224);
   --blue-border: rgb(133, 183, 217);
+  --light-green: rgb(76, 186, 69);
 }
 
 /* Reset style sheets */
@@ -73,6 +74,7 @@ body {
 #setup-main {
   padding: 2.5rem 1.8rem;
   color: var(--black-txt);
+  padding-bottom: 1rem;
 }
 
 #currencies {
@@ -413,6 +415,100 @@ th:first-child {
 td,
 th {
   white-space: nowrap;
+}
+
+#saved-account-container {
+  margin-top: 1.5rem;
+}
+
+.account-type-header {
+  padding: 1.2rem 1.6rem;
+  background-color: var(--grey-100);
+  border: 1px solid var(--grey-300);
+  border-left: 0;
+  border-right: 0;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.account-type-header .account-header-txt {
+  font-weight: 500;
+  font-size: 1.6rem;
+}
+
+.account-type-header .account-header-num {
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--light-green);
+}
+
+.account-body-cons {
+  padding: 1.2rem 1.6rem;
+  justify-content: space-between;
+  flex: 1;
+  border-bottom: 1px solid var(--grey-300);
+}
+
+.account-body-cons > .account-body-name {
+  flex: 1;
+  color: var(--primary-blue);
+  font-weight: 400;
+}
+
+.account-body-text-cons {
+  display: inline-flex;
+  gap: 1.2rem;
+  width: fit-content;
+}
+
+.account-btn-cons {
+  display: inline-flex;
+  gap: 0.8rem;
+  flex-direction: column;
+  width: fit-content;
+}
+
+.account-body-txt p {
+  color: var(--light-green);
+  font-weight: 400;
+  font-size: 1.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.account-body-txt p:last-of-type {
+  margin-bottom: 0;
+}
+
+.account-btn-cons button {
+  border: 1px solid var(--grey-300);
+  border-radius: 50%;
+  background: none;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.account-btn-cons button:hover {
+  background-color: rgba(124, 124, 124, 0.08);
+}
+
+.edit-account-btn i {
+  color: var(--light-green);
+}
+
+.delete-account-btn i {
+  color: var(--red);
+}
+
+.finish-btn {
+  margin-top: 1rem;
+  padding: 1rem 2rem;
+  background-color: var(--primary-blue);
+  border: none;
+  color: var(--White);
+  border-radius: 5px;
+  cursor: pointer;
+  justify-self: end;
 }
 
 @media (max-width: 768px) {
