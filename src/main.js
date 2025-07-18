@@ -572,6 +572,62 @@ const handleAddInput = () => {
   });
 };
 
+// display saved account currencies
+const displaySavedAccount = () => {
+  const storedAccount = Storage.getAccountData();
+
+  // clear saved account element before inserting another one
+
+  let lastElement = savedAccountContainer.lastElementChild;
+  let prev = lastElement?.previousElementSibling;
+  while (prev) {
+    const toClear = prev;
+    prev = prev.previousElementSibling;
+    savedAccountContainer.removeChild(toClear);
+  }
+  Object.keys(storedAccount).length <= 0
+    ? savedAccountContainer.classList.add('dp-none')
+    : savedAccountContainer.classList.remove('dp-none');
+  Object.entries(storedAccount).forEach(([type, account]) => {
+    const div = document.createElement('div');
+    div.className = 'account-type-group';
+    div.innerHTML = `
+            <div class="account-type-header flex">
+              <span class="account-header-txt">${type}</span>
+              <span class="account-header-num">0 USD</span>
+            </div>
+            ${account
+              .map(({ name, baseCurrency, additionalCurrencies }) => {
+                const details = ` <div class="account-body-cons flex">
+              <p class="account-body-name">${name}</p>
+              <div class="account-body-text-cons">
+                <div class="account-body-txt">
+                  <p class="account-body-txt-amt">${baseCurrency.amount.toFixed(2)} ${baseCurrency.currencyName}</p>
+                  ${additionalCurrencies
+                    .map((item) => {
+                      const addition = `<p class="account-body-txt-amt">${item.amount.toFixed(2)} ${item.code}</p>`;
+                      return addition;
+                    })
+                    .join('')}
+                </div>
+                <div class="account-btn-cons">
+                  <button class="edit-account-btn">
+                    <i class="fas fa-pencil"></i>
+                  </button>
+                  <button class="delete-account-btn">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>`;
+                return details;
+              })
+              .join('')}
+          `;
+    savedAccountContainer.insertBefore(div, lastElement);
+  });
+};
+
 // set account data to local storage
 
 const addAccount = (type, account) => {
@@ -582,6 +638,7 @@ const addAccount = (type, account) => {
   }
   storedAccount[type].push(account);
   Storage.setAccountData(storedAccount);
+  displaySavedAccount();
 };
 
 // save account
@@ -663,3 +720,4 @@ displayAddCurrencies();
 handleBaseInput();
 handleAddInput();
 updateBaseCurrency();
+displaySavedAccount();
