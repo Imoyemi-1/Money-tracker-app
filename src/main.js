@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import './style.css';
+import Storage from './Storage';
 
 const apiKey = import.meta.env.VITE_EXCHANGE_API_KEY;
 //
@@ -9,6 +10,11 @@ const dropDownEl = document.querySelectorAll('.dropdown');
 const itemContainerEl = document.querySelectorAll('.items-container');
 const searchAddEL = document.querySelector('.label-add');
 const inputEl = document.querySelectorAll('input[type = "text"]');
+const accountForm = document.querySelector('.set-account-container');
+const accountNameInput = document.querySelector('#account-name-input');
+const savedAccountContainer = document.querySelector(
+  '#saved-account-container'
+);
 
 let baseCurrency = 'USD';
 let additionalCurrencies = [];
@@ -397,6 +403,8 @@ const removeAdditionCurrency = (e) => {
 
   if (e.target.classList.contains('fa-xmark')) {
     const code = e.target.previousElementSibling.textContent;
+    removeCurFromArr(code);
+    onBaseCurrencyChange();
     e.target.parentElement.remove();
     removeAdditionFromAccount(code);
     addDropdownList.forEach((item) => {
@@ -408,8 +416,6 @@ const removeAdditionCurrency = (e) => {
       }
     });
     checkSelectedAdd();
-    removeCurFromArr(code);
-    onBaseCurrencyChange();
   }
 };
 
@@ -566,6 +572,62 @@ const handleAddInput = () => {
   });
 };
 
+// set account data to local storage
+
+const addAccount = (type, account) => {
+  const storedAccount = Storage.getAccountData();
+
+  if (!storedAccount[type]) {
+    storedAccount[type] = [];
+  }
+  storedAccount[type].push(account);
+  Storage.setAccountData(storedAccount);
+};
+
+// save account
+
+const saveAccount = (e) => {
+  e.preventDefault();
+  const type = document.querySelector('.group-selected').textContent;
+  const account = {};
+
+  const baseName = document.querySelector(
+    '#acccount-base-selected .account-amt-container p'
+  );
+  const baseAmount = document.querySelector(
+    '#acccount-base-selected .account-amt-container input'
+  );
+  const additionalAccount = document.querySelectorAll(
+    '.account-setup-container.add-account'
+  );
+
+  if (accountNameInput.value.trim().length > 0) {
+    account.id = crypto.randomUUID().slice(-5);
+    account.name = accountNameInput.value;
+    account.baseCurrency = {
+      currencyName: baseName.textContent,
+      amount: +baseAmount.value.trim() || 0,
+    };
+    account.additionalCurrencies = [];
+    additionalAccount.forEach((item) => {
+      const code = item.querySelector(' .account-amt-container p');
+      const amount = item.querySelector('.account-amt-container input');
+
+      const addDetail = {
+        code: code.textContent,
+        amount: +amount.value.trim() || 0,
+      };
+
+      account.additionalCurrencies.push(addDetail);
+    });
+    addAccount(type, account);
+    document.querySelectorAll('input').forEach((item) => (item.value = ''));
+  } else {
+    accountNameInput.value = '';
+    alert('Enter account name');
+  }
+};
+
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);
 document.addEventListener('click', (e) => {
@@ -594,6 +656,8 @@ document.addEventListener('click', (e) => {
 window.addEventListener('resize', () => {
   generateConversionTable();
 });
+accountForm.addEventListener('submit', saveAccount);
+
 displayBaseCurrencies();
 displayAddCurrencies();
 handleBaseInput();
