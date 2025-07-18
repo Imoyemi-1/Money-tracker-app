@@ -246,17 +246,36 @@ const checkAddCurrency = (code) => {
 // display selected base currency
 
 const selectBaseCurrency = (e) => {
+  const addDropDownEl = document.querySelectorAll(
+    '#add-dropdown .dropdown-item'
+  );
   const dropDownItemEl = e.target.closest('.dropdown-item');
   const code = dropDownItemEl
     .querySelector('.currencies-abb-name')
     .textContent.slice(0, 3);
+  const active = document.querySelector(
+    '.items-container .currencies-abb-name'
+  );
+
   dropDownItemEl.parentElement
     .querySelectorAll('.dropdown-item')
     .forEach((item) => item.classList.remove('active'));
   dropDownItemEl.classList.add('active');
   displayBaseSelected();
   displayAccountBaseSelected();
-  removeSelectedBaseCurrency();
+  addDropDownEl.forEach((item) => {
+    if (
+      item.querySelector('.currencies-abb-name').textContent.slice(0, 3) ===
+      active.textContent.slice(0, 3)
+    ) {
+      item.classList.remove('dp-none');
+    } else if (
+      item.querySelector('.currencies-abb-name').textContent.slice(0, 3) ===
+      code
+    ) {
+      item.classList.add('dp-none');
+    }
+  });
   checkAddCurrency(code);
   removeAdditionFromAccount(code);
   checkSelectedAdd();
