@@ -616,8 +616,8 @@ const displaySavedAccount = () => {
               <span class="account-header-num">0 USD</span>
             </div>
             ${account
-              .map(({ name, baseCurrency, additionalCurrencies }) => {
-                const details = ` <div class="account-body-cons flex">
+              .map(({ id, name, baseCurrency, additionalCurrencies }) => {
+                const details = ` <div class="account-body-cons flex " data-id =${id}>
               <p class="account-body-name">${name}</p>
               <div class="account-body-text-cons">
                 <div class="account-body-txt">
@@ -704,6 +704,31 @@ const saveAccount = (e) => {
   }
 };
 
+// handle saved account listener
+
+const handleSavedAccount = (e) => {
+  const accountHeader = e.target.closest('.account-type-header');
+  const deleteBtn = e.target.closest('.delete-account-btn');
+  if (accountHeader) {
+    accountHeader.nextElementSibling.classList.toggle('dp-none');
+  }
+
+  if (deleteBtn) {
+    const parentEl =
+      deleteBtn.parentElement.parentElement.parentElement.parentElement;
+
+    const type = parentEl.querySelector(
+      '.account-type-header .account-header-txt'
+    );
+    const id = parentEl
+      .querySelector('.account-body-cons')
+      .getAttribute('data-id');
+
+    Storage.deleteAccountData(id, type.textContent);
+    displaySavedAccount();
+  }
+};
+
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);
 document.addEventListener('click', (e) => {
@@ -733,6 +758,7 @@ window.addEventListener('resize', () => {
   generateConversionTable();
 });
 accountForm.addEventListener('submit', saveAccount);
+savedAccountContainer.addEventListener('click', handleSavedAccount);
 
 displayBaseCurrencies();
 displayAddCurrencies();
