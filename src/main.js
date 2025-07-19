@@ -20,6 +20,9 @@ let baseCurrency = 'USD';
 let additionalCurrencies = [];
 let exchangeRates = {};
 
+let isEdit = false;
+let accountID;
+
 // fetch country name flag
 
 const getCurrenciesInfo = async () => {
@@ -659,6 +662,20 @@ const addAccount = (type, account) => {
   Storage.setAccountData(storedAccount);
   displaySavedAccount();
 };
+// change reset account to default
+
+const defaultGroup = () => {
+  const groupType = document.querySelectorAll('#group-dropdown .dropdown-item');
+
+  groupType.forEach((item) => {
+    item.classList.remove('active');
+    if (item.textContent === 'Cash') {
+      item.classList.add('active');
+    }
+  });
+
+  displayAccountGroupSelected();
+};
 
 // save account
 
@@ -677,7 +694,7 @@ const saveAccount = (e) => {
     '.account-setup-container.add-account'
   );
 
-  if (accountNameInput.value.trim().length > 0) {
+  if (accountNameInput.value.trim().length > 0 && !isEdit) {
     account.id = crypto.randomUUID().slice(-5);
     account.name = accountNameInput.value;
     account.baseCurrency = {
@@ -698,6 +715,31 @@ const saveAccount = (e) => {
     });
     addAccount(type, account);
     document.querySelectorAll('input').forEach((item) => (item.value = ''));
+    defaultGroup();
+  } else if (accountNameInput.value.trim().length > 0 && isEdit) {
+    account.id = accountID;
+    account.name = accountNameInput.value;
+    account.baseCurrency = {
+      currencyName: baseName.textContent,
+      amount: +baseAmount.value.trim() || 0,
+    };
+    account.additionalCurrencies = [];
+    additionalAccount.forEach((item) => {
+      const code = item.querySelector(' .account-amt-container p');
+      const amount = item.querySelector('.account-amt-container input');
+
+      const addDetail = {
+        code: code.textContent,
+        amount: +amount.value.trim() || 0,
+      };
+
+      account.additionalCurrencies.push(addDetail);
+    });
+    Storage.deleteAccountData(account.id, type);
+    addAccount(type, account);
+    document.querySelectorAll('input').forEach((item) => (item.value = ''));
+    isEdit = false;
+    defaultGroup();
   } else {
     accountNameInput.value = '';
     alert('Enter account name');
@@ -709,23 +751,54 @@ const saveAccount = (e) => {
 const handleSavedAccount = (e) => {
   const accountHeader = e.target.closest('.account-type-header');
   const deleteBtn = e.target.closest('.delete-account-btn');
+  const EditBtn = e.target.closest('.edit-account-btn');
   if (accountHeader) {
     accountHeader.nextElementSibling.classList.toggle('dp-none');
   }
 
   if (deleteBtn) {
-    const parentEl =
+    const deleteParentEl =
       deleteBtn.parentElement.parentElement.parentElement.parentElement;
 
-    const type = parentEl.querySelector(
+    const type = deleteParentEl.querySelector(
       '.account-type-header .account-header-txt'
     );
-    const id = parentEl
+    const id = deleteParentEl
       .querySelector('.account-body-cons')
       .getAttribute('data-id');
+    if (confirm('Are sure you want to delete this account')) {
+      Storage.deleteAccountData(id, type.textContent);
+      displaySavedAccount();
+    }
+  }
 
-    Storage.deleteAccountData(id, type.textContent);
-    displaySavedAccount();
+  if (EditBtn) {
+    isEdit = true;
+    const editParentEl =
+      EditBtn.parentElement.parentElement.parentElement.parentElement;
+
+    const type = editParentEl.querySelector(
+      '.account-type-header .account-header-txt'
+    );
+    const name = editParentEl.querySelector('.account-body-name');
+    const id = editParentEl
+      .querySelector('.account-body-cons')
+      .getAttribute('data-id');
+    const input = document.querySelector('#account-name-input');
+    accountID = id;
+    input.value = name.textContent;
+
+    const groupType = document.querySelectorAll(
+      '#group-dropdown .dropdown-item'
+    );
+
+    groupType.forEach((item) => {
+      item.classList.remove('active');
+      if (item.textContent === type.textContent) {
+        item.classList.add('active');
+      }
+    });
+    displayAccountGroupSelected();
   }
 };
 
