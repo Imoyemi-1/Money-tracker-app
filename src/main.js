@@ -21,7 +21,8 @@ let additionalCurrencies = [];
 let exchangeRates = {};
 
 let isEdit = false;
-let accountID;
+let accountID = null;
+let accountType = null;
 
 // fetch country name flag
 
@@ -735,10 +736,13 @@ const saveAccount = (e) => {
 
       account.additionalCurrencies.push(addDetail);
     });
-    Storage.deleteAccountData(account.id, type);
+    Storage.deleteAccountData(account.id, accountType);
     addAccount(type, account);
     document.querySelectorAll('input').forEach((item) => (item.value = ''));
     isEdit = false;
+    accountID = null;
+    accountType = null;
+
     defaultGroup();
   } else {
     accountNameInput.value = '';
@@ -774,18 +778,16 @@ const handleSavedAccount = (e) => {
 
   if (EditBtn) {
     isEdit = true;
-    const editParentEl =
-      EditBtn.parentElement.parentElement.parentElement.parentElement;
+    const editParentEl = EditBtn.parentElement.parentElement.parentElement;
 
-    const type = editParentEl.querySelector(
+    const type = editParentEl.parentElement.querySelector(
       '.account-type-header .account-header-txt'
     );
     const name = editParentEl.querySelector('.account-body-name');
-    const id = editParentEl
-      .querySelector('.account-body-cons')
-      .getAttribute('data-id');
+    const id = editParentEl.getAttribute('data-id');
     const input = document.querySelector('#account-name-input');
     accountID = id;
+    accountType = type.textContent;
     input.value = name.textContent;
 
     const groupType = document.querySelectorAll(
