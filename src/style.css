@@ -376,6 +376,15 @@ body {
   color: var(--White);
   border-radius: 7px;
   cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
+}
+
+#save-account:hover,
+.finish-btn {
+  opacity: 0.9;
+  background-color: #2f45a0;
 }
 
 /* for style table mobile first */
@@ -551,6 +560,9 @@ th {
   border-radius: 5px;
   cursor: pointer;
   justify-self: end;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
 }
 
 @media (max-width: 768px) {
@@ -611,11 +623,8 @@ th {
   display: grid;
 }
 
+.display-none,
 .dp-none {
-  display: none;
-}
-
-.display-none {
   display: none;
 }
 
