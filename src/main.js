@@ -284,6 +284,7 @@ const selectBaseCurrency = (e) => {
   removeAdditionFromAccount(code);
   checkSelectedAdd();
   onBaseCurrencyChange(code);
+  updateAllGroupTotals(Storage.getAccountData(), baseCurrency, exchangeRates);
 };
 
 // display additional currency
@@ -615,7 +616,7 @@ const displaySavedAccount = () => {
     const div = document.createElement('div');
     div.className = 'account-type-group';
     div.innerHTML = `
-            <div class="account-type-header flex">
+            <div class="account-type-header flex" data-group = ${type}>
               <span class="account-header-txt">${type}</span>
               <span class="account-header-num">0 USD</span>
             </div>
@@ -715,6 +716,7 @@ const saveAccount = (e) => {
       account.additionalCurrencies.push(addDetail);
     });
     addAccount(type, account);
+    updateAllGroupTotals(Storage.getAccountData(), baseCurrency, exchangeRates);
     document.querySelectorAll('input').forEach((item) => (item.value = ''));
     defaultGroup();
   } else if (accountNameInput.value.trim().length > 0 && isEdit) {
@@ -738,6 +740,7 @@ const saveAccount = (e) => {
     });
     Storage.deleteAccountData(account.id, accountType);
     addAccount(type, account);
+    updateAllGroupTotals(Storage.getAccountData(), baseCurrency, exchangeRates);
     document.querySelectorAll('input').forEach((item) => (item.value = ''));
     isEdit = false;
     accountID = null;
@@ -761,18 +764,20 @@ const handleSavedAccount = (e) => {
   }
 
   if (deleteBtn) {
-    const deleteParentEl =
-      deleteBtn.parentElement.parentElement.parentElement.parentElement;
+    const deleteParentEl = deleteBtn.parentElement.parentElement.parentElement;
 
-    const type = deleteParentEl.querySelector(
+    const type = deleteParentEl.parentElement.querySelector(
       '.account-type-header .account-header-txt'
     );
-    const id = deleteParentEl
-      .querySelector('.account-body-cons')
-      .getAttribute('data-id');
+    const id = deleteParentEl.getAttribute('data-id');
     if (confirm('Are sure you want to delete this account')) {
       Storage.deleteAccountData(id, type.textContent);
       displaySavedAccount();
+      updateAllGroupTotals(
+        Storage.getAccountData(),
+        baseCurrency,
+        exchangeRates
+      );
     }
   }
 
@@ -803,6 +808,75 @@ const handleSavedAccount = (e) => {
     displayAccountGroupSelected();
   }
 };
+
+// convert currency to base
+function convertToBase(fromCode, amount, toCode, rates) {
+  if (fromCode === toCode) return amount;
+
+  const fromRate = rates[fromCode];
+  const toRate = rates[toCode];
+
+  if (!fromRate || !toRate) return 0;
+
+  const usdValue = amount / fromRate;
+  return usdValue * toRate;
+}
+
+// Calculate total value in a group
+function calculateGroupTotal(
+  groupedAccounts,
+  groupName,
+  baseCurrencyCode,
+  rates
+) {
+  const groupAccounts = groupedAccounts[groupName];
+  if (!groupAccounts) return 0;
+
+  return groupAccounts.reduce((total, acc) => {
+    let accTotal = 0;
+
+    // Convert base currency to desired base
+    accTotal += convertToBase(
+      acc.baseCurrency.currencyName,
+      acc.baseCurrency.amount || 0,
+      baseCurrencyCode,
+      rates
+    );
+
+    // Convert additional currencies too
+    if (Array.isArray(acc.additionalCurrencies)) {
+      acc.additionalCurrencies.forEach((curr) => {
+        accTotal += convertToBase(
+          curr.code,
+          curr.amount || 0,
+          baseCurrencyCode,
+          rates
+        );
+      });
+    }
+
+    return total + accTotal;
+  }, 0);
+}
+
+// update all currency totals
+
+function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
+  const headers = document.querySelectorAll('.account-type-header');
+
+  headers.forEach((header) => {
+    const groupName = header.dataset.group;
+    const total = calculateGroupTotal(
+      groupedAccounts,
+      groupName,
+      baseCurrencyCode,
+      rates
+    );
+
+    const totalElement = header.querySelector('.account-header-num');
+    totalElement.textContent = `${total.toFixed(2)} ${baseCurrencyCode}`;
+  });
+}
 
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);
@@ -841,3 +915,4 @@ handleBaseInput();
 handleAddInput();
 updateBaseCurrency();
 displaySavedAccount();
+updateAllGroupTotals(Storage.getAccountData(), baseCurrency, exchangeRates);
