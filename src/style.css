@@ -18,6 +18,7 @@
   --grey-300: rgb(224, 224, 224);
   --blue-border: rgb(133, 183, 217);
   --light-green: rgb(76, 186, 69);
+  --white-dp: rgb(245, 245, 245);
 }
 
 /* Reset style sheets */
@@ -66,9 +67,10 @@ body {
 }
 
 #header-txt {
-  font-weight: 400;
+  font-weight: 500;
   margin: 0;
   text-wrap: nowrap;
+  font-size: 2.6rem;
 }
 
 #setup-main {
@@ -84,8 +86,8 @@ body {
 #currencies-header,
 #accounts-header {
   font-weight: 400;
-  font-size: 2.8rem;
-  margin-bottom: 1.5rem;
+  font-size: 2.6rem;
+  margin-bottom: 2rem;
 }
 
 #currencies-txt,
@@ -108,7 +110,6 @@ body {
 }
 
 .currency-item-cons {
-  height: 100%;
   background: var(--White);
   position: relative;
   font-size: 1.455rem;
@@ -119,6 +120,7 @@ body {
   z-index: 99;
   border: 1px solid var(--grey-300);
   border-radius: 7px;
+  transition: border 0.2s ease;
 }
 
 .items-container.open-border {
@@ -156,6 +158,10 @@ body {
 
 .items-container > i {
   padding: 0 1rem;
+}
+
+.items-container:hover {
+  border: 1px solid rgb(178, 179, 179);
 }
 
 .label-add {
@@ -275,6 +281,11 @@ body {
   align-items: center;
 }
 
+.set-account-input-container {
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
 .account-type-container .items-container {
   padding: 0.945rem;
   align-items: center;
@@ -370,6 +381,27 @@ body {
 /* for style table mobile first */
 .conversion-table {
   margin-top: 1rem;
+  max-height: 40rem;
+  overflow: auto;
+}
+
+.conversion-table::-webkit-scrollbar {
+  width: 0.8rem;
+  border-radius: 5px;
+  background-color: rgb(250, 249, 249);
+  padding: 1px;
+}
+
+.conversion-table::-webkit-scrollbar-thumb {
+  background-color: rgb(196, 194, 194);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.conversion-table::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(112, 112, 112);
+  border-radius: 10px;
 }
 
 .mobile-rate-block {
@@ -400,7 +432,10 @@ td {
   border: 1px solid #ccc;
   font-size: 1.4rem;
 }
-
+th:first-of-type {
+  visibility: hidden;
+  border: none;
+}
 th {
   background-color: #f7f7f7;
   font-weight: bold;
@@ -520,7 +555,48 @@ th {
 
 @media (max-width: 768px) {
   table {
-    display: none; /* hide the full table on small screens (handled by mobile blocks) */
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .conversion-table {
+    width: 100%;
+    max-width: 76.2rem;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 0;
+    background-color: var(--white-dp);
+  }
+
+  #container {
+    width: 80rem;
+    background-color: var(--White);
+    box-shadow:
+      0 2px 4px 0 rgba(34, 36, 38, 0.12),
+      0 2px 10px 0 rgba(34, 36, 38, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.6575rem;
+  }
+
+  .select-currency-container,
+  .set-account-input-container {
+    flex-direction: row;
+  }
+  .currency-container,
+  .account-item-container,
+  .account-type-container {
+    flex: 1;
+  }
+}
+
+@media (max-width: 499px) {
+  html {
+    font-size: 55%;
   }
 }
 

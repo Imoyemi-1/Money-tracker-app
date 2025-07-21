@@ -71,33 +71,35 @@
             a loan to your friend.
           </p>
           <form class="set-account-container flex">
-            <div class="account-item-container">
-              <label for="name" class="type-name"
-                >Name <span id="important">*</span></label
-              >
-              <input
-                type="text"
-                id="account-name-input"
-                placeholder="Account name"
-                required
-              />
-            </div>
-            <div class="account-type-container">
-              <label for="base" class="type-name">Group</label>
-              <div class="currency-item-cons">
-                <div class="items-container flex">
-                  <div class="select-input-wrapper">
-                    <p class="group-selected flex">Cash</p>
+            <div class="set-account-input-container flex">
+              <div class="account-item-container">
+                <label for="name" class="type-name"
+                  >Name <span id="important">*</span></label
+                >
+                <input
+                  type="text"
+                  id="account-name-input"
+                  placeholder="Account name"
+                  required
+                />
+              </div>
+              <div class="account-type-container">
+                <label for="base" class="type-name">Group</label>
+                <div class="currency-item-cons">
+                  <div class="items-container flex">
+                    <div class="select-input-wrapper">
+                      <p class="group-selected flex">Cash</p>
+                    </div>
+                    <i class="fas fa-caret-down"></i>
                   </div>
-                  <i class="fas fa-caret-down"></i>
+                  <ul class="dropdown" id="group-dropdown">
+                    <li class="dropdown-item active">Cash</li>
+                    <li class="dropdown-item">Bank Account</li>
+                    <li class="dropdown-item">Deposit</li>
+                    <li class="dropdown-item">Credit</li>
+                    <li class="dropdown-item">Asset</li>
+                  </ul>
                 </div>
-                <ul class="dropdown" id="group-dropdown">
-                  <li class="dropdown-item active">Cash</li>
-                  <li class="dropdown-item">Bank Account</li>
-                  <li class="dropdown-item">Deposit</li>
-                  <li class="dropdown-item">Credit</li>
-                  <li class="dropdown-item">Asset</li>
-                </ul>
               </div>
             </div>
             <div
