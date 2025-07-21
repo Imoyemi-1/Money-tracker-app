@@ -66,8 +66,8 @@ function generateConversionTable() {
       block.classList.add('mobile-rate-block');
 
       block.innerHTML = `
-        <p>1 ${currencyCode} = ${rateFrom.toFixed(4)} ${baseCurrency}</p>
-        <p>1 ${baseCurrency} = ${rateTo.toFixed(4)} ${currencyCode}</p>
+        <p>1 ${currencyCode} = ${formatCurrency(+rateFrom.toFixed(4))} ${baseCurrency}</p>
+        <p>1 ${baseCurrency} = ${formatCurrency(+rateTo.toFixed(4))} ${currencyCode}</p>
       `;
 
       container.appendChild(block);
@@ -89,7 +89,7 @@ function generateConversionTable() {
           .map((to) => {
             const rate =
               from === to ? 1 : exchangeRates[to] / exchangeRates[from];
-            return `<td>${rate.toFixed(4)}</td>`;
+            return `<td>${formatCurrency(+rate.toFixed(4))}</td>`;
           })
           .join('');
       table.appendChild(row);
@@ -616,7 +616,7 @@ const displaySavedAccount = () => {
     const div = document.createElement('div');
     div.className = 'account-type-group';
     div.innerHTML = `
-            <div class="account-type-header flex" data-group = ${type}>
+            <div class="account-type-header flex" data-group = '${type}'>
               <span class="account-header-txt">${type}</span>
               <span class="account-header-num">0 USD</span>
             </div>
@@ -626,7 +626,7 @@ const displaySavedAccount = () => {
               <p class="account-body-name">${name}</p>
               <div class="account-body-text-cons">
                 <div class="account-body-txt">
-                  <p class="account-body-txt-amt">${baseCurrency.amount.toFixed(2)} ${baseCurrency.currencyName}</p>
+                  <p class="account-body-txt-amt">${formatCurrency(+baseCurrency.amount.toFixed(2))} ${baseCurrency.currencyName}</p>
                   ${additionalCurrencies
                     .map((item) => {
                       const addition = `<p class="account-body-txt-amt">${item.amount.toFixed(2)} ${item.code}</p>`;
@@ -874,9 +874,18 @@ function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
     );
 
     const totalElement = header.querySelector('.account-header-num');
-    totalElement.textContent = `${total.toFixed(2)} ${baseCurrencyCode}`;
+    totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrencyCode}`;
   });
 }
+
+// format currency
+
+const formatCurrency = (amount) => {
+  return amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
 
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);
