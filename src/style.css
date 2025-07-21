@@ -42,6 +42,8 @@ body {
   line-height: 1.325em;
   font-size: 1.5rem;
   font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .setup-header {
