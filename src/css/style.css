@@ -7,31 +7,6 @@
 
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 
-/* Reset style sheets */
-*,
-*::after,
-*::before {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 62.5%;
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--White);
-  color: var(--light-black);
-  line-height: 1.325em;
-  font-size: 1.5rem;
-  font-weight: 300;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 .setup-header {
   padding: 2.5rem 1.8rem;
   border-bottom: 1px solid var(--grey-200);
