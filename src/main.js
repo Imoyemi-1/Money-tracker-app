@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import './style.css';
+import './css/style.css';
 import Storage from './Storage';
 
 const apiKey = import.meta.env.VITE_EXCHANGE_API_KEY;

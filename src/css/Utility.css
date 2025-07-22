@@ -1,0 +1,27 @@
+:root {
+  --White: #fff;
+  --light-black: rgba(0, 0, 0, 0.87);
+  --black-txt: #000000de;
+  --grey-background: #e8e8e8;
+  --primary-blue: #3f51b5;
+  --grey-200: #bfbfbfde;
+  --grey-100: rgb(246, 246, 246);
+  --red: #db2828;
+  --grey-300: rgb(224, 224, 224);
+  --blue-border: rgb(133, 183, 217);
+  --light-green: rgb(76, 186, 69);
+  --white-dp: rgb(245, 245, 245);
+}
+
+a {
+  text-decoration: none;
+}
+
+.flex {
+  display: flex;
+  flex: 1;
+}
+
+.grid {
+  display: grid;
+}
