@@ -12,13 +12,13 @@
 .page-header {
   background-color: var(--primary-blue);
   color: var(--White);
-  padding: 1.6rem;
+  padding: 2.5rem;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2rem;
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  height: 6.2rem;
+  height: 7rem;
   width: 100%;
   border-bottom: 1px solid rgba(34, 36, 38, 0.15);
   box-shadow:
@@ -31,7 +31,7 @@
   padding: 0;
   margin: 0;
   font-weight: 300;
-  font-size: 2.6rem;
+  font-size: 2.8rem;
 }
 
 /* hamburger main */
@@ -65,6 +65,68 @@
   transform: translateY(-10.5px) rotate(-45deg);
 }
 
+.section-header {
+  padding: 2.5rem 2rem;
+}
+
+.section-header-txt {
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.section-header-txt h3 {
+  font-weight: 400;
+  font-size: 2.2rem;
+}
+
+.section-header-amt {
+  font-weight: 500;
+  font-size: 2.2rem;
+  color: var(--light-green);
+}
+
+.section-body {
+  border-top: 1px solid var(--grey-300);
+}
+
+.account-wallet-group {
+  width: 100%;
+}
+
+.account-wallet-header {
+  padding: 1.6rem;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--grey-300);
+  background-color: var(--grey-100);
+}
+
+.account-wallet-txt {
+  font-weight: 500;
+  font-size: 1.8rem;
+}
+
+.account-wallet-amt {
+  font-weight: 400;
+  color: var(--light-green);
+  font-size: 1.7rem;
+}
+
+.account-container {
+  justify-content: space-between;
+  padding: 1.2rem 1.6rem;
+  border-bottom: 1px solid var(--grey-300);
+}
+
+.account-container .account-name {
+  color: var(--primary-blue);
+  font-size: 1.6rem;
+}
+
+.account-container .account-price {
+  color: var(--light-green);
+  font-weight: 400;
+  font-size: 1.8rem;
+}
 /* General style */
 
 button {
