@@ -7,11 +7,38 @@
 
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 
+/* DASHBOARD STYLING */
+
+.page-header {
+  background-color: var(--primary-blue);
+  color: var(--White);
+  padding: 1.6rem;
+  align-items: center;
+  gap: 2.5rem;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  height: 6.2rem;
+  width: 100%;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  box-shadow:
+    0 2px 6px 0 rgba(34, 36, 38, 0.15),
+    0 2px 18px 0 rgba(34, 36, 38, 0.17);
+  z-index: 102;
+}
+
+.page-header h1 {
+  padding: 0;
+  margin: 0;
+  font-weight: 300;
+  font-size: 2.6rem;
+}
+
 /* hamburger main */
 
 .hamburger {
-  width: 30px;
-  height: 24px;
+  width: 3rem;
+  height: 2.2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -20,9 +47,9 @@
 }
 
 .hamburger span {
-  height: 3px;
+  height: 0.4rem;
   background: var(--White);
-  border-radius: 2px;
+  border-radius: 1px;
   transition: all 0.3s ease;
 }
 
@@ -36,4 +63,11 @@
 
 .hamburger.active span:nth-child(3) {
   transform: translateY(-10.5px) rotate(-45deg);
+}
+
+/* General style */
+
+button {
+  background: none;
+  border: none;
 }
