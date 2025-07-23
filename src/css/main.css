@@ -232,6 +232,14 @@
   border: 1px solid var(--grey-300);
   padding: 0.95rem 1.4rem;
 }
+
+.section:last-of-type {
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
+}
+
+.notransaction {
+  padding: calc(3.929rem / 2);
+}
 /* General style */
 
 button {
