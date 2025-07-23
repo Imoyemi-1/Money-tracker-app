@@ -465,30 +465,3 @@ th {
     font-size: 55%;
   }
 }
-
-/* UTILITY STYLE */
-
-.display-none,
-.dp-none {
-  display: none;
-}
-
-.remove-padding {
-  padding: 0.6rem 1.1rem;
-}
-.remove-padding > i {
-  padding: 0 1rem;
-  margin-top: 0.7rem;
-}
-
-li {
-  list-style-type: none;
-}
-
-#important {
-  color: var(--red);
-}
-
-input::placeholder {
-  color: var(--grey-200);
-}
