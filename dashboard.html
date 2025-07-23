@@ -54,9 +54,41 @@
               <p class="account-nav-txt">Income</p>
             </div>
           </div>
-          <form>
+          <form class="set-transaction-container">
             <div class="input-container">
               <label for="title">From</label>
+              <div class="currency-item-cons">
+                <div class="items-container flex">
+                  <div class="select-input-wrapper">
+                    <p class="transaction-selected flex">Cash</p>
+                  </div>
+                  <i class="fas fa-caret-down" aria-hidden="true"></i>
+                </div>
+                <ul class="dropdown" id="transaction-dropdown">
+                  <li class="dropdown-item active">Cash</li>
+                  <li class="dropdown-item">Bank Account</li>
+                  <li class="dropdown-item">Deposit</li>
+                  <li class="dropdown-item">Credit</li>
+                  <li class="dropdown-item">Asset</li>
+                </ul>
+              </div>
+              <div class="transaction-amt-container flex">
+                <input type="number" id="input-amt" min="0.01" step="0.01" />
+                <div class="currency-item-cons">
+                  <div class="items-container flex">
+                    <div class="select-input-wrapper">
+                      <p class="transaction-selected flex">USD</p>
+                    </div>
+                    <i class="fas fa-caret-down" aria-hidden="true"></i>
+                  </div>
+                  <ul class="dropdown" id="transaction-dropdown">
+                    <li class="dropdown-item active">AED</li>
+                    <li class="dropdown-item">USD</li>
+                    <li class="dropdown-item">UAE</li>
+                    <li class="dropdown-item">AES</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </form>
         </section>

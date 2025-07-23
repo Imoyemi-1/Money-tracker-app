@@ -156,9 +156,51 @@
   border-radius: 2px;
 }
 
+.set-transaction-container {
+  padding: 1.6rem;
+}
+
+.set-transaction-container .items-container {
+  padding: 0.945rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.transaction-amt-container #input-amt {
+  flex: 1;
+  text-align: end;
+  outline: none;
+  border: 1px solid var(--grey-300);
+  border-radius: 7px 0 0 7px;
+  height: 4.072rem;
+}
+
+.transaction-amt-container #input-amt:focus {
+  border: 1px solid var(--blue-border);
+}
+
+.transaction-amt-container .items-container {
+  border: none;
+  height: 4.072rem;
+  background-color: var(--grey-300);
+  border-radius: 0 7px 7px 0;
+  align-items: center;
+  margin: 0;
+}
+.transaction-amt-container .items-container .transaction-selected {
+  margin-top: 0.23rem;
+}
+
 /* General style */
 
 button {
   background: none;
   border: none;
+}
+
+label {
+  font-weight: 500;
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
 }
