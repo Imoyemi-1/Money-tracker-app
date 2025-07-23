@@ -163,6 +163,10 @@
 .set-transaction-container .items-container {
   padding: 0.945rem;
   align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.transaction-amt-container {
   margin-bottom: 2rem;
 }
 
@@ -175,7 +179,8 @@
   height: 4.072rem;
 }
 
-.transaction-amt-container #input-amt:focus {
+.transaction-amt-container #input-amt:focus,
+.input-tag-container #note:focus {
   border: 1px solid var(--blue-border);
 }
 
@@ -189,6 +194,21 @@
 }
 .transaction-amt-container .items-container .transaction-selected {
   margin-top: 0.23rem;
+}
+
+.input-tag-container .selected,
+.input-tag-container #note::placeholder {
+  color: var(--grey-200);
+}
+
+.input-tag-container #note {
+  width: 100%;
+  height: 4.072rem;
+  outline: none;
+  border: 1px solid var(--grey-300);
+  border-radius: 7px;
+  padding: 0.945rem;
+  margin-bottom: 1.5rem;
 }
 
 /* General style */
