@@ -211,6 +211,27 @@
   margin-bottom: 1.5rem;
 }
 
+.transaction-input-container {
+  gap: 3rem;
+  height: 3.876rem;
+}
+
+.transaction-input-container > input,
+.transaction-input-container > button {
+  flex: 1;
+  border-radius: 4px;
+}
+
+.transaction-input-container > button {
+  color: var(--White);
+  background-color: var(--primary-blue);
+}
+
+.transaction-input-container > input {
+  outline: none;
+  border: 1px solid var(--grey-300);
+  padding: 0.95rem 1.4rem;
+}
 /* General style */
 
 button {
