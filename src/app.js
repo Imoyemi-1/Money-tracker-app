@@ -1,4 +1,5 @@
 import './css/main.css';
+import Storage from './Storage';
 
 const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
@@ -8,6 +9,9 @@ const section = document.querySelectorAll('.section');
 const transactionLabel = document.querySelector('.input-container-label');
 const addItemBtn = document.querySelector('#add-items');
 const inputTagContainer = document.querySelector('.input-tag-container');
+const networthEl = document.querySelector(
+  '#networth-section .section-header-amt'
+);
 
 // open side bar menu on mobil
 const openMenu = () => {
@@ -125,8 +129,29 @@ const handleSection = (e) => {
   }
 };
 
+//  add red if number is less than 0 and green if its 0 or greater
+
+const checkValue = (num, el) => {
+  if (num > 0) {
+    el.classList.remove('success');
+    el.classList.add('danger');
+  } else {
+    el.classList.remove('danger');
+    el.classList.add('success');
+  }
+};
+
+// display networth
+
+const displayNetworth = () => {
+  const networth = Storage.getNetWorth();
+  networthEl.textContent = `${networth} ${Storage.getBaseCurrency()}`;
+  checkValue(networth, networthEl);
+};
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
 sidebar.addEventListener('click', openMenu);
 section.forEach((el) => el.addEventListener('click', handleSection));
+displayNetworth();
