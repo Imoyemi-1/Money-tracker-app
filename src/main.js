@@ -862,6 +862,7 @@ function calculateGroupTotal(
 // update all currency totals
 
 function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
+  const networth = [];
   const headers = document.querySelectorAll('.account-type-header');
 
   headers.forEach((header) => {
@@ -873,8 +874,14 @@ function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
       rates
     );
 
+    networth.push(total);
+
+    const totalNetworth = networth.reduce((acc, cur) => acc + cur, 0);
+
     const totalElement = header.querySelector('.account-header-num');
     totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrencyCode}`;
+    Storage.setNetWorth(totalNetworth);
+    Storage.setBaseCurrency(baseCurrency);
   });
 }
 

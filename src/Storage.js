@@ -17,4 +17,24 @@ export default class Storage {
     }
     this.setAccountData(data);
   }
+
+  static setBaseCurrency(code) {
+    localStorage.setItem('baseCurrency', code);
+  }
+
+  static getBaseCurrency() {
+    const baseCurrency = localStorage.getItem('baseCurrency') || 'USD';
+
+    return baseCurrency;
+  }
+
+  static setNetWorth(networth) {
+    localStorage.setItem('totalNetworth', networth);
+  }
+
+  static getNetWorth() {
+    const networth = localStorage.getItem('totalNetworth') || 0;
+
+    return networth;
+  }
 }
