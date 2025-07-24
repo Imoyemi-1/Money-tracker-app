@@ -4,6 +4,10 @@ const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
 const sidebar = document.querySelector('.sidebar');
 const openSide = document.querySelector('.open-side');
+const section = document.querySelectorAll('.section');
+const transactionLabel = document.querySelector('.input-container-label');
+const addItemBtn = document.querySelector('#add-items');
+const inputTagContainer = document.querySelector('.input-tag-container');
 
 // open side bar menu on mobil
 const openMenu = () => {
@@ -21,7 +25,108 @@ const openMenu = () => {
   }
 };
 
+// create tag section
+
+const createTag = () => {
+  inputTagContainer.innerHTML = '';
+  inputTagContainer.innerHTML = `<label for="title">Tags</label>
+                <div class="currency-item-cons">
+                  <div class="items-container flex">
+                    <div
+                      class="select-input-wrapper flex"
+                      id="base-input-wrapper"
+                    >
+                      <div class="selected flex">
+                        Choose exiting tags or add new
+                      </div>
+                      <input type="text" />
+                    </div>
+                    <i class="fas fa-caret-down" aria-hidden="true"></i>
+                  </div>
+                  <ul class="dropdown" id="base-dropdown"></ul>
+                </div>
+                <input type="text" placeholder="Note" id="note" />`;
+};
+
+// create transaction to section for transfer section
+
+const createToSection = () => {
+  const div = document.createElement('div');
+  div.className = 'input-container';
+  div.innerHTML = ` <label for="title" class="input-container-label">To</label>
+                <div class="currency-item-cons">
+                  <div class="items-container flex">
+                    <div class="select-input-wrapper">
+                      <p class="transaction-selected flex">Cash</p>
+                    </div>
+                    <i class="fas fa-caret-down" aria-hidden="true"></i>
+                  </div>
+                  <ul class="dropdown" id="transaction-dropdown">
+                    <li class="dropdown-item active">Cash</li>
+                    <li class="dropdown-item">Bank Account</li>
+                    <li class="dropdown-item">Deposit</li>
+                    <li class="dropdown-item">Credit</li>
+                    <li class="dropdown-item">Asset</li>
+                  </ul>
+                </div>
+                <div class="transaction-amt-container flex">
+                  <input type="number" id="input-amt" min="0.01" step="0.01" />
+                  <div class="currency-item-cons">
+                    <div class="items-container flex">
+                      <div class="select-input-wrapper">
+                        <p class="transaction-selected flex">USD</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                `;
+  const noteDiv = document.createElement('div');
+  noteDiv.innerHTML = `<input type="text" placeholder="Note" id="note" />`;
+  inputTagContainer.appendChild(div);
+  inputTagContainer.appendChild(noteDiv);
+};
+
+// handle section click
+
+const handleSection = (e) => {
+  const sectionHeader = e.target.closest('.section-header');
+  const accountWallet = e.target.closest('.account-wallet-header');
+  const accountNav = e.target.closest('.account-nav-txt');
+  const accountNavEls = document.querySelectorAll('.account-nav-txt');
+
+  if (sectionHeader) {
+    sectionHeader.nextElementSibling.classList.toggle('dp-none');
+    if (sectionHeader.nextElementSibling.classList.contains('dp-none'))
+      sectionHeader.querySelector('i').classList.add('rotate');
+    else sectionHeader.querySelector('i').classList.remove('rotate');
+  }
+  if (accountWallet) {
+    accountWallet.nextElementSibling.classList.toggle('dp-none');
+  }
+  if (accountNav) {
+    accountNavEls.forEach((el) => (el.className = 'account-nav-txt'));
+    accountNav.classList.add('active');
+    if (accountNav.textContent === 'Expense') {
+      accountNav.classList.add('danger');
+      transactionLabel.textContent = 'From';
+      addItemBtn.textContent = 'Add Expense';
+      createTag();
+    } else if (accountNav.textContent === 'Income') {
+      accountNav.classList.add('success');
+      transactionLabel.textContent = 'To';
+      addItemBtn.textContent = 'Add Income';
+      createTag();
+    } else {
+      transactionLabel.textContent = 'From';
+      addItemBtn.textContent = 'Add Transfer';
+      inputTagContainer.innerHTML = '';
+      createToSection();
+    }
+  }
+};
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
 sidebar.addEventListener('click', openMenu);
+section.forEach((el) => el.addEventListener('click', handleSection));
