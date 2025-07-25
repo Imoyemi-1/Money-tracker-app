@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import './css/style.css';
 import Storage from './Storage';
+import { formatCurrency } from './Utility';
 
 const apiKey = import.meta.env.VITE_EXCHANGE_API_KEY;
 //
@@ -629,7 +630,7 @@ const displaySavedAccount = () => {
                   <p class="account-body-txt-amt">${formatCurrency(+baseCurrency.amount.toFixed(2))} ${baseCurrency.currencyName}</p>
                   ${additionalCurrencies
                     .map((item) => {
-                      const addition = `<p class="account-body-txt-amt">${item.amount.toFixed(2)} ${item.code}</p>`;
+                      const addition = `<p class="account-body-txt-amt">${formatCurrency(+item.amount.toFixed(2))} ${item.code}</p>`;
                       return addition;
                     })
                     .join('')}
@@ -884,15 +885,6 @@ function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
     Storage.setBaseCurrency(baseCurrency);
   });
 }
-
-// format currency
-
-const formatCurrency = (amount) => {
-  return amount.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
 
 // Eventlistener
 setupMainEl.addEventListener('click', handleDropDown);

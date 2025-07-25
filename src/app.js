@@ -1,5 +1,6 @@
 import './css/main.css';
 import Storage from './Storage';
+import { formatCurrency } from './Utility';
 
 const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
@@ -149,9 +150,41 @@ const displayNetworth = () => {
   checkValue(networth, networthEl);
 };
 
+// display save account
+const displayAccount = () => {
+  const storedAccount = Storage.getAccountData();
+  Object.entries(storedAccount).forEach(([type, account]) => {
+    const div = document.createElement('div');
+    div.className = 'account-wallet-group';
+    div.innerHTML = `<div class="account-wallet-header flex">
+                <p class="account-wallet-txt">${type}</p>
+                <p class="account-wallet-amt">0 USD</p>
+              </div>
+              <div class="account-wallet-body">
+              ${account
+                .map(({ name, baseCurrency, additionalCurrencies }) => {
+                  return `  <div class="account-container flex">
+                  <p class="account-name">${name}</p>
+                <div>
+                <p class="account-price">${formatCurrency(+baseCurrency.amount.toFixed(2))} ${baseCurrency.currencyName}</p>
+                 ${additionalCurrencies
+                   .map((item) => {
+                     return `<p class="account-price">${formatCurrency(+item.amount.toFixed(2))} ${item.code}</p>`;
+                   })
+                   .join('')}
+                </div>
+                </div>`;
+                })
+                .join('')}
+              </div>`;
+    document.querySelector('#networth-section .section-body').append(div);
+  });
+};
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
 sidebar.addEventListener('click', openMenu);
 section.forEach((el) => el.addEventListener('click', handleSection));
 displayNetworth();
+displayAccount();
