@@ -4,8 +4,14 @@ import Storage from './Storage';
 import { formatCurrency } from './Utility';
 
 const apiKey = import.meta.env.VITE_EXCHANGE_API_KEY;
-//
+const accountData = Storage.getAccountData();
 
+// redirectly page
+if (accountData && Object.keys(accountData).length > 0) {
+  window.location.href = '/dashboard.html';
+}
+
+//
 const setupMainEl = document.getElementById('setup-main');
 const dropDownEl = document.querySelectorAll('.dropdown');
 const itemContainerEl = document.querySelectorAll('.items-container');
