@@ -145,8 +145,8 @@ const checkValue = (num, el) => {
 // display networth
 
 const displayNetworth = () => {
-  const networth = Storage.getNetWorth();
-  networthEl.textContent = `${networth} ${Storage.getBaseCurrency()}`;
+  const networth = +Storage.getNetWorth();
+  networthEl.textContent = `${formatCurrency(networth.toFixed(2))} ${Storage.getBaseCurrency()}`;
   checkValue(networth, networthEl);
 };
 

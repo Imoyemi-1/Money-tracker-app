@@ -71,6 +71,14 @@
   border-bottom: 1px solid var(--grey-300);
 }
 
+#networth-section .section-header {
+  border-bottom: none;
+}
+
+#transaction-section .section-header {
+  border-top: 1px solid var(--grey-300);
+}
+
 .section-header-txt {
   align-items: center;
   gap: 0.8rem;
@@ -91,13 +99,13 @@
 }
 
 .section-header-amt {
-  font-weight: 600;
-  font-size: 2rem;
+  font-weight: 500;
+  font-size: 2.3rem;
   color: var(--light-green);
 }
 
-.section-body:nth-child(2) {
-  border-bottom: 1px solid var(--grey-300);
+.section-body {
+  flex-direction: column;
 }
 
 .account-wallet-group {
@@ -108,6 +116,7 @@
   padding: 1.6rem;
   justify-content: space-between;
   background-color: var(--grey-100);
+  border-top: 1px solid var(--grey-300);
   cursor: pointer;
 }
 
@@ -119,7 +128,8 @@
 .account-wallet-amt {
   font-weight: 400;
   color: var(--light-green);
-  font-size: 1.6rem;
+  font-size: 2rem;
+  text-align: end;
 }
 
 .account-container {
@@ -142,6 +152,9 @@
   color: var(--light-green);
   font-weight: 400;
   font-size: 1.8rem;
+  text-align: end;
+  word-spacing: 0.3rem;
+  line-height: 1.1;
 }
 
 .account-nav {
