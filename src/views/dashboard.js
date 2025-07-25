@@ -1,6 +1,6 @@
-import './css/main.css';
-import Storage from './Storage';
-import { formatCurrency } from './Utility';
+import '../css/main.css';
+import Storage from '../Storage';
+import { formatCurrency } from '../Utility';
 
 const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
