@@ -14,7 +14,8 @@ const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
 
-const baseCurrency = Storage.getBaseCurrency();
+const baseCurrencyCode = Storage.getBaseCurrency();
+const rates = JSON.parse(localStorage.getItem('exchangeRates'));
 
 // open side bar menu on mobil
 const openMenu = () => {
@@ -136,18 +137,17 @@ const handleSection = (e) => {
 
 const displayNetworth = () => {
   const networth = +Storage.getNetWorth();
-  networthEl.textContent = `${formatCurrency(networth.toFixed(2))} ${baseCurrency}`;
+  networthEl.textContent = `${formatCurrency(networth.toFixed(2))} ${baseCurrencyCode}`;
   checkValue(networth, networthEl);
 };
 
 // display save account
 const displayAccount = () => {
   const storedAccount = Storage.getAccountData();
-  const rates = JSON.parse(localStorage.getItem('exchangeRates'));
   Object.entries(storedAccount).forEach(([type, account]) => {
     const div = document.createElement('div');
     div.className = 'account-wallet-group';
-    div.innerHTML = `<div class="account-wallet-header flex data-group = '${type}'">
+    div.innerHTML = `<div class="account-wallet-header flex " data-group = '${type}'>
                 <p class="account-wallet-txt">${type}</p>
                 <p class="account-wallet-amt"></p>
               </div>
@@ -170,12 +170,18 @@ const displayAccount = () => {
               </div>`;
     document.querySelector('#networth-section .section-body').append(div);
   });
-  updateAllGroupTotals(storedAccount, baseCurrency, rates);
+};
+
+// check account available to display transfer
+const checkAccount = () => {
+  const accountEl = document.querySelectorAll('.account-price');
+  const transferEl = document.querySelectorAll('.account-nav-txt ')[1];
+  if (accountEl.length <= 1) transferEl.remove();
 };
 
 // update all currency totals
 
-function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
+function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
   const headers = document.querySelectorAll('.account-wallet-header');
 
   headers.forEach((header) => {
@@ -183,12 +189,12 @@ function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
     const total = calculateGroupTotal(
       groupedAccounts,
       groupName,
-      baseCurrencyCode,
+      baseCurrency,
       rates
     );
-
+    console.log(groupedAccounts, groupName, baseCurrency, rates);
     const totalElement = header.querySelector('.account-wallet-amt');
-    totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrencyCode}`;
+    totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrency}`;
   });
 }
 
@@ -199,3 +205,5 @@ sidebar.addEventListener('click', openMenu);
 section.forEach((el) => el.addEventListener('click', handleSection));
 displayNetworth();
 displayAccount();
+checkAccount();
+updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);

@@ -884,6 +884,6 @@ displayBaseCurrencies();
 displayAddCurrencies();
 handleBaseInput();
 handleAddInput();
-updateBaseCurrency();
+await updateBaseCurrency();
 displaySavedAccount();
 updateAllGroupTotals(Storage.getAccountData(), baseCurrency, exchangeRates);
