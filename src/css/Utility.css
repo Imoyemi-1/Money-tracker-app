@@ -112,7 +112,7 @@ a {
   scroll-behavior: smooth;
   transition: max-height 0.2s ease;
   position: absolute;
-  z-index: 99999999;
+  z-index: 100;
   background-color: var(--White);
   display: none;
 }
