@@ -13,6 +13,8 @@ const inputTagContainer = document.querySelector('.input-tag-container');
 const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
+const dropDownEl = document.querySelectorAll('.dropdown');
+const itemContainerEl = document.querySelectorAll('.items-container');
 
 const baseCurrencyCode = Storage.getBaseCurrency();
 const rates = JSON.parse(localStorage.getItem('exchangeRates'));
@@ -37,23 +39,25 @@ const openMenu = () => {
 
 const createTag = () => {
   inputTagContainer.innerHTML = '';
-  inputTagContainer.innerHTML = `<label for="title">Tags</label>
-                <div class="currency-item-cons">
-                  <div class="items-container flex">
-                    <div
-                      class="select-input-wrapper flex"
-                      id="base-input-wrapper"
-                    >
-                      <div class="selected flex">
-                        Choose exiting tags or add new
-                      </div>
-                      <input type="text" />
+  inputTagContainer.innerHTML = ` <label for="title">Tags</label>
+            <div class="input-dropdown-container flex">
+              <div class="currency-item-cons">
+                <div class="items-container flex">
+                  <div
+                    class="select-input-wrapper flex"
+                    id="base-input-wrapper"
+                  >
+                    <div class="selected flex">
+                      Choose exiting tags or add new
                     </div>
-                    <i class="fas fa-caret-down" aria-hidden="true"></i>
+                    <input type="text" />
                   </div>
-                  <ul class="dropdown" id="base-dropdown"></ul>
+                  <i class="fas fa-caret-down" aria-hidden="true"></i>
                 </div>
-                <input type="text" placeholder="Note" id="note" />`;
+                <ul class="dropdown" id="base-dropdown"></ul>
+              </div>
+              <input type="text" placeholder="Note" id="note" />
+            </div>`;
 };
 
 // create transaction to section for transfer section
@@ -62,6 +66,7 @@ const createToSection = () => {
   const div = document.createElement('div');
   div.className = 'input-container';
   div.innerHTML = ` <label for="title" class="input-container-label">To</label>
+              <div class="input-dropdown-container flex">
                 <div class="currency-item-cons">
                   <div class="items-container flex">
                     <div class="select-input-wrapper">
@@ -87,11 +92,49 @@ const createToSection = () => {
                     </div>
                   </div>
                 </div>
+                  </div>
                 `;
   const noteDiv = document.createElement('div');
   noteDiv.innerHTML = `<input type="text" placeholder="Note" id="note" />`;
   inputTagContainer.appendChild(div);
   inputTagContainer.appendChild(noteDiv);
+};
+
+// open and close of dropdown if the input is click
+const toggleDropDown = (e) => {
+  const dropDownWrapper = e.target.closest('.items-container');
+  const selectedEl = document.querySelectorAll('.selected');
+  const addDropDownList = document.querySelectorAll(
+    '#add-dropdown .dropdown-item'
+  );
+  if (dropDownWrapper) {
+    const dropDownInput = dropDownWrapper.querySelector('input');
+    const dropDownItem = dropDownWrapper.querySelector('.selected');
+
+    e.stopPropagation();
+    const parent = dropDownWrapper.parentElement;
+    dropDownEl.forEach((el) => {
+      el.classList.remove('show');
+      el.classList.remove('border');
+    });
+
+    itemContainerEl.forEach((item) => item.classList.remove('open-border'));
+    selectedEl.forEach((item) => item.classList.remove('blur'));
+
+    if (dropDownInput) {
+      dropDownInput.focus();
+      dropDownItem.classList.add('blur');
+    }
+
+    parent.querySelector('.dropdown').classList.add('show');
+    dropDownWrapper.classList.add('open-border');
+    parent.querySelector('.dropdown').classList.add('border');
+
+    // inputEl[0].value = '';
+    selectedEl[0].classList.remove('dp-none');
+    // inputEl[1].value = '';
+    addDropDownList.forEach((item) => item.classList.remove('display-none'));
+  }
 };
 
 // handle section click
@@ -131,6 +174,7 @@ const handleSection = (e) => {
       createToSection();
     }
   }
+  toggleDropDown(e);
 };
 
 // display networth
@@ -192,7 +236,6 @@ function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
       baseCurrency,
       rates
     );
-    console.log(groupedAccounts, groupName, baseCurrency, rates);
     const totalElement = header.querySelector('.account-wallet-amt');
     totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrency}`;
   });

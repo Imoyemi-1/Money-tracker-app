@@ -186,6 +186,11 @@
   border-radius: 2px;
 }
 
+.input-dropdown-container {
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .set-transaction-container {
   padding: 1.6rem;
   cursor: pointer;
@@ -194,7 +199,6 @@
 .set-transaction-container .items-container {
   padding: 0.945rem;
   align-items: center;
-  margin-bottom: 1.5rem;
 }
 
 .transaction-amt-container {
