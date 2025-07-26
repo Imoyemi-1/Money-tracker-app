@@ -1,6 +1,6 @@
 import '../css/style.css';
 import Storage from '../Storage';
-import { formatCurrency } from '../Utility';
+import { formatCurrency, calculateGroupTotal } from '../Utility';
 import { loadView } from '../router/loader.js';
 
 const apiKey = import.meta.env.VITE_EXCHANGE_API_KEY;
@@ -810,56 +810,6 @@ const handleSavedAccount = (e) => {
   }
 };
 
-// convert currency to base
-function convertToBase(fromCode, amount, toCode, rates) {
-  if (fromCode === toCode) return amount;
-
-  const fromRate = rates[fromCode];
-  const toRate = rates[toCode];
-
-  if (!fromRate || !toRate) return 0;
-
-  const usdValue = amount / fromRate;
-  return usdValue * toRate;
-}
-
-// Calculate total value in a group
-function calculateGroupTotal(
-  groupedAccounts,
-  groupName,
-  baseCurrencyCode,
-  rates
-) {
-  const groupAccounts = groupedAccounts[groupName];
-  if (!groupAccounts) return 0;
-
-  return groupAccounts.reduce((total, acc) => {
-    let accTotal = 0;
-
-    // Convert base currency to desired base
-    accTotal += convertToBase(
-      acc.baseCurrency.currencyName,
-      acc.baseCurrency.amount || 0,
-      baseCurrencyCode,
-      rates
-    );
-
-    // Convert additional currencies too
-    if (Array.isArray(acc.additionalCurrencies)) {
-      acc.additionalCurrencies.forEach((curr) => {
-        accTotal += convertToBase(
-          curr.code,
-          curr.amount || 0,
-          baseCurrencyCode,
-          rates
-        );
-      });
-    }
-
-    return total + accTotal;
-  }, 0);
-}
-
 // update all currency totals
 
 function updateAllGroupTotals(groupedAccounts, baseCurrencyCode, rates) {
@@ -893,6 +843,7 @@ export function initSetup() {
   if (finishBtn) {
     finishBtn.addEventListener('click', () => {
       localStorage.setItem('setupCompleted', 'yes');
+      localStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
       loadView('dashboard');
     });
   }
@@ -933,6 +884,6 @@ displayBaseCurrencies();
 displayAddCurrencies();
 handleBaseInput();
 handleAddInput();
-updateBaseCurrency();
+await updateBaseCurrency();
 displaySavedAccount();
 updateAllGroupTotals(Storage.getAccountData(), baseCurrency, exchangeRates);

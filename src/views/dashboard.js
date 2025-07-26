@@ -1,7 +1,7 @@
 import '../css/main.css';
 import { loadView } from '../router/loader';
 import Storage from '../Storage';
-import { formatCurrency } from '../Utility';
+import { formatCurrency, calculateGroupTotal, checkValue } from '../Utility';
 
 const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
@@ -15,6 +15,9 @@ const inputTagContainer = document.querySelector('.input-tag-container');
 const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
+
+const baseCurrencyCode = Storage.getBaseCurrency();
+const rates = JSON.parse(localStorage.getItem('exchangeRates'));
 
 // open side bar menu on mobil
 const openMenu = () => {
@@ -139,23 +142,11 @@ const handleSection = (e) => {
   }
 };
 
-//  add red if number is less than 0 and green if its 0 or greater
-
-const checkValue = (num, el) => {
-  if (num > 0) {
-    el.classList.remove('success');
-    el.classList.add('danger');
-  } else {
-    el.classList.remove('danger');
-    el.classList.add('success');
-  }
-};
-
 // display networth
 
 const displayNetworth = () => {
   const networth = +Storage.getNetWorth();
-  networthEl.textContent = `${formatCurrency(networth.toFixed(2))} ${Storage.getBaseCurrency()}`;
+  networthEl.textContent = `${formatCurrency(networth.toFixed(2))} ${baseCurrencyCode}`;
   checkValue(networth, networthEl);
 };
 
@@ -165,9 +156,9 @@ const displayAccount = () => {
   Object.entries(storedAccount).forEach(([type, account]) => {
     const div = document.createElement('div');
     div.className = 'account-wallet-group';
-    div.innerHTML = `<div class="account-wallet-header flex">
+    div.innerHTML = `<div class="account-wallet-header flex " data-group = '${type}'>
                 <p class="account-wallet-txt">${type}</p>
-                <p class="account-wallet-amt">0 USD</p>
+                <p class="account-wallet-amt"></p>
               </div>
               <div class="account-wallet-body">
               ${account
@@ -190,6 +181,32 @@ const displayAccount = () => {
   });
 };
 
+// check account available to display transfer
+const checkAccount = () => {
+  const accountEl = document.querySelectorAll('.account-price');
+  const transferEl = document.querySelectorAll('.account-nav-txt ')[1];
+  if (accountEl.length <= 1) transferEl.remove();
+};
+
+// update all currency totals
+
+function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
+  const headers = document.querySelectorAll('.account-wallet-header');
+
+  headers.forEach((header) => {
+    const groupName = header.dataset.group;
+    const total = calculateGroupTotal(
+      groupedAccounts,
+      groupName,
+      baseCurrency,
+      rates
+    );
+    console.log(groupedAccounts, groupName, baseCurrency, rates);
+    const totalElement = header.querySelector('.account-wallet-amt');
+    totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrency}`;
+  });
+}
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
@@ -198,3 +215,5 @@ sidebarItem.forEach((item) => item.addEventListener('click', navToPage));
 section.forEach((el) => el.addEventListener('click', handleSection));
 displayNetworth();
 displayAccount();
+checkAccount();
+updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
