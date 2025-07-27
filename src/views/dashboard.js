@@ -16,6 +16,7 @@ const networthEl = document.querySelector(
 const dropDownEl = document.querySelectorAll('.dropdown');
 const itemContainerEl = document.querySelectorAll('.items-container');
 
+const storedAccount = Storage.getAccountData();
 const baseCurrencyCode = Storage.getBaseCurrency();
 const rates = JSON.parse(localStorage.getItem('exchangeRates'));
 
@@ -103,14 +104,8 @@ const createToSection = () => {
 // open and close of dropdown if the input is click
 const toggleDropDown = (e) => {
   const dropDownWrapper = e.target.closest('.items-container');
-  const selectedEl = document.querySelectorAll('.selected');
-  const addDropDownList = document.querySelectorAll(
-    '#add-dropdown .dropdown-item'
-  );
-  if (dropDownWrapper) {
-    const dropDownInput = dropDownWrapper.querySelector('input');
-    const dropDownItem = dropDownWrapper.querySelector('.selected');
 
+  if (dropDownWrapper) {
     e.stopPropagation();
     const parent = dropDownWrapper.parentElement;
     dropDownEl.forEach((el) => {
@@ -119,21 +114,10 @@ const toggleDropDown = (e) => {
     });
 
     itemContainerEl.forEach((item) => item.classList.remove('open-border'));
-    selectedEl.forEach((item) => item.classList.remove('blur'));
-
-    if (dropDownInput) {
-      dropDownInput.focus();
-      dropDownItem.classList.add('blur');
-    }
 
     parent.querySelector('.dropdown').classList.add('show');
     dropDownWrapper.classList.add('open-border');
     parent.querySelector('.dropdown').classList.add('border');
-
-    // inputEl[0].value = '';
-    selectedEl[0].classList.remove('dp-none');
-    // inputEl[1].value = '';
-    addDropDownList.forEach((item) => item.classList.remove('display-none'));
   }
 };
 
@@ -187,7 +171,6 @@ const displayNetworth = () => {
 
 // display save account
 const displayAccount = () => {
-  const storedAccount = Storage.getAccountData();
   Object.entries(storedAccount).forEach(([type, account]) => {
     const div = document.createElement('div');
     div.className = 'account-wallet-group';
@@ -249,4 +232,17 @@ section.forEach((el) => el.addEventListener('click', handleSection));
 displayNetworth();
 displayAccount();
 checkAccount();
-updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
+updateAllGroupTotals(storedAccount, baseCurrencyCode, rates);
+document.addEventListener('click', (e) => {
+  const selectedEl = document.querySelectorAll('.selected');
+
+  if (e.target.closest('.add-selected-currencies')) return;
+  dropDownEl.forEach((el) => {
+    el.classList.remove('show');
+    el.classList.remove('border');
+  });
+  selectedEl[0].classList.remove('dp-none');
+
+  itemContainerEl.forEach((item) => item.classList.remove('open-border'));
+  selectedEl.forEach((item) => item.classList.remove('blur'));
+});

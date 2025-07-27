@@ -231,6 +231,19 @@
   margin-top: 0.23rem;
 }
 
+.dropdown-item {
+  justify-content: space-between;
+}
+
+.dropdown-item.active {
+  background-color: var(--grey-100);
+  font-weight: 500;
+}
+
+.dropdown-item .list-account-type {
+  color: var(--grey-300);
+}
+
 .input-tag-container .selected,
 .input-tag-container #note::placeholder {
   color: var(--grey-200);
