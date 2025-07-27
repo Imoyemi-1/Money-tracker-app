@@ -227,9 +227,6 @@
   align-items: center;
   margin: 0;
 }
-.transaction-amt-container .items-container .transaction-selected {
-  margin-top: 0.23rem;
-}
 
 .dropdown-item {
   justify-content: space-between;

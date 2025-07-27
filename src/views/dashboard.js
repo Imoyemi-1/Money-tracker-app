@@ -136,6 +136,53 @@ const displayAvailableAccount = () => {
       transactionDropdownCon.forEach((item) => item.appendChild(li));
     });
   });
+  displayAccountGroupSelected();
+};
+
+// select item and display from dropdown
+
+const displayAccountGroupSelected = () => {
+  const transactionDropdownEl = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+
+  transactionDropdownEl[0].firstChild.classList.add('active');
+  transactionDropdownEl[1]?.firstChild.nextElementSibling.classList.add(
+    'active'
+  );
+  transactionDropdownEl.forEach((item) => {
+    const selected = item.parentElement.querySelector('.transaction-selected');
+    const active = item.querySelector('.dropdown-item.active ');
+    selected.textContent =
+      active.querySelector('.list-account-name').textContent;
+    selected.setAttribute(
+      'data-type',
+      active.querySelector('.list-account-type').textContent
+    );
+  });
+};
+
+const selectListItem = (e) => {
+  const dropDownItemEl = e.target.closest('.dropdown-item');
+
+  if (dropDownItemEl) {
+    const dropDownItemParentEl = dropDownItemEl.parentElement;
+    const selectedAccount = dropDownItemParentEl.parentElement.querySelector(
+      '.transaction-selected'
+    );
+    if (dropDownItemParentEl.classList.contains('transaction-dropdown')) {
+      dropDownItemEl.parentElement
+        .querySelectorAll('.dropdown-item')
+        .forEach((item) => item.classList.remove('active'));
+      dropDownItemEl.classList.add('active');
+      selectedAccount.textContent =
+        dropDownItemEl.querySelector('.list-account-name').textContent;
+      selectedAccount.setAttribute(
+        'data-type',
+        dropDownItemEl.querySelector('.list-account-type').textContent
+      );
+    }
+  }
 };
 
 // handle section click
@@ -177,6 +224,7 @@ const handleSection = (e) => {
     }
   }
   toggleDropDown(e);
+  selectListItem(e);
 };
 
 // display networth
