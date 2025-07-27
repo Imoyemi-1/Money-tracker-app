@@ -13,8 +13,6 @@ const inputTagContainer = document.querySelector('.input-tag-container');
 const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
-const dropDownEl = document.querySelectorAll('.dropdown');
-const itemContainerEl = document.querySelectorAll('.items-container');
 
 const storedAccount = Storage.getAccountData();
 const baseCurrencyCode = Storage.getBaseCurrency();
@@ -67,34 +65,34 @@ const createToSection = () => {
   const div = document.createElement('div');
   div.className = 'input-container';
   div.innerHTML = ` <label for="title" class="input-container-label">To</label>
-              <div class="input-dropdown-container flex">
+            <div class="input-dropdown-container flex">
+              <div class="currency-item-cons">
+                <div class="items-container flex">
+                  <div class="select-input-wrapper">
+                    <p class="transaction-selected flex">Cash</p>
+                  </div>
+                  <i class="fas fa-caret-down" aria-hidden="true"></i>
+                </div>
+                <ul class="dropdown transaction-dropdown"></ul>
+              </div>
+              <div class="transaction-amt-container flex">
+                <input type="number" id="input-amt" min="0.01" step="0.01" />
                 <div class="currency-item-cons">
                   <div class="items-container flex">
                     <div class="select-input-wrapper">
-                      <p class="transaction-selected flex">Cash</p>
+                      <p class="transaction-selected flex">USD</p>
                     </div>
                     <i class="fas fa-caret-down" aria-hidden="true"></i>
                   </div>
-                  <ul class="dropdown" id="transaction-dropdown">
-                    <li class="dropdown-item active">Cash</li>
-                    <li class="dropdown-item">Bank Account</li>
-                    <li class="dropdown-item">Deposit</li>
-                    <li class="dropdown-item">Credit</li>
-                    <li class="dropdown-item">Asset</li>
+                  <ul class="dropdown">
+                    <li class="dropdown-item active">AED</li>
+                    <li class="dropdown-item">USD</li>
+                    <li class="dropdown-item">UAE</li>
+                    <li class="dropdown-item">AES</li>
                   </ul>
                 </div>
-                <div class="transaction-amt-container flex">
-                  <input type="number" id="input-amt" min="0.01" step="0.01" />
-                  <div class="currency-item-cons">
-                    <div class="items-container flex">
-                      <div class="select-input-wrapper">
-                        <p class="transaction-selected flex">USD</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                  </div>
-                `;
+              </div>
+            </div> `;
   const noteDiv = document.createElement('div');
   noteDiv.innerHTML = `<input type="text" placeholder="Note" id="note" />`;
   inputTagContainer.appendChild(div);
@@ -104,6 +102,8 @@ const createToSection = () => {
 // open and close of dropdown if the input is click
 const toggleDropDown = (e) => {
   const dropDownWrapper = e.target.closest('.items-container');
+  const dropDownEl = document.querySelectorAll('.dropdown');
+  const itemContainerEl = document.querySelectorAll('.items-container');
 
   if (dropDownWrapper) {
     e.stopPropagation();
@@ -115,10 +115,27 @@ const toggleDropDown = (e) => {
 
     itemContainerEl.forEach((item) => item.classList.remove('open-border'));
 
-    parent.querySelector('.dropdown').classList.add('show');
+    parent.querySelector('.dropdown')?.classList.add('show');
     dropDownWrapper.classList.add('open-border');
     parent.querySelector('.dropdown').classList.add('border');
   }
+};
+
+// display account available in dropdown
+
+const displayAvailableAccount = () => {
+  const transactionDropdownCon = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+  Object.entries(storedAccount).forEach(([type, account]) => {
+    account.forEach((item) => {
+      const li = document.createElement('li');
+      li.className = 'dropdown-item flex';
+      li.innerHTML = `  <p class="list-account-name">${item.name}</p>
+                    <p class="list-account-type">${type}</p>`;
+      transactionDropdownCon.forEach((item) => item.appendChild(li));
+    });
+  });
 };
 
 // handle section click
@@ -156,6 +173,7 @@ const handleSection = (e) => {
       addItemBtn.textContent = 'Add Transfer';
       inputTagContainer.innerHTML = '';
       createToSection();
+      displayAvailableAccount();
     }
   }
   toggleDropDown(e);
@@ -164,8 +182,8 @@ const handleSection = (e) => {
 // display networth
 
 const displayNetworth = () => {
-  const networth = +Storage.getNetWorth();
-  networthEl.textContent = `${formatCurrency(networth.toFixed(2))} ${baseCurrencyCode}`;
+  const networth = Storage.getNetWorth();
+  networthEl.textContent = `${formatCurrency(+networth)} ${baseCurrencyCode}`;
   checkValue(networth, networthEl);
 };
 
@@ -235,14 +253,17 @@ checkAccount();
 updateAllGroupTotals(storedAccount, baseCurrencyCode, rates);
 document.addEventListener('click', (e) => {
   const selectedEl = document.querySelectorAll('.selected');
+  const dropDownEl = document.querySelectorAll('.dropdown');
+  const itemContainerEl = document.querySelectorAll('.items-container');
 
   if (e.target.closest('.add-selected-currencies')) return;
   dropDownEl.forEach((el) => {
     el.classList.remove('show');
     el.classList.remove('border');
   });
-  selectedEl[0].classList.remove('dp-none');
+  selectedEl[0]?.classList.remove('dp-none');
 
   itemContainerEl.forEach((item) => item.classList.remove('open-border'));
   selectedEl.forEach((item) => item.classList.remove('blur'));
 });
+displayAvailableAccount();
