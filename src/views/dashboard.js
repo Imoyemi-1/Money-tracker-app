@@ -80,11 +80,11 @@ const createToSection = () => {
                 <div class="currency-item-cons">
                   <div class="items-container flex">
                     <div class="select-input-wrapper">
-                      <p class="transaction-selected flex">USD</p>
+                      <p class="transaction-selected flex"></p>
                     </div>
                     <i class="fas fa-caret-down" aria-hidden="true"></i>
                   </div>
-                  <ul class="dropdown"></ul>
+                  <ul class="dropdown transaction-amt-dropdown"></ul>
                 </div>
               </div>
             </div> `;
@@ -160,6 +160,10 @@ const defaultTransactionAmt = () => {
   const transactionDropdownEl = document.querySelectorAll(
     '.transaction-dropdown'
   );
+  const transactionAmtDropdownEl = document.querySelectorAll(
+    '.transaction-amt-dropdown'
+  );
+
   transactionDropdownEl.forEach((item) => {
     const active = item.querySelector('.dropdown-item.active ');
     if (!active) return;
@@ -167,6 +171,12 @@ const defaultTransactionAmt = () => {
       item.parentElement.nextElementSibling.querySelector('.dropdown');
     transactionAmtDropDown.innerHTML = '';
     displayAmtCode(active.dataset.id, transactionAmtDropDown);
+  });
+  transactionAmtDropdownEl.forEach((item) => {
+    item.firstChild.classList.add('active');
+    item.previousElementSibling.querySelector(
+      '.transaction-selected'
+    ).textContent = item.querySelector('.active').textContent;
   });
 };
 
@@ -192,6 +202,14 @@ const selectListItem = (e) => {
       selectedAccount.setAttribute('data-id', dropDownItemEl.dataset.id);
       transactionAmtDropDown.innerHTML = '';
       displayAmtCode(dropDownItemEl.dataset.id, transactionAmtDropDown);
+    } else if (
+      dropDownItemParentEl.classList.contains('transaction-amt-dropdown')
+    ) {
+      dropDownItemEl.parentElement
+        .querySelectorAll('.dropdown-item')
+        .forEach((item) => item.classList.remove('active'));
+      dropDownItemEl.classList.add('active');
+      selectedAccount.textContent = dropDownItemEl.textContent;
     }
   }
 };
