@@ -69,7 +69,7 @@ const createToSection = () => {
               <div class="currency-item-cons">
                 <div class="items-container flex">
                   <div class="select-input-wrapper">
-                    <p class="transaction-selected flex">Cash</p>
+                    <p class="transaction-selected flex"></p>
                   </div>
                   <i class="fas fa-caret-down" aria-hidden="true"></i>
                 </div>
@@ -84,12 +84,7 @@ const createToSection = () => {
                     </div>
                     <i class="fas fa-caret-down" aria-hidden="true"></i>
                   </div>
-                  <ul class="dropdown">
-                    <li class="dropdown-item active">AED</li>
-                    <li class="dropdown-item">USD</li>
-                    <li class="dropdown-item">UAE</li>
-                    <li class="dropdown-item">AES</li>
-                  </ul>
+                  <ul class="dropdown"></ul>
                 </div>
               </div>
             </div> `;
@@ -131,12 +126,14 @@ const displayAvailableAccount = () => {
     account.forEach((item) => {
       const li = document.createElement('li');
       li.className = 'dropdown-item flex';
+      li.setAttribute('data-id', item.id);
       li.innerHTML = `  <p class="list-account-name">${item.name}</p>
                     <p class="list-account-type">${type}</p>`;
       transactionDropdownCon.forEach((item) => item.appendChild(li));
     });
   });
   displayAccountGroupSelected();
+  defaultTransactionAmt();
 };
 
 // select item and display from dropdown
@@ -155,10 +152,21 @@ const displayAccountGroupSelected = () => {
     const active = item.querySelector('.dropdown-item.active ');
     selected.textContent =
       active.querySelector('.list-account-name').textContent;
-    selected.setAttribute(
-      'data-type',
-      active.querySelector('.list-account-type').textContent
-    );
+    selected.setAttribute('data-id', active.dataset.id);
+  });
+};
+
+const defaultTransactionAmt = () => {
+  const transactionDropdownEl = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+  transactionDropdownEl.forEach((item) => {
+    const active = item.querySelector('.dropdown-item.active ');
+    if (!active) return;
+    const transactionAmtDropDown =
+      item.parentElement.nextElementSibling.querySelector('.dropdown');
+    transactionAmtDropDown.innerHTML = '';
+    displayAmtCode(active.dataset.id, transactionAmtDropDown);
   });
 };
 
@@ -171,18 +179,43 @@ const selectListItem = (e) => {
       '.transaction-selected'
     );
     if (dropDownItemParentEl.classList.contains('transaction-dropdown')) {
+      const transactionAmtDropDown =
+        dropDownItemEl.parentElement.parentElement.nextElementSibling.querySelector(
+          '.dropdown'
+        );
       dropDownItemEl.parentElement
         .querySelectorAll('.dropdown-item')
         .forEach((item) => item.classList.remove('active'));
       dropDownItemEl.classList.add('active');
       selectedAccount.textContent =
         dropDownItemEl.querySelector('.list-account-name').textContent;
-      selectedAccount.setAttribute(
-        'data-type',
-        dropDownItemEl.querySelector('.list-account-type').textContent
-      );
+      selectedAccount.setAttribute('data-id', dropDownItemEl.dataset.id);
+      transactionAmtDropDown.innerHTML = '';
+      displayAmtCode(dropDownItemEl.dataset.id, transactionAmtDropDown);
     }
   }
+};
+
+// select item and display from dropdown
+
+const displayAmtCode = (id, el) => {
+  Object.entries(storedAccount).forEach(([type, account]) => {
+    account.forEach((item) => {
+      if (item.id === id) {
+        const currencies = [];
+        currencies.push(item.baseCurrency.currencyName);
+        item.additionalCurrencies.forEach((item) =>
+          currencies.push(item?.code)
+        );
+        currencies.forEach((item) => {
+          const li = document.createElement('li');
+          li.className = 'dropdown-item';
+          li.textContent = item;
+          el.appendChild(li);
+        });
+      }
+    });
+  });
 };
 
 // handle section click
