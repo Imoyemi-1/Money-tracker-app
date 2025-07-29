@@ -189,10 +189,10 @@ const selectListItem = (e) => {
       '.transaction-selected'
     );
     if (dropDownItemParentEl.classList.contains('transaction-dropdown')) {
+      const transactionAmtDropDownPa =
+        dropDownItemEl.parentElement.parentElement.nextElementSibling;
       const transactionAmtDropDown =
-        dropDownItemEl.parentElement.parentElement.nextElementSibling.querySelector(
-          '.dropdown'
-        );
+        transactionAmtDropDownPa.querySelector('.dropdown');
       dropDownItemEl.parentElement
         .querySelectorAll('.dropdown-item')
         .forEach((item) => item.classList.remove('active'));
@@ -202,6 +202,14 @@ const selectListItem = (e) => {
       selectedAccount.setAttribute('data-id', dropDownItemEl.dataset.id);
       transactionAmtDropDown.innerHTML = '';
       displayAmtCode(dropDownItemEl.dataset.id, transactionAmtDropDown);
+      transactionAmtDropDown
+        .querySelectorAll('.dropdown-item')[0]
+        .classList.add('active');
+      transactionAmtDropDownPa.querySelector(
+        '.transaction-selected '
+      ).textContent = transactionAmtDropDown.querySelector(
+        '.dropdown-item.active'
+      ).textContent;
     } else if (
       dropDownItemParentEl.classList.contains('transaction-amt-dropdown')
     ) {
@@ -212,6 +220,25 @@ const selectListItem = (e) => {
       selectedAccount.textContent = dropDownItemEl.textContent;
     }
   }
+};
+
+const checkTransactionAmt = () => {
+  const transactionAmtDropdownEl = document.querySelectorAll(
+    '.transaction-amt-dropdown'
+  );
+
+  transactionAmtDropdownEl.forEach((item) => {
+    const parent = item.parentElement;
+    if (item.children.length <= 1) {
+      item.style.visibility = 'hidden';
+      parent.style.cursor = 'default';
+      parent.querySelector('i').style.display = 'none';
+    } else {
+      item.style.visibility = 'visible';
+      parent.style.cursor = 'pointer';
+      parent.querySelector('i').style.display = 'block';
+    }
+  });
 };
 
 // select item and display from dropdown
@@ -234,6 +261,7 @@ const displayAmtCode = (id, el) => {
       }
     });
   });
+  checkTransactionAmt();
 };
 
 // handle section click
