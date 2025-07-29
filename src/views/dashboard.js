@@ -100,8 +100,17 @@ const toggleDropDown = (e) => {
   const dropDownEl = document.querySelectorAll('.dropdown');
   const itemContainerEl = document.querySelectorAll('.items-container');
   const tagInput = document.querySelector('#tag-input');
+  const selectedTag = e.target.closest('.add-selected-currencies');
+
   if (dropDownWrapper) {
     e.stopPropagation();
+    if (selectedTag) {
+      if (e.target.tagName === 'I') {
+        selectedTag.remove();
+        checkSelectedAdd();
+      }
+      return;
+    }
     const parent = dropDownWrapper.parentElement;
     dropDownEl.forEach((el) => {
       el.classList.remove('show');
@@ -221,6 +230,12 @@ const selectListItem = (e) => {
         .forEach((item) => item.classList.remove('active'));
       dropDownItemEl.classList.add('active');
       selectedAccount.textContent = dropDownItemEl.textContent;
+    } else {
+      if (dropDownItemEl.classList.contains('create-tag-item')) {
+        const tag = dropDownItemEl.querySelector('span');
+        selectedTag(tag.textContent);
+        checkSelectedAdd();
+      }
     }
   }
 };
@@ -376,16 +391,19 @@ function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
 
 const displayTagDropdown = () => {
   const tagDropdown = document.querySelector('.tag-dropdown');
-
-  if (tagDropdown.childElementCount < 1) {
+  const noresult = document.querySelector('.noresult');
+  if (tagDropdown.querySelectorAll('.dp-none ').length >= 0) {
+    if (noresult) noresult.remove();
     const li = document.createElement('li');
     li.className = 'noresult';
     li.textContent = 'No results found.';
     tagDropdown.appendChild(li);
+  } else {
+    if (noresult) noresult.remove();
   }
 };
 
-// handle base currency  input
+// handle tag currency  input
 
 const handleTagInput = () => {
   const input = document.querySelector('#tag-input');
@@ -401,11 +419,10 @@ const handleTagInput = () => {
         createTagLi.innerHTML = `Add <span>${input.value.trim()}</span>`;
       else {
         const li = document.createElement('li');
-        li.className = 'create-tag-item';
+        li.className = 'create-tag-item dropdown-item';
         li.innerHTML = `Add <span>${input.value.trim()}</span>`;
-        if (tagDropdown.firstChild.classList.contains('noresult')) {
-          tagDropdown.replaceChild(li, tagDropdown.firstChild);
-        }
+        tagDropdown.insertBefore(li, tagDropdown.firstChild);
+        document.querySelector('.noresult').classList.add('dp-none');
       }
     } else {
       selected.classList.remove('display-none');
@@ -413,6 +430,33 @@ const handleTagInput = () => {
       displayTagDropdown();
     }
   });
+};
+
+// display selected tag
+
+const selectedTag = (code) => {
+  const tagInput = document.querySelector('#tag-input');
+  const parentEl = tagInput.parentElement;
+  const div = document.createElement('div');
+  div.className = 'add-selected-currencies flex';
+  div.innerHTML = `<p>${code}</p>
+  <i class="fas fa-xmark"></i>`;
+
+  parentEl.insertBefore(div, tagInput);
+  displayTagDropdown();
+  const li = document.createElement('li');
+  li.className = 'dropdown-item dp-none';
+  li.textContent = code;
+  document.querySelector('.tag-dropdown ').appendChild(li);
+};
+
+const checkSelectedAdd = () => {
+  const selectedAddition = document.querySelectorAll(
+    '.add-selected-currencies'
+  );
+  const selected = document.querySelector('#tag-selected');
+  if (selectedAddition.length < 1) selected.style.visibility = 'visible';
+  else selected.style.visibility = 'hidden';
 };
 
 // eventlistener
@@ -429,6 +473,9 @@ document.addEventListener('click', (e) => {
   const dropDownEl = document.querySelectorAll('.dropdown');
   const itemContainerEl = document.querySelectorAll('.items-container');
   const createTagLi = document.querySelector('.create-tag-item');
+
+  const tagSelected = e.target.closest('.add-selected-currencies');
+  if (tagSelected) return;
 
   dropDownEl.forEach((el) => {
     el.classList.remove('show');
