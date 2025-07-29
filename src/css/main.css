@@ -191,6 +191,10 @@
   gap: 1.5rem;
 }
 
+.input-dropdown-container .items-container {
+  height: 4.072rem;
+}
+
 .set-transaction-container {
   padding: 1.6rem;
 }
