@@ -369,6 +369,19 @@ function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
   });
 }
 
+// add tag dropdown item to tag
+
+const displayTagDropdown = () => {
+  const tagDropdown = document.querySelector('.tag-dropdown');
+
+  if (tagDropdown.childElementCount < 1) {
+    const li = document.createElement('li');
+    li.className = 'dropdown-item noresult';
+    li.textContent = 'No results found.';
+    tagDropdown.appendChild(li);
+  }
+};
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
@@ -394,3 +407,4 @@ document.addEventListener('click', (e) => {
   selectedEl.forEach((item) => item.classList.remove('blur'));
 });
 displayAvailableAccount();
+displayTagDropdown();
