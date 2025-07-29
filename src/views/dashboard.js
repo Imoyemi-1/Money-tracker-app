@@ -99,7 +99,7 @@ const toggleDropDown = (e) => {
   const dropDownWrapper = e.target.closest('.items-container');
   const dropDownEl = document.querySelectorAll('.dropdown');
   const itemContainerEl = document.querySelectorAll('.items-container');
-
+  const tagInput = document.querySelector('#tag-input');
   if (dropDownWrapper) {
     e.stopPropagation();
     const parent = dropDownWrapper.parentElement;
@@ -113,6 +113,9 @@ const toggleDropDown = (e) => {
     parent.querySelector('.dropdown')?.classList.add('show');
     dropDownWrapper.classList.add('open-border');
     parent.querySelector('.dropdown').classList.add('border');
+    if (dropDownWrapper.classList.contains('tag-container')) {
+      tagInput.focus();
+    }
   }
 };
 
@@ -376,10 +379,40 @@ const displayTagDropdown = () => {
 
   if (tagDropdown.childElementCount < 1) {
     const li = document.createElement('li');
-    li.className = 'dropdown-item noresult';
+    li.className = 'noresult';
     li.textContent = 'No results found.';
     tagDropdown.appendChild(li);
   }
+};
+
+// handle base currency  input
+
+const handleTagInput = () => {
+  const input = document.querySelector('#tag-input');
+  const selected = document.querySelector('#tag-selected');
+  const tagDropdown = document.querySelector('.tag-dropdown');
+
+  input.addEventListener('input', () => {
+    const createTagLi = document.querySelector('.create-tag-item');
+    if (input.value.length > 0) {
+      // checking if base input is being type in
+      selected.classList.add('display-none');
+      if (createTagLi)
+        createTagLi.innerHTML = `Add <span>${input.value.trim()}</span>`;
+      else {
+        const li = document.createElement('li');
+        li.className = 'create-tag-item';
+        li.innerHTML = `Add <span>${input.value.trim()}</span>`;
+        if (tagDropdown.firstChild.classList.contains('noresult')) {
+          tagDropdown.replaceChild(li, tagDropdown.firstChild);
+        }
+      }
+    } else {
+      selected.classList.remove('display-none');
+      createTagLi.remove();
+      displayTagDropdown();
+    }
+  });
 };
 
 // eventlistener
@@ -395,16 +428,22 @@ document.addEventListener('click', (e) => {
   const selectedEl = document.querySelectorAll('.selected');
   const dropDownEl = document.querySelectorAll('.dropdown');
   const itemContainerEl = document.querySelectorAll('.items-container');
+  const createTagLi = document.querySelector('.create-tag-item');
 
-  if (e.target.closest('.add-selected-currencies')) return;
   dropDownEl.forEach((el) => {
     el.classList.remove('show');
     el.classList.remove('border');
   });
   selectedEl[0]?.classList.remove('dp-none');
-
+  if (createTagLi) {
+    createTagLi.remove();
+    document.querySelector('#tag-input').value = '';
+    document.querySelector('#tag-selected').classList.remove('display-none');
+    displayTagDropdown();
+  }
   itemContainerEl.forEach((item) => item.classList.remove('open-border'));
   selectedEl.forEach((item) => item.classList.remove('blur'));
 });
 displayAvailableAccount();
 displayTagDropdown();
+handleTagInput();
