@@ -14,6 +14,7 @@ const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
 const form = document.querySelector('.set-transaction-container');
+const dateInput = document.querySelector(`input[type='date']`);
 
 const storedAccount = Storage.getAccountData();
 const baseCurrencyCode = Storage.getBaseCurrency();
@@ -485,6 +486,13 @@ const removeSelectedTag = (code) => {
   });
 };
 
+// display date
+
+const displayDate = () => {
+  const todayDate = new Date().toISOString().split('T')[0];
+  dateInput.value = todayDate;
+};
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
@@ -520,3 +528,4 @@ document.addEventListener('click', (e) => {
 displayAvailableAccount();
 displayTagDropdown();
 handleTagInput();
+displayDate();
