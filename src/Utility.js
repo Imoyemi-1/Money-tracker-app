@@ -61,11 +61,11 @@ function calculateGroupTotal(
 
 const checkValue = (num, el) => {
   if (num > 0) {
-    el.classList.remove('success');
-    el.classList.add('danger');
-  } else {
     el.classList.remove('danger');
     el.classList.add('success');
+  } else {
+    el.classList.add('danger');
+    el.classList.remove('success');
   }
 };
 
