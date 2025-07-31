@@ -196,6 +196,7 @@
 
 .set-transaction-container {
   padding: 1.6rem;
+  border-bottom: 1px solid var(--grey-300);
 }
 
 .set-transaction-container .items-container {
@@ -241,6 +242,10 @@
 
 .dropdown-item .list-account-type {
   color: var(--grey-300);
+}
+
+.input-tag-container {
+  margin-bottom: 1.5rem;
 }
 
 .input-tag-container .selected,
