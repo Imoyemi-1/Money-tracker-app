@@ -9,6 +9,16 @@ export default class Storage {
     localStorage.setItem('accountData', JSON.stringify(data));
   }
 
+  static getTransactions() {
+    const data = JSON.parse(localStorage.getItem('transactions')) || [];
+
+    return data;
+  }
+
+  static setTransactions(data) {
+    localStorage.setItem('transactions', JSON.stringify(data));
+  }
+
   static deleteAccountData(id, type) {
     const data = this.getAccountData();
     data[type] = data[type].filter((item) => item.id !== id);
@@ -36,5 +46,9 @@ export default class Storage {
     const networth = localStorage.getItem('totalNetworth') || 0;
 
     return networth;
+  }
+
+  static getExchangesRates() {
+    return JSON.parse(localStorage.getItem('exchangeRates')) || {};
   }
 }

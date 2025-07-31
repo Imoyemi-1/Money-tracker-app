@@ -2,8 +2,8 @@ import Storage from './Storage';
 
 export class Tracker {
   constructor() {
-    this.accounts = Storage.getAccountData() || {};
-    this.transactions = [];
+    this.accounts = Storage.getAccountData();
+    this.transactions = Storage.getTransactions();
     this.networth = Storage.getNetWorth();
   }
 
@@ -49,6 +49,8 @@ export class Tracker {
         tags,
         accountName,
       });
+      Storage.setAccountData(this.accounts);
+      Storage.setTransactions(this.transactions);
     }
   }
 
@@ -94,6 +96,8 @@ export class Tracker {
         tags,
         accountName,
       });
+      Storage.setAccountData(this.accounts);
+      Storage.setTransactions(this.transactions);
     }
   }
 
@@ -138,6 +142,8 @@ export class Tracker {
       fromAccountName,
       toAccountName,
     });
+    Storage.setAccountData(this.accounts);
+    Storage.setTransactions(this.transactions);
   }
 
   #convertCurrency(fromCode, toCode, amount) {
@@ -164,13 +170,5 @@ export class Tracker {
 
   #saveTransactions(transactions) {
     this.transactions.unshift(transactions);
-  }
-
-  getAccounts() {
-    console.log(Object.values(this.accounts));
-  }
-
-  getTransaction() {
-    console.log(this.transactions);
   }
 }
