@@ -1,6 +1,7 @@
 import '../css/main.css';
 import Storage from '../Storage';
 import { formatCurrency, calculateGroupTotal, checkValue } from '../Utility';
+import { Tracker } from '../Tracker';
 
 const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
@@ -16,11 +17,11 @@ const networthEl = document.querySelector(
 const form = document.querySelector('.set-transaction-container');
 const dateInput = document.querySelector(`input[type='date']`);
 
-const storedAccount = Storage.getAccountData();
 const baseCurrencyCode = Storage.getBaseCurrency();
-const rates = JSON.parse(localStorage.getItem('exchangeRates'));
+const rates = Storage.getExchangesRates();
 
 let createdTags = [];
+let transactionStatus = 'expense';
 // open side bar menu on mobil
 const openMenu = () => {
   hamburger.classList.toggle('active');
@@ -65,7 +66,7 @@ const createToSection = () => {
                 <ul class="dropdown transaction-dropdown"></ul>
               </div>
               <div class="transaction-amt-container flex">
-                <input type="number" id="input-amt" min="0.01" step="0.01" />
+                <input type="number" id="input-amt" min="0.01" step="0.01" readOnly/>
                 <div class="currency-item-cons">
                   <div class="items-container flex">
                     <div class="select-input-wrapper">
@@ -78,7 +79,7 @@ const createToSection = () => {
               </div>
             </div> `;
   const noteDiv = document.createElement('div');
-  noteDiv.innerHTML = `<input type="text" placeholder="Note" id="note" />`;
+  noteDiv.innerHTML = `<input type="text" placeholder="Note" id="note" autocomplete="off"/>`;
   inputTagContainer.classList.add('dp-none');
   toInputPa.appendChild(div);
   toInputPa.appendChild(noteDiv);
@@ -129,6 +130,7 @@ const displayAvailableAccount = () => {
   const transactionDropdownCon = document.querySelectorAll(
     '.transaction-dropdown'
   );
+  const storedAccount = Storage.getAccountData();
   Object.entries(storedAccount).forEach(([type, account]) => {
     account.forEach((item) => {
       const li = document.createElement('li');
@@ -260,6 +262,7 @@ const checkTransactionAmt = () => {
 // select item and display from dropdown
 
 const displayAmtCode = (id, el) => {
+  const storedAccount = Storage.getAccountData();
   Object.values(storedAccount).forEach((account) => {
     account.forEach((item) => {
       if (item.id === id) {
@@ -301,16 +304,19 @@ const handleSection = (e) => {
     accountNavEls.forEach((el) => (el.className = 'account-nav-txt'));
     accountNav.classList.add('active');
     if (accountNav.textContent === 'Expense') {
+      transactionStatus = 'expense';
       accountNav.classList.add('danger');
       transactionLabel.textContent = 'From';
       addItemBtn.textContent = 'Add Expense';
       createTag();
     } else if (accountNav.textContent === 'Income') {
+      transactionStatus = 'income';
       accountNav.classList.add('success');
       transactionLabel.textContent = 'To';
       addItemBtn.textContent = 'Add Income';
       createTag();
     } else {
+      transactionStatus = 'transfer';
       transactionLabel.textContent = 'From';
       addItemBtn.textContent = 'Add Transfer';
       createToSection();
@@ -328,11 +334,18 @@ const handleSection = (e) => {
 const displayNetworth = () => {
   const networth = Storage.getNetWorth();
   networthEl.textContent = `${formatCurrency(+networth)} ${baseCurrencyCode}`;
+
   checkValue(networth, networthEl);
 };
 
 // display save account
 const displayAccount = () => {
+  const accountBodyEl = document.querySelector(
+    '#networth-section .section-body'
+  );
+  const storedAccount = Storage.getAccountData();
+
+  accountBodyEl.innerHTML = '';
   Object.entries(storedAccount).forEach(([type, account]) => {
     const div = document.createElement('div');
     div.className = 'account-wallet-group';
@@ -357,8 +370,9 @@ const displayAccount = () => {
                 })
                 .join('')}
               </div>`;
-    document.querySelector('#networth-section .section-body').append(div);
+    accountBodyEl.append(div);
   });
+  checkAccountPrice();
 };
 
 // check account available to display transfer
@@ -383,6 +397,7 @@ function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
     );
     const totalElement = header.querySelector('.account-wallet-amt');
     totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrency}`;
+    checkValue(total, totalElement);
   });
 }
 
@@ -486,11 +501,87 @@ const removeSelectedTag = (code) => {
   });
 };
 
+// add transaction for expense ,transfer and income
+
+const addTransactions = () => {
+  const moneyTracker = new Tracker();
+  const note = document.querySelector('#note');
+  const accountDetails = document.querySelectorAll(
+    '.input-dropdown-container '
+  );
+  const amountInput = document.querySelector(
+    '.transaction-amt-container input[type="number"]'
+  );
+  const curCodeEl = document.querySelectorAll('.transaction-amt-container');
+  const tags = [];
+
+  if (transactionStatus === 'expense') {
+    moneyTracker.addExpense({
+      accountId: accountDetails[0].querySelector('.transaction-selected')
+        .dataset.id,
+      curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
+      amount: +amountInput.value ?? 0,
+      date: dateInput.value,
+      note: note.value.trim(),
+      tags,
+      accountName: accountDetails[0].querySelector('.transaction-selected')
+        .textContent,
+    });
+  } else if (transactionStatus === 'income') {
+    moneyTracker.addIncome({
+      accountId: accountDetails[0].querySelector('.transaction-selected')
+        .dataset.id,
+      curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
+      amount: +amountInput.value ?? 0,
+      date: dateInput.value,
+      note: note.value.trim(),
+      tags,
+      accountName: accountDetails[0].querySelector('.transaction-selected')
+        .textContent,
+    });
+  } else {
+    moneyTracker.addTransfer({
+      fromAccountId: accountDetails[0].querySelector('.transaction-selected')
+        .dataset.id,
+      toAccountId: accountDetails[1].querySelector('.transaction-selected')
+        .dataset.id,
+      fromCurCode: curCodeEl[0].querySelector('.transaction-selected')
+        .textContent,
+      toCurCode: curCodeEl[1].querySelector('.transaction-selected')
+        .textContent,
+      amount: +amountInput.value ?? 0,
+      date: dateInput.value,
+      note: note.value.trim(),
+      fromAccountName: accountDetails[0].querySelector('.transaction-selected')
+        .textContent,
+      toAccountName: accountDetails[1].querySelector('.transaction-selected')
+        .textContent,
+    });
+  }
+
+  console.log(Storage.getTransactions());
+  displayNetworth();
+  displayAccount();
+  updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
+};
+
 // display date
 
 const displayDate = () => {
   const todayDate = new Date().toISOString().split('T')[0];
   dateInput.value = todayDate;
+};
+
+// check account price if negative or positive
+
+const checkAccountPrice = () => {
+  const accountPrices = document.querySelectorAll('.account-price');
+
+  accountPrices.forEach((item) => {
+    const amtText = item.textContent.split(' ')[0];
+    const amt = amtText.replace(/,/g, '');
+    checkValue(Number(amt), item);
+  });
 };
 
 // eventlistener
@@ -501,7 +592,7 @@ section.forEach((el) => el.addEventListener('click', handleSection));
 displayNetworth();
 displayAccount();
 checkAccount();
-updateAllGroupTotals(storedAccount, baseCurrencyCode, rates);
+updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
 document.addEventListener('click', (e) => {
   const selectedEl = document.querySelectorAll('.selected');
   const dropDownEl = document.querySelectorAll('.dropdown');
@@ -529,3 +620,7 @@ displayAvailableAccount();
 displayTagDropdown();
 handleTagInput();
 displayDate();
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  addTransactions();
+});
