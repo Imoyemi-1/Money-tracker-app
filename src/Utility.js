@@ -1,3 +1,5 @@
+import Storage from './Storage';
+
 // format currency
 
 const formatCurrency = (amount) => {
@@ -69,4 +71,28 @@ const checkValue = (num, el) => {
   }
 };
 
-export { formatCurrency, calculateGroupTotal, checkValue };
+// covert currency
+
+const convertCurrency = (fromCode, toCode, amount) => {
+  const rates = Storage.getExchangesRates();
+
+  let amountInUSD;
+  if (fromCode === 'USD') {
+    amountInUSD = amount;
+  } else {
+    const fromRate = rates[fromCode];
+    if (!fromRate) throw new Error(`Missing rate for ${fromCode}`);
+    amountInUSD = amount / fromRate;
+  }
+
+  if (toCode === 'USD') {
+    return amountInUSD;
+  }
+
+  const toRate = rates[toCode];
+  if (!toRate) throw new Error(`Missing rate for ${toCode}`);
+
+  return amountInUSD * toRate;
+};
+
+export { formatCurrency, calculateGroupTotal, checkValue, convertCurrency };

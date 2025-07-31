@@ -1,4 +1,5 @@
 import Storage from './Storage';
+import { convertCurrency } from './Utility';
 
 export class Tracker {
   constructor() {
@@ -44,7 +45,7 @@ export class Tracker {
 
       Storage.setTransactions(this.transactions);
     }
-    let convertedAmount = this.#convertCurrency(
+    let convertedAmount = convertCurrency(
       curCode,
       Storage.getBaseCurrency(),
       amount
@@ -92,7 +93,7 @@ export class Tracker {
 
       Storage.setTransactions(this.transactions);
     }
-    let convertedAmount = this.#convertCurrency(
+    let convertedAmount = convertCurrency(
       curCode,
       Storage.getBaseCurrency(),
       amount
@@ -123,7 +124,7 @@ export class Tracker {
 
     let convertedAmount = amount;
     if (fromCurCode !== toCurCode) {
-      convertedAmount = this.#convertCurrency(fromCurCode, toCurCode, amount);
+      convertedAmount = convertCurrency(fromCurCode, toCurCode, amount);
     }
 
     this.addIncome({
@@ -146,28 +147,6 @@ export class Tracker {
     });
     Storage.setAccountData(this.accounts);
     Storage.setTransactions(this.transactions);
-  }
-
-  #convertCurrency(fromCode, toCode, amount) {
-    const rates = Storage.getExchangesRates();
-
-    let amountInUSD;
-    if (fromCode === 'USD') {
-      amountInUSD = amount;
-    } else {
-      const fromRate = rates[fromCode];
-      if (!fromRate) throw new Error(`Missing rate for ${fromCode}`);
-      amountInUSD = amount / fromRate;
-    }
-
-    if (toCode === 'USD') {
-      return amountInUSD;
-    }
-
-    const toRate = rates[toCode];
-    if (!toRate) throw new Error(`Missing rate for ${toCode}`);
-
-    return amountInUSD * toRate;
   }
 
   #saveTransactions(transactions) {
