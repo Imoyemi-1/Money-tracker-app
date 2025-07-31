@@ -1,3 +1,51 @@
+// import Storage from './Storage';
+
 class Tracker {
-  constructor() {}
+  constructor() {
+    this.accounts = {
+      Cash: [
+        {
+          id: '08993',
+          name: 'imoyemi',
+          baseCurrency: { currencyName: 'USD', amount: 10 },
+          additionalCurrencies: [
+            { code: 'AED', amount: 178 },
+            { code: 'ALL', amount: 232 },
+          ],
+        },
+        {
+          id: 'f57ea',
+          name: 'access',
+          baseCurrency: { currencyName: 'NGN', amount: 89 },
+          additionalCurrencies: [],
+        },
+      ],
+      'Bank Account': [
+        {
+          id: '60fbd',
+          name: 'imoyemioo',
+          baseCurrency: { currencyName: 'USD', amount: 1232 },
+          additionalCurrencies: [],
+        },
+      ],
+    };
+  }
+
+  addExpense({ accountId, curCode, amount }) {
+    const account = Object.values(this.accounts)
+      .flat()
+      .find((acc) => acc.id === accountId);
+    if (curCode === account.baseCurrency.currencyName) {
+      account.baseCurrency.amount = account.baseCurrency.amount - amount;
+    } else {
+      const additional = account.additionalCurrencies.find(
+        (acc) => acc.code === curCode
+      );
+      additional.amount -= amount;
+    }
+  }
 }
+
+const moneyTracker = new Tracker();
+
+moneyTracker.addExpense({ accountId: '08993', curCode: 'USD', amount: 100 });
