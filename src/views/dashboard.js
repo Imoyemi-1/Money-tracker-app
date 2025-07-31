@@ -1,6 +1,11 @@
 import '../css/main.css';
 import Storage from '../Storage';
-import { formatCurrency, calculateGroupTotal, checkValue } from '../Utility';
+import {
+  formatCurrency,
+  calculateGroupTotal,
+  checkValue,
+  convertCurrency,
+} from '../Utility';
 import { Tracker } from '../Tracker';
 
 const hamburger = document.querySelector('.hamburger');
@@ -16,6 +21,7 @@ const networthEl = document.querySelector(
 );
 const form = document.querySelector('.set-transaction-container');
 const dateInput = document.querySelector(`input[type='date']`);
+const inputAmt = document.querySelector('#input-amt');
 
 const baseCurrencyCode = Storage.getBaseCurrency();
 const rates = Storage.getExchangesRates();
@@ -219,6 +225,7 @@ const selectListItem = (e) => {
       ).textContent = transactionAmtDropDown.querySelector(
         '.dropdown-item.active'
       ).textContent;
+      checkInput();
     } else if (
       dropDownItemParentEl.classList.contains('transaction-amt-dropdown')
     ) {
@@ -227,6 +234,7 @@ const selectListItem = (e) => {
         .forEach((item) => item.classList.remove('active'));
       dropDownItemEl.classList.add('active');
       selectedAccount.textContent = dropDownItemEl.textContent;
+      checkInput();
     } else {
       if (dropDownItemEl.classList.contains('create-tag-item')) {
         const tag = dropDownItemEl.querySelector('span');
@@ -584,6 +592,29 @@ const checkAccountPrice = () => {
   });
 };
 
+// check transaction input
+const checkInput = () => {
+  const transactionInput = document.querySelectorAll(
+    '.transaction-amt-container '
+  );
+
+  if (transactionInput[1]?.querySelector('.transaction-selected')) {
+    let convertedAmount = convertCurrency(
+      transactionInput[0].querySelector('.transaction-selected').textContent,
+      transactionInput[1].querySelector('.transaction-selected').textContent,
+      +transactionInput[0].querySelector('input').value
+    );
+    transactionInput[1].querySelector('input').value =
+      convertedAmount >= 1
+        ? convertedAmount.toFixed(2)
+        : convertedAmount.toPrecision(2);
+
+    if (transactionInput[0].querySelector('input').value === '') {
+      transactionInput[1].querySelector('input').value = '';
+    }
+  }
+};
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
@@ -624,3 +655,4 @@ form.addEventListener('submit', (e) => {
   e.preventDefault();
   addTransactions();
 });
+inputAmt.addEventListener('input', checkInput);
