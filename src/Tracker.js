@@ -4,7 +4,7 @@ export class Tracker {
   constructor() {
     this.accounts = Storage.getAccountData();
     this.transactions = Storage.getTransactions();
-    this.networth = Storage.getNetWorth();
+    this.networth = +Storage.getNetWorth();
   }
 
   addExpense({
@@ -31,14 +31,6 @@ export class Tracker {
     }
 
     if (!skipLog) {
-      convertedAmount = this.#convertCurrency(
-        curCode,
-        Storage.getBaseCurrency(),
-        amount
-      );
-
-      this.networth -= convertedAmount;
-      Storage.setBaseCurrency(this.networth);
       this.#saveTransactions({
         type: 'expense',
         accountId,
@@ -49,9 +41,18 @@ export class Tracker {
         tags,
         accountName,
       });
-      Storage.setAccountData(this.accounts);
+
       Storage.setTransactions(this.transactions);
     }
+    let convertedAmount = this.#convertCurrency(
+      curCode,
+      Storage.getBaseCurrency(),
+      amount
+    );
+
+    this.networth -= convertedAmount;
+    Storage.setNetWorth(this.networth);
+    Storage.setAccountData(this.accounts);
   }
 
   addIncome({
@@ -78,14 +79,6 @@ export class Tracker {
     }
 
     if (!skipLog) {
-      convertedAmount = this.#convertCurrency(
-        curCode,
-        Storage.getBaseCurrency(),
-        amount
-      );
-      this.networth += convertedAmount;
-      Storage.setBaseCurrency(this.networth);
-
       this.#saveTransactions({
         type: 'income',
         accountId,
@@ -96,9 +89,18 @@ export class Tracker {
         tags,
         accountName,
       });
-      Storage.setAccountData(this.accounts);
+
       Storage.setTransactions(this.transactions);
     }
+    let convertedAmount = this.#convertCurrency(
+      curCode,
+      Storage.getBaseCurrency(),
+      amount
+    );
+
+    this.networth += convertedAmount;
+    Storage.setNetWorth(this.networth);
+    Storage.setAccountData(this.accounts);
   }
 
   addTransfer({
