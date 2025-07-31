@@ -50,14 +50,6 @@ a {
   display: grid;
 }
 
-.danger {
-  color: #db2828;
-}
-
-.success {
-  color: var(--light-green);
-}
-
 /* General style */
 
 .currency-item-cons {

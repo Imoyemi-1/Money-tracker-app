@@ -149,7 +149,6 @@
 }
 
 .account-container .account-price {
-  color: var(--light-green);
   font-weight: 400;
   font-size: 1.8rem;
   text-align: end;
@@ -371,4 +370,12 @@ label {
   font-size: 1.4rem;
   margin-bottom: 0.5rem;
   display: inline-block;
+}
+
+.danger {
+  color: #db2828;
+}
+
+.success {
+  color: var(--light-green);
 }
