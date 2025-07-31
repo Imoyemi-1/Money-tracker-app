@@ -51,4 +51,12 @@ export default class Storage {
   static getExchangesRates() {
     return JSON.parse(localStorage.getItem('exchangeRates')) || {};
   }
+
+  static getTags() {
+    let tags = this.getTransactions();
+    tags = tags.filter((item) => item.type !== 'transfer');
+    tags = [...new Set(tags.map((item) => item.tags).flat())];
+
+    return tags;
+  }
 }

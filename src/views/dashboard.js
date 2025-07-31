@@ -26,7 +26,7 @@ const inputAmt = document.querySelector('#input-amt');
 const baseCurrencyCode = Storage.getBaseCurrency();
 const rates = Storage.getExchangesRates();
 
-let createdTags = [];
+let createdTags = Storage.getTags() || [];
 let transactionStatus = 'expense';
 // open side bar menu on mobil
 const openMenu = () => {
@@ -265,7 +265,7 @@ const selectListItem = (e) => {
     } else {
       if (dropDownItemEl.classList.contains('create-tag-item')) {
         const tag = dropDownItemEl.querySelector('span');
-        selectedTag({ name: tag.textContent, pick: false });
+        selectedTag(tag.textContent);
       } else {
         e.target.classList.add('dp-none');
         displaySelectTag(e.target.textContent);
@@ -441,6 +441,7 @@ function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
 const displayTagDropdown = () => {
   const tagDropdown = document.querySelector('.tag-dropdown');
   const noresult = document.querySelector('.noresult');
+
   if (!tagDropdown) return;
   if (tagDropdown.querySelectorAll('.dropdown-item:not(.dp-none)').length < 1) {
     if (noresult) noresult.remove();
@@ -489,22 +490,31 @@ const selectedTag = (code) => {
   const tagDropdown = document.querySelector('.tag-dropdown');
 
   // Prevent duplicate
-  if (
-    !createdTags.some(
-      (obj) => obj.name.toLowerCase() === code.name.toLowerCase()
-    )
-  ) {
+  if (!createdTags.some((obj) => obj.toLowerCase() === code.toLowerCase())) {
     createdTags.push(code);
-    displaySelectTag(code.name);
+    displaySelectTag(code);
+
     const li = document.createElement('li');
     li.className = 'dropdown-item dp-none';
-    li.textContent = code.name;
+    li.textContent = code;
     tagDropdown.appendChild(li);
 
     displayTagDropdown();
   } else {
     alert('Tag already exist');
   }
+};
+
+// display tag list
+
+const displayTagList = () => {
+  const tagDropdown = document.querySelector('.tag-dropdown');
+  createdTags.forEach((item) => {
+    const li = document.createElement('li');
+    li.className = 'dropdown-item';
+    li.textContent = item;
+    tagDropdown.appendChild(li);
+  });
 };
 
 const displaySelectTag = (code) => {
@@ -548,7 +558,7 @@ const addTransactions = () => {
     '.transaction-amt-container input[type="number"]'
   );
   const curCodeEl = document.querySelectorAll('.transaction-amt-container');
-  const tags = [];
+  const tags = ['tagss', 'yam'];
 
   if (transactionStatus === 'expense') {
     moneyTracker.addExpense({
@@ -675,6 +685,7 @@ document.addEventListener('click', (e) => {
   selectedEl.forEach((item) => item.classList.remove('blur'));
 });
 displayAvailableAccount();
+displayTagList();
 displayTagDropdown();
 handleTagInput();
 displayDate();
