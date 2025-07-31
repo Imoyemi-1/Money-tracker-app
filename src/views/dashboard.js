@@ -84,11 +84,9 @@ const createToSection = () => {
                 </div>
               </div>
             </div> `;
-  const noteDiv = document.createElement('div');
-  noteDiv.innerHTML = `<input type="text" placeholder="Note" id="note" autocomplete="off"/>`;
+
   inputTagContainer.classList.add('dp-none');
   toInputPa.appendChild(div);
-  toInputPa.appendChild(noteDiv);
   if (document.querySelector('.toinput-container')) return;
   form.insertBefore(toInputPa, form.firstElementChild.nextElementSibling);
 };
@@ -189,13 +187,6 @@ const displayAccountGroupSelected = () => {
   firstSelected.textContent =
     firstActive.querySelector('.list-account-name').textContent;
   firstSelected.setAttribute('data-id', firstActive.dataset.id);
-  // transactionDropdownEl[1].forEach((item) => {
-  //   const selected = item.parentElement.querySelector('.transaction-selected');
-  //   const active = item.querySelector('.dropdown-item.active ');
-  //   selected.textContent =
-  //     active.querySelector('.list-account-name').textContent;
-  //   selected.setAttribute('data-id', active.dataset.id);
-  // });
 };
 
 const defaultTransactionAmt = () => {
@@ -509,6 +500,7 @@ const selectedTag = (code) => {
 
 const displayTagList = () => {
   const tagDropdown = document.querySelector('.tag-dropdown');
+  tagDropdown.innerHTML = '';
   createdTags.forEach((item) => {
     const li = document.createElement('li');
     li.className = 'dropdown-item';
@@ -554,11 +546,15 @@ const addTransactions = () => {
   const accountDetails = document.querySelectorAll(
     '.input-dropdown-container '
   );
+  const selectedTagPa = document.querySelectorAll('.add-selected-currencies');
   const amountInput = document.querySelector(
     '.transaction-amt-container input[type="number"]'
   );
   const curCodeEl = document.querySelectorAll('.transaction-amt-container');
-  const tags = ['tagss', 'yam'];
+  const tags = [];
+  selectedTagPa.forEach((item) =>
+    tags.push(item.querySelector('p').textContent)
+  );
 
   if (transactionStatus === 'expense') {
     moneyTracker.addExpense({
@@ -608,6 +604,13 @@ const addTransactions = () => {
   displayNetworth();
   displayAccount();
   updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
+
+  amountInput.value = '';
+  note.value = '';
+  checkInput();
+  if (selectedTagPa) selectedTagPa.forEach((item) => item.remove());
+  displayTagList();
+  checkSelectedAdd();
 };
 
 // display date
