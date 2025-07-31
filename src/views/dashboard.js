@@ -260,7 +260,7 @@ const checkTransactionAmt = () => {
 // select item and display from dropdown
 
 const displayAmtCode = (id, el) => {
-  Object.entries(storedAccount).forEach(([type, account]) => {
+  Object.values(storedAccount).forEach((account) => {
     account.forEach((item) => {
       if (item.id === id) {
         const currencies = [];
