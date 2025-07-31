@@ -29,9 +29,18 @@ class Tracker {
         },
       ],
     };
+    this.transactions = [];
   }
 
-  addExpense({ accountId, curCode, amount }) {
+  addExpense({
+    accountId,
+    curCode,
+    amount,
+    date,
+    note,
+    tags,
+    skipLog = false,
+  }) {
     const account = Object.values(this.accounts)
       .flat()
       .find((acc) => acc.id === accountId);
@@ -43,9 +52,19 @@ class Tracker {
       );
       additional.amount -= amount;
     }
+    if (!skipLog)
+      this.#saveTransactions({
+        type: 'expense',
+        accountId,
+        currency: curCode,
+        amount,
+        date,
+        note,
+        tags,
+      });
   }
 
-  addIncome({ accountId, curCode, amount }) {
+  addIncome({ accountId, curCode, amount, date, note, tags, skipLog = false }) {
     const account = Object.values(this.accounts)
       .flat()
       .find((acc) => acc.id === accountId);
@@ -57,10 +76,33 @@ class Tracker {
       );
       additional.amount += amount;
     }
+    if (!skipLog)
+      this.#saveTransactions({
+        type: 'income',
+        accountId,
+        currency: curCode,
+        amount,
+        date,
+        note,
+        tags,
+      });
   }
 
-  addTransfer({ fromAccountId, toAccountId, fromCurCode, toCurCode, amount }) {
-    this.addExpense({ accountId: fromAccountId, curCode: fromCurCode, amount });
+  addTransfer({
+    fromAccountId,
+    toAccountId,
+    fromCurCode,
+    toCurCode,
+    amount,
+    date,
+    note,
+  }) {
+    this.addExpense({
+      accountId: fromAccountId,
+      curCode: fromCurCode,
+      amount,
+      skipLog: true,
+    });
 
     let convertedAmount = amount;
     if (fromCurCode !== toCurCode) {
@@ -71,6 +113,17 @@ class Tracker {
       accountId: toAccountId,
       curCode: toCurCode,
       amount: convertedAmount,
+      skipLog: true,
+    });
+
+    this.#saveTransactions({
+      type: 'transfer',
+      fromAccountId,
+      toAccountId,
+      sentAmount: amount,
+      receivedAmount: convertedAmount,
+      date,
+      note,
     });
   }
 
@@ -260,19 +313,27 @@ class Tracker {
     return amountInUSD * toRate;
   }
 
+  #saveTransactions(transactions) {
+    this.transactions.unshift(transactions);
+  }
+
   getAccounts() {
     console.log(Object.values(this.accounts)[0][0]);
     console.log(Object.values(this.accounts)[0][1]);
+  }
+
+  getTransaction() {
+    console.log(this.transactions);
   }
 }
 
 const moneyTracker = new Tracker();
 
-// moneyTracker.getAccounts();
-// moneyTracker.addExpense({ accountId: '08993', curCode: 'USD', amount: 100 });
-// moneyTracker.getAccounts();
-// moneyTracker.addIncome({ accountId: '08993', curCode: 'ALL', amount: 100 });
-// moneyTracker.getAccounts();
+moneyTracker.getAccounts();
+moneyTracker.addExpense({ accountId: '08993', curCode: 'USD', amount: 100 });
+moneyTracker.getAccounts();
+moneyTracker.addIncome({ accountId: '08993', curCode: 'ALL', amount: 100 });
+moneyTracker.getAccounts();
 moneyTracker.addTransfer({
   fromAccountId: '08993',
   toAccountId: 'f57ea',
@@ -281,3 +342,4 @@ moneyTracker.addTransfer({
   amount: 5,
 });
 moneyTracker.getAccounts();
+moneyTracker.getTransaction();
