@@ -157,18 +157,45 @@ const displayAccountGroupSelected = () => {
   const transactionDropdownEl = document.querySelectorAll(
     '.transaction-dropdown'
   );
+  const firstSelected = transactionDropdownEl[0].parentElement.querySelector(
+    '.transaction-selected'
+  );
+  const secondSelected = transactionDropdownEl[1]?.parentElement.querySelector(
+    '.transaction-selected'
+  );
+  const secondActive =
+    transactionDropdownEl[1]?.querySelectorAll('.dropdown-item');
 
-  transactionDropdownEl[0].firstChild.classList.add('active');
+  const alreadyExist = [
+    ...transactionDropdownEl[0].querySelectorAll('.dropdown-item'),
+  ].some((item) => item.classList.contains('active'));
+
   transactionDropdownEl[1]?.firstChild.nextElementSibling.classList.add(
     'active'
   );
-  transactionDropdownEl.forEach((item) => {
-    const selected = item.parentElement.querySelector('.transaction-selected');
-    const active = item.querySelector('.dropdown-item.active ');
-    selected.textContent =
-      active.querySelector('.list-account-name').textContent;
-    selected.setAttribute('data-id', active.dataset.id);
-  });
+
+  if (secondSelected) {
+    secondSelected.textContent =
+      secondActive[1].querySelector('.list-account-name').textContent;
+    secondSelected.setAttribute('data-id', secondActive[1].dataset.id);
+  }
+  if (alreadyExist) return;
+  transactionDropdownEl[0].firstChild.classList.add('active');
+
+  const firstActive = transactionDropdownEl[0].querySelector(
+    '.dropdown-item.active'
+  );
+
+  firstSelected.textContent =
+    firstActive.querySelector('.list-account-name').textContent;
+  firstSelected.setAttribute('data-id', firstActive.dataset.id);
+  // transactionDropdownEl[1].forEach((item) => {
+  //   const selected = item.parentElement.querySelector('.transaction-selected');
+  //   const active = item.querySelector('.dropdown-item.active ');
+  //   selected.textContent =
+  //     active.querySelector('.list-account-name').textContent;
+  //   selected.setAttribute('data-id', active.dataset.id);
+  // });
 };
 
 const defaultTransactionAmt = () => {
