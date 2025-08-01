@@ -27,12 +27,23 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Helvetica,
+    Arial,
+    sans-serif,
+    Apple Color Emoji,
+    Segoe UI Emoji,
+    Segoe UI Symbol,
+    Roboto,
+    Helvetica Neue;
   background-color: var(--White);
   color: var(--light-black);
   line-height: 1.325em;
-  font-size: 1.5rem;
-  font-weight: 300;
+  font-size: 1.6rem;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -55,7 +66,7 @@ a {
 .currency-item-cons {
   background: var(--White);
   position: relative;
-  font-size: 1.455rem;
+  font-size: 1.535rem;
   cursor: pointer;
 }
 
@@ -100,7 +111,7 @@ a {
 .dropdown {
   width: 100%;
   left: 0;
-  max-height: 11.8rem;
+  max-height: 12.15rem;
   overflow-y: auto;
   scroll-behavior: smooth;
   transition: max-height 0.2s ease;
@@ -123,7 +134,7 @@ a {
   align-items: center;
   gap: 1.2rem;
   padding: 0.9rem;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   border-bottom: 1px solid var(--grey-100);
   cursor: pointer;
   transition: background 0.2s ease;

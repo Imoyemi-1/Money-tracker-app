@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+@import url(https://fonts.googleapis.com/css?family=Roboto+Mono:100,200,300,regular,500,600,700,100italic,200italic,300italic,italic,500italic,600italic,700italic);
 
 /* Import normalize css from npm module */
 
@@ -30,7 +30,7 @@
 .page-header h1 {
   padding: 0;
   margin: 0;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 2.6rem;
 }
 
@@ -99,9 +99,10 @@
 }
 
 .section-header-amt {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 2rem;
   color: var(--light-green);
+  font-family: 'Roboto Mono', monospace;
 }
 
 .section-body {
@@ -122,14 +123,13 @@
 
 .account-wallet-txt {
   font-weight: 500;
-  font-size: 1.7rem;
 }
 
 .account-wallet-amt {
-  font-weight: 400;
   color: var(--light-green);
-  font-size: 2rem;
+  font-size: 1.8rem;
   text-align: end;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .account-container {
@@ -145,15 +145,12 @@
 
 .account-container .account-name {
   color: var(--primary-blue);
-  font-size: 1.6rem;
 }
 
 .account-container .account-price {
-  font-weight: 400;
-  font-size: 1.8rem;
   text-align: end;
-  word-spacing: 0.3rem;
-  line-height: 1.1;
+  line-height: 1.2;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .account-nav {
@@ -338,10 +335,6 @@
   font-size: 2.4rem;
 }
 
-.sidebar-item p {
-  font-weight: 400;
-}
-
 .sidebar-item:hover {
   background-color: rgba(246, 246, 246, 0.8);
 }
@@ -363,6 +356,86 @@
 .open-side.closed {
   display: none;
 }
+
+/* style transaction */
+
+.transaction-item {
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: repeat(2, 1fr);
+  row-gap: 0.5rem;
+  padding: 1rem 2rem;
+  align-items: center;
+}
+
+.transaction-item-date {
+  color: #929293;
+  font-weight: 400;
+}
+
+.transaction-item-info {
+  grid-row: 2/3;
+  grid-column: 1/4;
+  align-items: center;
+}
+
+.transaction-item-info > i {
+  font-size: 1.8rem;
+  text-shadow: 1px 0 rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.3);
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  margin: 0 0.6rem;
+}
+
+.transaction-item-info > .transaction-tag-item {
+  font-size: 1.45rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: initial;
+  margin: 0 0.14285714em;
+  background-color: #e8e8e8;
+  background-image: none;
+  padding: 0.4533em 0.833em;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: none;
+  font-weight: 500;
+  border: 0 solid transparent;
+  border-radius: 0.28571429rem;
+  -webkit-transition: background 0.1s ease;
+  transition: background 0.1s ease;
+  box-shadow: inset 0 0 0 1px rgba(34, 36, 38, 0.15);
+}
+
+.transaction-item-info-note {
+  color: #929293;
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0 0.8rem;
+}
+
+.transaction-item-amount {
+  color: #686869;
+  font-size: 1.4rem;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.edit-btn {
+  margin: 0 0 0 1.05em;
+  padding: 1.1rem 1.3rem;
+  border-radius: 50%;
+  border: 1px solid var(--grey-300);
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border 0.2s ease;
+}
+
+.edit-btn:hover {
+  border: 1px solid var(--grey-200);
+  color: var(--light-black);
+}
+
 /* General style */
 
 button {
