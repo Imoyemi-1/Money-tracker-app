@@ -615,6 +615,7 @@ const addTransactions = () => {
   if (selectedTagPa) selectedTagPa.forEach((item) => item.remove());
   displayTagList();
   checkSelectedAdd();
+  resetAccount();
 };
 
 // display date
@@ -750,6 +751,32 @@ const checkTransaction = () => {
 
   if (transactions.length < 1)
     transactionContainerEl.innerHTML = ` <p class="notransaction flex">No transactions found.</p>`;
+};
+
+// reset all account to default
+
+const resetAccount = () => {
+  const transactionDropdownEl = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+
+  transactionDropdownEl.forEach((item) => {
+    item
+      .querySelectorAll('.dropdown-item')
+      .forEach((item) => item.classList.remove('active'));
+  });
+  transactionDropdownEl[0].firstChild.classList.add('active');
+  transactionDropdownEl[1]?.firstChild.nextElementSibling.classList.add(
+    'active'
+  );
+
+  transactionDropdownEl.forEach((item) => {
+    const selected = item.parentElement.querySelector('.transaction-selected');
+    const active = item.querySelector('.dropdown-item.active ');
+    selected.textContent =
+      active.querySelector('.list-account-name').textContent;
+    selected.setAttribute('data-id', active.dataset.id);
+  });
 };
 
 // eventlistener
