@@ -463,7 +463,7 @@ const handleTagInput = () => {
         createTagLi.innerHTML = `Add <span>${input.value.trim()}</span>`;
       else {
         const li = document.createElement('li');
-        li.className = 'create-tag-item';
+        li.className = 'create-tag-item dropdown-item';
         li.innerHTML = `Add <span>${input.value.trim()}</span>`;
         tagDropdown.insertBefore(li, tagDropdown.firstChild);
       }
@@ -474,8 +474,8 @@ const handleTagInput = () => {
             .toLowerCase()
             .includes(input.value.trim().toLowerCase())
         )
-          el.classList.add('dp-none');
-        else el.classList.remove('dp-none');
+          el.classList.add('display-none');
+        else el.classList.remove('display-none');
       });
       if (document.querySelector('.noresult'))
         document.querySelector('.noresult').remove();
@@ -817,13 +817,12 @@ document.addEventListener('click', (e) => {
     createTagLi.remove();
     document.querySelector('#tag-input').value = '';
     document.querySelector('#tag-selected').classList.remove('display-none');
-    displayTagDropdown();
   }
   itemContainerEl.forEach((item) => item.classList.remove('open-border'));
   selectedEl.forEach((item) => item.classList.remove('blur'));
   document
     .querySelectorAll('.tag-dropdown .dropdown-item')
-    ?.forEach((el) => el.classList.remove('dp-none'));
+    ?.forEach((el) => el.classList.remove('display-none'));
   displayTagDropdown();
 });
 displayAvailableAccount();
