@@ -114,6 +114,8 @@ export class Tracker {
     note,
     fromAccountName,
     toAccountName,
+    receivedCode,
+    sentCode,
   }) {
     this.addExpense({
       accountId: fromAccountId,
@@ -140,6 +142,8 @@ export class Tracker {
       toAccountId,
       sentAmount: amount,
       receivedAmount: convertedAmount,
+      receivedCode,
+      sentCode,
       date,
       note,
       fromAccountName,

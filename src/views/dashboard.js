@@ -597,6 +597,9 @@ const addTransactions = () => {
         .textContent,
       toAccountName: accountDetails[1].querySelector('.transaction-selected')
         .textContent,
+      receivedCode: curCodeEl[1].querySelector('.transaction-selected')
+        .textContent,
+      sentCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
     });
   }
 
@@ -723,10 +726,10 @@ const displayTransaction = () => {
             <span class="transaction-item-info-note">${item.note}</span>
           </div>
           <div class="transaction-item-amount">
-            <span class="transaction-amount-txt">${formatCurrency(item.sentAmount) + ' ' + item.currency}</span
-            ><span></span>
-              <i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
-              <span class="transaction-amount-txt">${formatCurrency(item.receivedAmount) + ' ' + item.currency}</span></span
+            <span class="${item.sentCode !== item.receivedCode ? 'transaction-amount-txt' : 'dp-none'}">${formatCurrency(item.sentAmount) + ' ' + item.sentCode}</span
+            >
+              <i aria-hidden="true" class="${item.sentCode !== item.receivedCode ? 'fa-solid fa-arrow-right' : 'dp-none'}"></i>
+              <span class="transaction-amount-txt">${formatCurrency(item.receivedAmount) + ' ' + item?.receivedCode}</span></span
             >
           </div>
           <div class="transaction-item-edit">
