@@ -600,7 +600,7 @@ const addTransactions = () => {
     });
   }
 
-  console.log(Storage.getTransactions());
+  displayTransaction();
   displayNetworth();
   displayAccount();
   updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
@@ -655,6 +655,91 @@ const checkInput = () => {
   }
 };
 
+// display all recent transaction
+
+const displayTransaction = () => {
+  const transactions = Storage.getTransactions();
+  const transactionContainerEl = document.querySelector(
+    '.transaction-container'
+  );
+
+  transactionContainerEl.innerHTML = '';
+  transactions.forEach((item) => {
+    const transactionItemDiv = document.createElement('div');
+    transactionItemDiv.className = 'transaction-item grid';
+    if (item.type !== 'transfer') {
+      transactionItemDiv.innerHTML = `
+          <div class="transaction-item-date">${new Intl.DateTimeFormat(
+            'en-Us',
+            {
+              day: 'numeric',
+              month: 'short',
+            }
+          ).format(new Date(item.date))}</div>
+          <div class="transaction-item-info flex">
+            <p class="transaction-item-acc-name">${item.accountName}</p>
+            <i aria-hidden='true' class='${
+              item.type === 'expense' && (item.note || item.tags.length > 0)
+                ? 'fa-solid fa-arrow-right'
+                : item.type === 'income' && (item.note || item.tags.length > 0)
+                  ? 'fa-solid fa-arrow-left'
+                  : 'dp-none'
+            }'></i>
+            ${item.tags
+              .map((item) => {
+                return `<div class="transaction-tag-item">${item}</div>`;
+              })
+              .join('')}
+            <span class="transaction-item-info-note">${item.note}</span>
+          </div>
+          <div class="transaction-item-amount">
+            <span class="transaction-amount-txt ${
+              item.type === 'expense' ? 'danger' : 'success'
+            }">${
+              item.type === 'expense'
+                ? '-' + formatCurrency(item.amount) + ' ' + item.currency
+                : '+' + formatCurrency(item.amount) + ' ' + item.currency
+            }</span>
+          </div>
+          <div class="transaction-item-edit">
+            <button class="edit-btn">
+              <i aria-hidden="true" class="fas fa-pencil"></i>
+            </button>
+          </div>
+    `;
+    } else {
+      transactionItemDiv.innerHTML = `   
+          <div class="transaction-item-date">${new Intl.DateTimeFormat(
+            'en-Us',
+            {
+              day: 'numeric',
+              month: 'short',
+            }
+          ).format(new Date(item.date))}</div>
+          <div class="transaction-item-info flex">
+            <p class="transaction-item-acc-name">${item.fromAccountName}</p>
+            <i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
+            <p class="transaction-item-acc-name">${item.toAccountName}</p>
+            <span class="transaction-item-info-note">${item.note}</span>
+          </div>
+          <div class="transaction-item-amount">
+            <span class="transaction-amount-txt">${formatCurrency(item.sentAmount) + ' ' + item.currency}</span
+            ><span></span>
+              <i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
+              <span class="transaction-amount-txt">${formatCurrency(item.receivedAmount) + ' ' + item.currency}</span></span
+            >
+          </div>
+          <div class="transaction-item-edit">
+            <button class="edit-btn">
+              <i aria-hidden="true" class="fas fa-pencil"></i>
+            </button>
+          </div>
+      `;
+    }
+    transactionContainerEl.appendChild(transactionItemDiv);
+  });
+};
+
 // eventlistener
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
@@ -697,3 +782,4 @@ form.addEventListener('submit', (e) => {
   addTransactions();
 });
 inputAmt.addEventListener('input', checkInput);
+displayTransaction();
