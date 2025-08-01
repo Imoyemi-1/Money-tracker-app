@@ -452,6 +452,7 @@ const handleTagInput = () => {
   const input = document.querySelector('#tag-input');
   const selected = document.querySelector('#tag-selected');
   const tagDropdown = document.querySelector('.tag-dropdown');
+  const tagDropdownLi = tagDropdown.querySelectorAll('.dropdown-item');
 
   input.addEventListener('input', () => {
     const createTagLi = document.querySelector('.create-tag-item');
@@ -462,10 +463,20 @@ const handleTagInput = () => {
         createTagLi.innerHTML = `Add <span>${input.value.trim()}</span>`;
       else {
         const li = document.createElement('li');
-        li.className = 'create-tag-item dropdown-item';
+        li.className = 'create-tag-item';
         li.innerHTML = `Add <span>${input.value.trim()}</span>`;
         tagDropdown.insertBefore(li, tagDropdown.firstChild);
       }
+
+      tagDropdownLi?.forEach((el) => {
+        if (
+          !el.textContent
+            .toLowerCase()
+            .includes(input.value.trim().toLowerCase())
+        )
+          el.classList.add('dp-none');
+        else el.classList.remove('dp-none');
+      });
       if (document.querySelector('.noresult'))
         document.querySelector('.noresult').remove();
     } else {
@@ -810,6 +821,10 @@ document.addEventListener('click', (e) => {
   }
   itemContainerEl.forEach((item) => item.classList.remove('open-border'));
   selectedEl.forEach((item) => item.classList.remove('blur'));
+  document
+    .querySelectorAll('.tag-dropdown .dropdown-item')
+    ?.forEach((el) => el.classList.remove('dp-none'));
+  displayTagDropdown();
 });
 displayAvailableAccount();
 displayTagList();
