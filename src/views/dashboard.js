@@ -22,6 +22,7 @@ const networthEl = document.querySelector(
 const form = document.querySelector('.set-transaction-container');
 const dateInput = document.querySelector(`input[type='date']`);
 const inputAmt = document.querySelector('#input-amt');
+const transactionContainerEl = document.querySelector('.transaction-container');
 
 const baseCurrencyCode = Storage.getBaseCurrency();
 const rates = Storage.getExchangesRates();
@@ -662,12 +663,10 @@ const checkInput = () => {
 
 const displayTransaction = () => {
   const transactions = Storage.getTransactions();
-  const transactionContainerEl = document.querySelector(
-    '.transaction-container'
-  );
 
   transactionContainerEl.innerHTML = '';
   transactions.forEach((item) => {
+    const [year, month, day] = item.date.split('-'); //format date correctly
     const transactionItemDiv = document.createElement('div');
     transactionItemDiv.className = 'transaction-item grid';
     if (item.type !== 'transfer') {
@@ -678,7 +677,7 @@ const displayTransaction = () => {
               day: 'numeric',
               month: 'short',
             }
-          ).format(new Date(item.date))}</div>
+          ).format(new Date(+year, +month - 1, +day))}</div>
           <div class="transaction-item-info flex">
             <p class="transaction-item-acc-name">${item.accountName}</p>
             <i aria-hidden='true' class='${
@@ -718,7 +717,7 @@ const displayTransaction = () => {
               day: 'numeric',
               month: 'short',
             }
-          ).format(new Date(item.date))}</div>
+          ).format(new Date(+year, +month - 1, +day))}</div>
           <div class="transaction-item-info flex">
             <p class="transaction-item-acc-name">${item.fromAccountName}</p>
             <i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
@@ -741,6 +740,16 @@ const displayTransaction = () => {
     }
     transactionContainerEl.appendChild(transactionItemDiv);
   });
+  checkTransaction();
+};
+
+// check if theres no transaction available
+
+const checkTransaction = () => {
+  const transactions = Storage.getTransactions();
+
+  if (transactions.length < 1)
+    transactionContainerEl.innerHTML = ` <p class="notransaction flex">No transactions found.</p>`;
 };
 
 // eventlistener
