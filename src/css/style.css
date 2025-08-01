@@ -72,51 +72,6 @@
   width: 100%;
 }
 
-.selected {
-  align-items: center;
-  gap: 1.2rem;
-  position: absolute;
-}
-
-.selected.blur {
-  opacity: 0.6;
-}
-
-.selected > img,
-.dropdown-item img {
-  max-width: 2rem;
-  object-fit: cover;
-  object-position: center;
-}
-
-.label-add {
-  color: var(--grey-200);
-  font-weight: 400;
-}
-
-.add-selected-currencies {
-  align-items: center;
-  background-color: var(--grey-300);
-  justify-content: space-between;
-  max-width: 7rem;
-  padding: 0.2rem 0.5rem;
-  border: 1px solid var(--grey-200);
-  border-radius: 5px;
-  gap: 1rem;
-}
-
-.add-selected-currencies > i {
-  color: rgb(185, 185, 185);
-  cursor: pointer;
-  transition: color 0.2s ease;
-  font-weight: 900;
-  font-size: 1.8rem;
-}
-
-.add-selected-currencies > i:hover {
-  color: var(--light-black);
-}
-
 .account-item-container input {
   border: 1px solid var(--grey-300);
   width: 100%;

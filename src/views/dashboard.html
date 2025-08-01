@@ -63,55 +63,54 @@
         <form class="set-transaction-container">
           <div class="input-container">
             <label for="title" class="input-container-label">From</label>
-            <div class="currency-item-cons">
-              <div class="items-container flex">
-                <div class="select-input-wrapper">
-                  <p class="transaction-selected flex">Cash</p>
-                </div>
-                <i class="fas fa-caret-down" aria-hidden="true"></i>
-              </div>
-              <ul class="dropdown" id="transaction-dropdown">
-                <li class="dropdown-item active">Cash</li>
-                <li class="dropdown-item">Bank Account</li>
-                <li class="dropdown-item">Deposit</li>
-                <li class="dropdown-item">Credit</li>
-                <li class="dropdown-item">Asset</li>
-              </ul>
-            </div>
-            <div class="transaction-amt-container flex">
-              <input type="number" id="input-amt" min="0.01" step="0.01" />
+            <div class="input-dropdown-container flex">
               <div class="currency-item-cons">
                 <div class="items-container flex">
                   <div class="select-input-wrapper">
-                    <p class="transaction-selected flex">USD</p>
+                    <p class="transaction-selected flex"></p>
                   </div>
                   <i class="fas fa-caret-down" aria-hidden="true"></i>
                 </div>
-                <ul class="dropdown" id="transaction-dropdown">
-                  <li class="dropdown-item active">AED</li>
-                  <li class="dropdown-item">USD</li>
-                  <li class="dropdown-item">UAE</li>
-                  <li class="dropdown-item">AES</li>
-                </ul>
+                <ul class="dropdown transaction-dropdown"></ul>
+              </div>
+              <div class="transaction-amt-container flex">
+                <input
+                  type="number"
+                  id="input-amt"
+                  min="0.01"
+                  step="0.01"
+                  required
+                />
+                <div class="currency-item-cons">
+                  <div class="items-container flex">
+                    <div class="select-input-wrapper">
+                      <p class="transaction-selected flex"></p>
+                    </div>
+                    <i class="fas fa-caret-down" aria-hidden="true"></i>
+                  </div>
+                  <ul class="dropdown transaction-amt-dropdown"></ul>
+                </div>
               </div>
             </div>
           </div>
           <div class="input-tag-container">
             <label for="title">Tags</label>
-            <div class="currency-item-cons">
-              <div class="items-container flex">
-                <div class="select-input-wrapper flex" id="base-input-wrapper">
-                  <div class="selected flex">
-                    Choose exiting tags or add new
+            <div class="input-dropdown-container flex">
+              <div class="currency-item-cons">
+                <div class="items-container flex tag-container">
+                  <div class="select-input-wrapper flex">
+                    <div class="selected label-add" id="tag-selected">
+                      Choose existing tags or add new
+                    </div>
+                    <input type="text" id="tag-input" autocomplete="off" />
                   </div>
-                  <input type="text" />
+                  <i class="fas fa-caret-down" aria-hidden="true"></i>
                 </div>
-                <i class="fas fa-caret-down" aria-hidden="true"></i>
+                <ul class="dropdown tag-dropdown"></ul>
               </div>
-              <ul class="dropdown" id="base-dropdown"></ul>
             </div>
-            <input type="text" placeholder="Note" id="note" />
           </div>
+          <input type="text" placeholder="Note" id="note" autocomplete="off" />
           <div class="transaction-input-container flex">
             <input type="date" required />
             <button id="add-items">Add Expense</button>
@@ -126,9 +125,7 @@
           <h3>RECENT TRANSACTION</h3>
         </div>
       </div>
-      <div class="section-body">
-        <p class="notransaction flex">No transactions found.</p>
-      </div>
+      <div class="section-body transaction-container"></div>
     </section>
   </main>
 </div>

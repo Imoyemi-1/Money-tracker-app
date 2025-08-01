@@ -27,12 +27,23 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Helvetica,
+    Arial,
+    sans-serif,
+    Apple Color Emoji,
+    Segoe UI Emoji,
+    Segoe UI Symbol,
+    Roboto,
+    Helvetica Neue;
   background-color: var(--White);
   color: var(--light-black);
   line-height: 1.325em;
-  font-size: 1.5rem;
-  font-weight: 300;
+  font-size: 1.6rem;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -43,19 +54,10 @@ a {
 
 .flex {
   display: flex;
-  flex: 1;
 }
 
 .grid {
   display: grid;
-}
-
-.danger {
-  color: #db2828;
-}
-
-.success {
-  color: var(--light-green);
 }
 
 /* General style */
@@ -63,7 +65,8 @@ a {
 .currency-item-cons {
   background: var(--White);
   position: relative;
-  font-size: 1.455rem;
+  font-size: 1.535rem;
+  cursor: pointer;
 }
 
 .items-container input {
@@ -78,6 +81,8 @@ a {
 
 .items-container > i {
   padding: 0 1rem;
+  font-style: normal;
+  text-align: center;
 }
 
 .items-container:hover {
@@ -107,12 +112,12 @@ a {
 .dropdown {
   width: 100%;
   left: 0;
-  max-height: 11.8rem;
+  max-height: 12.15rem;
   overflow-y: auto;
   scroll-behavior: smooth;
   transition: max-height 0.2s ease;
   position: absolute;
-  z-index: 99999999;
+  z-index: 100;
   background-color: var(--White);
   display: none;
 }
@@ -130,16 +135,17 @@ a {
   align-items: center;
   gap: 1.2rem;
   padding: 0.9rem;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   border-bottom: 1px solid var(--grey-100);
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .noresult {
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1rem;
   color: var(--grey-200);
   font-weight: 400;
+  font-size: 1.5rem;
 }
 
 .dropdown::-webkit-scrollbar {
@@ -193,4 +199,58 @@ li {
 
 input::placeholder {
   color: var(--grey-200);
+}
+
+.selected {
+  align-items: center;
+  gap: 1.2rem;
+  position: absolute;
+}
+
+.selected.blur {
+  opacity: 0.6;
+}
+
+.selected > img,
+.dropdown-item img {
+  max-width: 2rem;
+  object-fit: cover;
+  object-position: center;
+}
+
+.label-add {
+  color: var(--grey-200);
+  font-weight: 400;
+}
+
+.add-selected-currencies,
+.transaction-item-info > .transaction-tag-item {
+  font-size: 1.45rem;
+  display: inline-flex;
+  line-height: 1;
+  gap: 0.6rem;
+  vertical-align: middle;
+  width: fit-content;
+  background-color: #d0d0d0;
+  padding: 0.6rem 1.1rem;
+  text-transform: none;
+  border: 0 solid transparent;
+  border-radius: 0.28571429rem;
+  -webkit-transition: background 0.1s ease;
+  transition: background 0.1s ease;
+  box-shadow: inset 0 0 0 1px rgba(34, 36, 38, 0.15);
+}
+
+.add-selected-currencies > i {
+  color: rgb(185, 185, 185);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-weight: 700;
+  font-size: 1.6rem;
+  text-shadow: 1.2px 0;
+  margin-top: 0.1rem;
+}
+
+.add-selected-currencies > i:hover {
+  color: rgb(119, 119, 119);
 }

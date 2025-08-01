@@ -1,7 +1,13 @@
 import '../css/main.css';
 import { loadView } from '../router/loader';
 import Storage from '../Storage';
-import { formatCurrency, calculateGroupTotal, checkValue } from '../Utility';
+import {
+  formatCurrency,
+  calculateGroupTotal,
+  checkValue,
+  convertCurrency,
+} from '../Utility';
+import { Tracker } from '../Tracker';
 
 const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
@@ -15,10 +21,16 @@ const inputTagContainer = document.querySelector('.input-tag-container');
 const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
+const form = document.querySelector('.set-transaction-container');
+const dateInput = document.querySelector(`input[type='date']`);
+const inputAmt = document.querySelector('#input-amt');
+const transactionContainerEl = document.querySelector('.transaction-container');
 
 const baseCurrencyCode = Storage.getBaseCurrency();
-const rates = JSON.parse(localStorage.getItem('exchangeRates'));
+const rates = Storage.getExchangesRates();
 
+let createdTags = Storage.getTags() || [];
+let transactionStatus = 'expense';
 // open side bar menu on mobil
 const openMenu = () => {
   hamburger.classList.toggle('active');
@@ -45,62 +57,266 @@ const navToPage = (e) => {
 // create tag section
 
 const createTag = () => {
-  inputTagContainer.innerHTML = '';
-  inputTagContainer.innerHTML = `<label for="title">Tags</label>
-                <div class="currency-item-cons">
-                  <div class="items-container flex">
-                    <div
-                      class="select-input-wrapper flex"
-                      id="base-input-wrapper"
-                    >
-                      <div class="selected flex">
-                        Choose exiting tags or add new
-                      </div>
-                      <input type="text" />
-                    </div>
-                    <i class="fas fa-caret-down" aria-hidden="true"></i>
-                  </div>
-                  <ul class="dropdown" id="base-dropdown"></ul>
-                </div>
-                <input type="text" placeholder="Note" id="note" />`;
+  const toInputPa = document.querySelector('.toinput-container');
+
+  if (toInputPa) toInputPa.remove();
+  inputTagContainer.classList.remove('dp-none');
 };
 
 // create transaction to section for transfer section
 
 const createToSection = () => {
   const div = document.createElement('div');
+  const toInputPa = document.createElement('div');
+  toInputPa.className = 'toinput-container';
   div.className = 'input-container';
   div.innerHTML = ` <label for="title" class="input-container-label">To</label>
+            <div class="input-dropdown-container flex">
+              <div class="currency-item-cons">
+                <div class="items-container flex">
+                  <div class="select-input-wrapper">
+                    <p class="transaction-selected flex"></p>
+                  </div>
+                  <i class="fas fa-caret-down" aria-hidden="true"></i>
+                </div>
+                <ul class="dropdown transaction-dropdown"></ul>
+              </div>
+              <div class="transaction-amt-container flex">
+                <input type="number" id="input-amt" min="0.01" step="0.01" readOnly/>
                 <div class="currency-item-cons">
                   <div class="items-container flex">
                     <div class="select-input-wrapper">
-                      <p class="transaction-selected flex">Cash</p>
+                      <p class="transaction-selected flex"></p>
                     </div>
                     <i class="fas fa-caret-down" aria-hidden="true"></i>
                   </div>
-                  <ul class="dropdown" id="transaction-dropdown">
-                    <li class="dropdown-item active">Cash</li>
-                    <li class="dropdown-item">Bank Account</li>
-                    <li class="dropdown-item">Deposit</li>
-                    <li class="dropdown-item">Credit</li>
-                    <li class="dropdown-item">Asset</li>
-                  </ul>
+                  <ul class="dropdown transaction-amt-dropdown"></ul>
                 </div>
-                <div class="transaction-amt-container flex">
-                  <input type="number" id="input-amt" min="0.01" step="0.01" />
-                  <div class="currency-item-cons">
-                    <div class="items-container flex">
-                      <div class="select-input-wrapper">
-                        <p class="transaction-selected flex">USD</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                `;
-  const noteDiv = document.createElement('div');
-  noteDiv.innerHTML = `<input type="text" placeholder="Note" id="note" />`;
-  inputTagContainer.appendChild(div);
-  inputTagContainer.appendChild(noteDiv);
+              </div>
+            </div> `;
+
+  inputTagContainer.classList.add('dp-none');
+  toInputPa.appendChild(div);
+  if (document.querySelector('.toinput-container')) return;
+  form.insertBefore(toInputPa, form.firstElementChild.nextElementSibling);
+};
+
+// open and close of dropdown if the input is click
+const toggleDropDown = (e) => {
+  const dropDownWrapper = e.target.closest('.items-container');
+  const dropDownEl = document.querySelectorAll('.dropdown');
+  const itemContainerEl = document.querySelectorAll('.items-container');
+  const tagInput = document.querySelector('#tag-input');
+  const selectedTag = e.target.closest('.add-selected-currencies');
+  const noresult = document.querySelector('.noresult');
+
+  if (dropDownWrapper) {
+    e.stopPropagation();
+    if (selectedTag) {
+      if (e.target.tagName === 'I') {
+        selectedTag.remove();
+        checkSelectedAdd();
+        removeSelectedTag(selectedTag.querySelector('p').textContent);
+        if (noresult) noresult.remove();
+      }
+      return;
+    }
+    const parent = dropDownWrapper.parentElement;
+    dropDownEl.forEach((el) => {
+      el.classList.remove('show');
+      el.classList.remove('border');
+    });
+
+    itemContainerEl.forEach((item) => item.classList.remove('open-border'));
+
+    parent.querySelector('.dropdown')?.classList.add('show');
+    dropDownWrapper.classList.add('open-border');
+    parent.querySelector('.dropdown').classList.add('border');
+    if (dropDownWrapper.classList.contains('tag-container')) {
+      tagInput.focus();
+    }
+  }
+};
+
+// display account available in dropdown
+
+const displayAvailableAccount = () => {
+  const transactionDropdownCon = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+  const storedAccount = Storage.getAccountData();
+  Object.entries(storedAccount).forEach(([type, account]) => {
+    account.forEach((item) => {
+      const li = document.createElement('li');
+      li.className = 'dropdown-item flex';
+      li.setAttribute('data-id', item.id);
+      li.innerHTML = `  <p class="list-account-name">${item.name}</p>
+                    <p class="list-account-type">${type}</p>`;
+      transactionDropdownCon.forEach((item) => item.appendChild(li));
+    });
+  });
+  displayAccountGroupSelected();
+  defaultTransactionAmt();
+};
+
+// select item and display from dropdown
+
+const displayAccountGroupSelected = () => {
+  const transactionDropdownEl = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+  const firstSelected = transactionDropdownEl[0].parentElement.querySelector(
+    '.transaction-selected'
+  );
+  const secondSelected = transactionDropdownEl[1]?.parentElement.querySelector(
+    '.transaction-selected'
+  );
+  const secondActive =
+    transactionDropdownEl[1]?.querySelectorAll('.dropdown-item');
+
+  const alreadyExist = [
+    ...transactionDropdownEl[0].querySelectorAll('.dropdown-item'),
+  ].some((item) => item.classList.contains('active'));
+
+  transactionDropdownEl[1]?.firstChild.nextElementSibling.classList.add(
+    'active'
+  );
+
+  if (secondSelected) {
+    secondSelected.textContent =
+      secondActive[1].querySelector('.list-account-name').textContent;
+    secondSelected.setAttribute('data-id', secondActive[1].dataset.id);
+  }
+  if (alreadyExist) return;
+  transactionDropdownEl[0].firstChild.classList.add('active');
+
+  const firstActive = transactionDropdownEl[0].querySelector(
+    '.dropdown-item.active'
+  );
+
+  firstSelected.textContent =
+    firstActive.querySelector('.list-account-name').textContent;
+  firstSelected.setAttribute('data-id', firstActive.dataset.id);
+};
+
+const defaultTransactionAmt = () => {
+  const transactionDropdownEl = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+  const transactionAmtDropdownEl = document.querySelectorAll(
+    '.transaction-amt-dropdown'
+  );
+
+  transactionDropdownEl.forEach((item) => {
+    const active = item.querySelector('.dropdown-item.active ');
+    if (!active) return;
+    const transactionAmtDropDown =
+      item.parentElement.nextElementSibling.querySelector('.dropdown');
+    transactionAmtDropDown.innerHTML = '';
+    displayAmtCode(active.dataset.id, transactionAmtDropDown);
+  });
+  transactionAmtDropdownEl.forEach((item) => {
+    item.firstChild.classList.add('active');
+    item.previousElementSibling.querySelector(
+      '.transaction-selected'
+    ).textContent = item.querySelector('.active').textContent;
+  });
+};
+
+const selectListItem = (e) => {
+  const dropDownItemEl = e.target.closest('.dropdown-item');
+
+  if (dropDownItemEl) {
+    const dropDownItemParentEl = dropDownItemEl.parentElement;
+    const selectedAccount = dropDownItemParentEl.parentElement.querySelector(
+      '.transaction-selected'
+    );
+    if (dropDownItemParentEl.classList.contains('transaction-dropdown')) {
+      const transactionAmtDropDownPa =
+        dropDownItemEl.parentElement.parentElement.nextElementSibling;
+      const transactionAmtDropDown =
+        transactionAmtDropDownPa.querySelector('.dropdown');
+      dropDownItemEl.parentElement
+        .querySelectorAll('.dropdown-item')
+        .forEach((item) => item.classList.remove('active'));
+      dropDownItemEl.classList.add('active');
+      selectedAccount.textContent =
+        dropDownItemEl.querySelector('.list-account-name').textContent;
+      selectedAccount.setAttribute('data-id', dropDownItemEl.dataset.id);
+      transactionAmtDropDown.innerHTML = '';
+      displayAmtCode(dropDownItemEl.dataset.id, transactionAmtDropDown);
+      transactionAmtDropDown
+        .querySelectorAll('.dropdown-item')[0]
+        .classList.add('active');
+      transactionAmtDropDownPa.querySelector(
+        '.transaction-selected '
+      ).textContent = transactionAmtDropDown.querySelector(
+        '.dropdown-item.active'
+      ).textContent;
+      checkInput();
+    } else if (
+      dropDownItemParentEl.classList.contains('transaction-amt-dropdown')
+    ) {
+      dropDownItemEl.parentElement
+        .querySelectorAll('.dropdown-item')
+        .forEach((item) => item.classList.remove('active'));
+      dropDownItemEl.classList.add('active');
+      selectedAccount.textContent = dropDownItemEl.textContent;
+      checkInput();
+    } else {
+      if (dropDownItemEl.classList.contains('create-tag-item')) {
+        const tag = dropDownItemEl.querySelector('span');
+        selectedTag(tag.textContent);
+      } else {
+        e.target.classList.add('dp-none');
+        displaySelectTag(e.target.textContent);
+        displayTagDropdown();
+      }
+    }
+  }
+};
+
+const checkTransactionAmt = () => {
+  const transactionAmtDropdownEl = document.querySelectorAll(
+    '.transaction-amt-dropdown'
+  );
+
+  transactionAmtDropdownEl.forEach((item) => {
+    const parent = item.parentElement;
+    if (item.children.length <= 1) {
+      item.style.visibility = 'hidden';
+      parent.style.cursor = 'default';
+      parent.querySelector('i').style.display = 'none';
+    } else {
+      item.style.visibility = 'visible';
+      parent.style.cursor = 'pointer';
+      parent.querySelector('i').style.display = 'block';
+    }
+  });
+};
+
+// select item and display from dropdown
+
+const displayAmtCode = (id, el) => {
+  const storedAccount = Storage.getAccountData();
+  Object.values(storedAccount).forEach((account) => {
+    account.forEach((item) => {
+      if (item.id === id) {
+        const currencies = [];
+        currencies.push(item.baseCurrency.currencyName);
+        item.additionalCurrencies.forEach((item) =>
+          currencies.push(item?.code)
+        );
+        currencies.forEach((item) => {
+          const li = document.createElement('li');
+          li.className = 'dropdown-item';
+          li.textContent = item;
+          el.appendChild(li);
+        });
+      }
+    });
+  });
+  checkTransactionAmt();
 };
 
 // handle section click
@@ -124,35 +340,48 @@ const handleSection = (e) => {
     accountNavEls.forEach((el) => (el.className = 'account-nav-txt'));
     accountNav.classList.add('active');
     if (accountNav.textContent === 'Expense') {
+      transactionStatus = 'expense';
       accountNav.classList.add('danger');
       transactionLabel.textContent = 'From';
       addItemBtn.textContent = 'Add Expense';
       createTag();
     } else if (accountNav.textContent === 'Income') {
+      transactionStatus = 'income';
       accountNav.classList.add('success');
       transactionLabel.textContent = 'To';
       addItemBtn.textContent = 'Add Income';
       createTag();
     } else {
+      transactionStatus = 'transfer';
       transactionLabel.textContent = 'From';
       addItemBtn.textContent = 'Add Transfer';
-      inputTagContainer.innerHTML = '';
       createToSection();
+      displayAvailableAccount();
+      displayTagDropdown();
     }
+    displayTagDropdown();
   }
+  toggleDropDown(e);
+  selectListItem(e);
 };
 
 // display networth
 
 const displayNetworth = () => {
-  const networth = +Storage.getNetWorth();
-  networthEl.textContent = `${formatCurrency(networth.toFixed(2))} ${baseCurrencyCode}`;
+  const networth = Storage.getNetWorth();
+  networthEl.textContent = `${formatCurrency(+networth)} ${baseCurrencyCode}`;
+
   checkValue(networth, networthEl);
 };
 
 // display save account
 const displayAccount = () => {
+  const accountBodyEl = document.querySelector(
+    '#networth-section .section-body'
+  );
   const storedAccount = Storage.getAccountData();
+
+  accountBodyEl.innerHTML = '';
   Object.entries(storedAccount).forEach(([type, account]) => {
     const div = document.createElement('div');
     div.className = 'account-wallet-group';
@@ -177,8 +406,9 @@ const displayAccount = () => {
                 })
                 .join('')}
               </div>`;
-    document.querySelector('#networth-section .section-body').append(div);
+    accountBodyEl.append(div);
   });
+  checkAccountPrice();
 };
 
 // check account available to display transfer
@@ -201,11 +431,373 @@ function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
       baseCurrency,
       rates
     );
-    console.log(groupedAccounts, groupName, baseCurrency, rates);
     const totalElement = header.querySelector('.account-wallet-amt');
     totalElement.textContent = `${formatCurrency(+total.toFixed(2))} ${baseCurrency}`;
+    checkValue(total, totalElement);
   });
 }
+
+// add tag dropdown item to tag
+
+const displayTagDropdown = () => {
+  const tagDropdown = document.querySelector('.tag-dropdown');
+  const noresult = document.querySelector('.noresult');
+
+  if (!tagDropdown) return;
+  if (tagDropdown.querySelectorAll('.dropdown-item:not(.dp-none)').length < 1) {
+    if (noresult) noresult.remove();
+    const li = document.createElement('li');
+    li.className = 'noresult';
+    li.textContent = 'No results found.';
+    tagDropdown.appendChild(li);
+  } else {
+    if (noresult) noresult.remove();
+  }
+};
+
+// handle tag currency  input
+
+const handleTagInput = () => {
+  const input = document.querySelector('#tag-input');
+  const selected = document.querySelector('#tag-selected');
+  const tagDropdown = document.querySelector('.tag-dropdown');
+  const tagDropdownLi = tagDropdown.querySelectorAll('.dropdown-item');
+
+  input.addEventListener('input', () => {
+    const createTagLi = document.querySelector('.create-tag-item');
+    if (input.value.length > 0) {
+      // checking if base input is being type in
+      selected.classList.add('display-none');
+      if (createTagLi)
+        createTagLi.innerHTML = `Add <span>${input.value.trim()}</span>`;
+      else {
+        const li = document.createElement('li');
+        li.className = 'create-tag-item dropdown-item';
+        li.innerHTML = `Add <span>${input.value.trim()}</span>`;
+        tagDropdown.insertBefore(li, tagDropdown.firstChild);
+      }
+
+      tagDropdownLi?.forEach((el) => {
+        if (
+          !el.textContent
+            .toLowerCase()
+            .includes(input.value.trim().toLowerCase())
+        )
+          el.classList.add('display-none');
+        else el.classList.remove('display-none');
+      });
+      if (document.querySelector('.noresult'))
+        document.querySelector('.noresult').remove();
+    } else {
+      selected.classList.remove('display-none');
+      createTagLi.remove();
+      displayTagDropdown();
+    }
+  });
+};
+
+// display selected tag
+
+const selectedTag = (code) => {
+  const tagDropdown = document.querySelector('.tag-dropdown');
+
+  // Prevent duplicate
+  if (!createdTags.some((obj) => obj.toLowerCase() === code.toLowerCase())) {
+    createdTags.push(code);
+    displaySelectTag(code);
+
+    const li = document.createElement('li');
+    li.className = 'dropdown-item dp-none';
+    li.textContent = code;
+    tagDropdown.appendChild(li);
+
+    displayTagDropdown();
+  } else {
+    alert('Tag already exist');
+  }
+};
+
+// display tag list
+
+const displayTagList = () => {
+  const tagDropdown = document.querySelector('.tag-dropdown');
+  tagDropdown.innerHTML = '';
+  createdTags.forEach((item) => {
+    const li = document.createElement('li');
+    li.className = 'dropdown-item';
+    li.textContent = item;
+    tagDropdown.appendChild(li);
+  });
+};
+
+const displaySelectTag = (code) => {
+  const tagInput = document.querySelector('#tag-input');
+  const parentEl = tagInput.parentElement;
+  const div = document.createElement('div');
+  div.className = 'add-selected-currencies flex';
+  div.innerHTML = `<p>${code}</p>
+  <i class="fas fa-xmark"></i>`;
+
+  parentEl.insertBefore(div, tagInput);
+  checkSelectedAdd();
+};
+const checkSelectedAdd = () => {
+  const selectedAddition = document.querySelectorAll(
+    '.add-selected-currencies'
+  );
+  const selected = document.querySelector('#tag-selected');
+  if (selectedAddition.length < 1) selected.style.visibility = 'visible';
+  else selected.style.visibility = 'hidden';
+};
+
+const removeSelectedTag = (code) => {
+  const tagDropdown = document.querySelectorAll('.tag-dropdown .dropdown-item');
+  tagDropdown.forEach((item) => {
+    if (item.textContent === code) {
+      item.classList.remove('dp-none');
+    }
+  });
+};
+
+// add transaction for expense ,transfer and income
+
+const addTransactions = () => {
+  const moneyTracker = new Tracker();
+  const note = document.querySelector('#note');
+  const accountDetails = document.querySelectorAll(
+    '.input-dropdown-container '
+  );
+  const selectedTagPa = document.querySelectorAll('.add-selected-currencies');
+  const amountInput = document.querySelector(
+    '.transaction-amt-container input[type="number"]'
+  );
+  const curCodeEl = document.querySelectorAll('.transaction-amt-container');
+  const tags = [];
+  selectedTagPa.forEach((item) =>
+    tags.push(item.querySelector('p').textContent)
+  );
+
+  if (transactionStatus === 'expense') {
+    moneyTracker.addExpense({
+      accountId: accountDetails[0].querySelector('.transaction-selected')
+        .dataset.id,
+      curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
+      amount: +amountInput.value ?? 0,
+      date: dateInput.value,
+      note: note.value.trim(),
+      tags,
+      accountName: accountDetails[0].querySelector('.transaction-selected')
+        .textContent,
+    });
+  } else if (transactionStatus === 'income') {
+    moneyTracker.addIncome({
+      accountId: accountDetails[0].querySelector('.transaction-selected')
+        .dataset.id,
+      curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
+      amount: +amountInput.value ?? 0,
+      date: dateInput.value,
+      note: note.value.trim(),
+      tags,
+      accountName: accountDetails[0].querySelector('.transaction-selected')
+        .textContent,
+    });
+  } else {
+    moneyTracker.addTransfer({
+      fromAccountId: accountDetails[0].querySelector('.transaction-selected')
+        .dataset.id,
+      toAccountId: accountDetails[1].querySelector('.transaction-selected')
+        .dataset.id,
+      fromCurCode: curCodeEl[0].querySelector('.transaction-selected')
+        .textContent,
+      toCurCode: curCodeEl[1].querySelector('.transaction-selected')
+        .textContent,
+      amount: +amountInput.value ?? 0,
+      date: dateInput.value,
+      note: note.value.trim(),
+      fromAccountName: accountDetails[0].querySelector('.transaction-selected')
+        .textContent,
+      toAccountName: accountDetails[1].querySelector('.transaction-selected')
+        .textContent,
+      receivedCode: curCodeEl[1].querySelector('.transaction-selected')
+        .textContent,
+      sentCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
+    });
+  }
+
+  displayTransaction();
+  displayNetworth();
+  displayAccount();
+  updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
+
+  amountInput.value = '';
+  note.value = '';
+  checkInput();
+  if (selectedTagPa) selectedTagPa.forEach((item) => item.remove());
+  displayTagList();
+  checkSelectedAdd();
+  resetAccount();
+};
+
+// display date
+
+const displayDate = () => {
+  const todayDate = new Date().toISOString().split('T')[0];
+  dateInput.value = todayDate;
+};
+
+// check account price if negative or positive
+
+const checkAccountPrice = () => {
+  const accountPrices = document.querySelectorAll('.account-price');
+
+  accountPrices.forEach((item) => {
+    const amtText = item.textContent.split(' ')[0];
+    const amt = amtText.replace(/,/g, '');
+    checkValue(Number(amt), item);
+  });
+};
+
+// check transaction input
+const checkInput = () => {
+  const transactionInput = document.querySelectorAll(
+    '.transaction-amt-container '
+  );
+
+  if (transactionInput[1]?.querySelector('.transaction-selected')) {
+    let convertedAmount = convertCurrency(
+      transactionInput[0].querySelector('.transaction-selected').textContent,
+      transactionInput[1].querySelector('.transaction-selected').textContent,
+      +transactionInput[0].querySelector('input').value
+    );
+    transactionInput[1].querySelector('input').value =
+      convertedAmount >= 1
+        ? convertedAmount.toFixed(2)
+        : convertedAmount.toPrecision(2);
+
+    if (transactionInput[0].querySelector('input').value === '') {
+      transactionInput[1].querySelector('input').value = '';
+    }
+  }
+};
+
+// display all recent transaction
+
+const displayTransaction = () => {
+  const transactions = Storage.getTransactions();
+
+  transactionContainerEl.innerHTML = '';
+  transactions.forEach((item) => {
+    const [year, month, day] = item.date.split('-'); //format date correctly
+    const transactionItemDiv = document.createElement('div');
+    transactionItemDiv.className = 'transaction-item grid';
+    if (item.type !== 'transfer') {
+      transactionItemDiv.innerHTML = `
+          <div class="transaction-item-date">${new Intl.DateTimeFormat(
+            'en-Us',
+            {
+              day: 'numeric',
+              month: 'short',
+            }
+          ).format(new Date(+year, +month - 1, +day))}</div>
+          <div class="transaction-item-info flex">
+            <p class="transaction-item-acc-name">${item.accountName}</p>
+            <i aria-hidden='true' class='${
+              item.type === 'expense' && (item.note || item.tags.length > 0)
+                ? 'fa-solid fa-arrow-right'
+                : item.type === 'income' && (item.note || item.tags.length > 0)
+                  ? 'fa-solid fa-arrow-left'
+                  : 'dp-none'
+            }'></i>
+            ${item.tags
+              .map((item) => {
+                return `<div class="transaction-tag-item">${item}</div>`;
+              })
+              .join('')}
+            <span class="transaction-item-info-note">${item.note}</span>
+          </div>
+          <div class="transaction-item-amount">
+            <span class="transaction-amount-txt ${
+              item.type === 'expense' ? 'danger' : 'success'
+            }">${
+              item.type === 'expense'
+                ? '-' + formatCurrency(item.amount) + ' ' + item.currency
+                : '+' + formatCurrency(item.amount) + ' ' + item.currency
+            }</span>
+          </div>
+          <div class="transaction-item-edit">
+            <button class="edit-btn">
+              <i aria-hidden="true" class="fas fa-pencil"></i>
+            </button>
+          </div>
+    `;
+    } else {
+      transactionItemDiv.innerHTML = `   
+          <div class="transaction-item-date">${new Intl.DateTimeFormat(
+            'en-Us',
+            {
+              day: 'numeric',
+              month: 'short',
+            }
+          ).format(new Date(+year, +month - 1, +day))}</div>
+          <div class="transaction-item-info flex">
+            <p class="transaction-item-acc-name">${item.fromAccountName}</p>
+            <i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
+            <p class="transaction-item-acc-name">${item.toAccountName}</p>
+            <span class="transaction-item-info-note">${item.note}</span>
+          </div>
+          <div class="transaction-item-amount">
+            <span class="${item.sentCode !== item.receivedCode ? 'transaction-amount-txt' : 'dp-none'}">${formatCurrency(item.sentAmount) + ' ' + item.sentCode}</span
+            >
+              <i aria-hidden="true" class="${item.sentCode !== item.receivedCode ? 'fa-solid fa-arrow-right' : 'dp-none'}"></i>
+              <span class="transaction-amount-txt">${formatCurrency(item.receivedAmount) + ' ' + item?.receivedCode}</span></span
+            >
+          </div>
+          <div class="transaction-item-edit">
+            <button class="edit-btn">
+              <i aria-hidden="true" class="fas fa-pencil"></i>
+            </button>
+          </div>
+      `;
+    }
+    transactionContainerEl.appendChild(transactionItemDiv);
+  });
+  checkTransaction();
+};
+
+// check if theres no transaction available
+
+const checkTransaction = () => {
+  const transactions = Storage.getTransactions();
+
+  if (transactions.length < 1)
+    transactionContainerEl.innerHTML = ` <p class="notransaction flex">No transactions found.</p>`;
+};
+
+// reset all account to default
+
+const resetAccount = () => {
+  const transactionDropdownEl = document.querySelectorAll(
+    '.transaction-dropdown'
+  );
+
+  transactionDropdownEl.forEach((item) => {
+    item
+      .querySelectorAll('.dropdown-item')
+      .forEach((item) => item.classList.remove('active'));
+  });
+  transactionDropdownEl[0].firstChild.classList.add('active');
+  transactionDropdownEl[1]?.firstChild.nextElementSibling.classList.add(
+    'active'
+  );
+
+  transactionDropdownEl.forEach((item) => {
+    const selected = item.parentElement.querySelector('.transaction-selected');
+    const active = item.querySelector('.dropdown-item.active ');
+    selected.textContent =
+      active.querySelector('.list-account-name').textContent;
+    selected.setAttribute('data-id', active.dataset.id);
+  });
+};
 
 // eventlistener
 hamburger.addEventListener('click', openMenu);
@@ -217,3 +809,40 @@ displayNetworth();
 displayAccount();
 checkAccount();
 updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
+document.addEventListener('click', (e) => {
+  const selectedEl = document.querySelectorAll('.selected');
+  const dropDownEl = document.querySelectorAll('.dropdown');
+  const itemContainerEl = document.querySelectorAll('.items-container');
+  const createTagLi = document.querySelector('.create-tag-item');
+
+  const tagSelected = e.target.closest('.add-selected-currencies');
+  if (tagSelected) return;
+
+  dropDownEl.forEach((el) => {
+    el.classList.remove('show');
+    el.classList.remove('border');
+  });
+  selectedEl[0]?.classList.remove('dp-none');
+  if (createTagLi) {
+    createTagLi.remove();
+    document.querySelector('#tag-input').value = '';
+    document.querySelector('#tag-selected').classList.remove('display-none');
+  }
+  itemContainerEl.forEach((item) => item.classList.remove('open-border'));
+  selectedEl.forEach((item) => item.classList.remove('blur'));
+  document
+    .querySelectorAll('.tag-dropdown .dropdown-item')
+    ?.forEach((el) => el.classList.remove('display-none'));
+  displayTagDropdown();
+});
+displayAvailableAccount();
+displayTagList();
+displayTagDropdown();
+handleTagInput();
+displayDate();
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  addTransactions();
+});
+inputAmt.addEventListener('input', checkInput);
+displayTransaction();
