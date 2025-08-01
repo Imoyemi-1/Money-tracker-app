@@ -69,6 +69,7 @@
   padding: 2.3rem 2rem;
   cursor: pointer;
   border-bottom: 1px solid var(--grey-300);
+  justify-content: space-between;
 }
 
 #networth-section .section-header {
@@ -376,35 +377,24 @@
 .transaction-item-info {
   grid-row: 2/3;
   grid-column: 1/4;
+  display: flex;
   align-items: center;
 }
 
-.transaction-item-info > i {
+.transaction-item-info i {
+  display: inline-block;
   font-size: 1.8rem;
   text-shadow: 1px 0 rgba(0, 0, 0, 0.3);
   color: rgba(0, 0, 0, 0.3);
-  text-align: center;
-  -webkit-font-smoothing: antialiased;
-  margin: 0 0.6rem;
+  margin: 0.5rem 0.6rem 0;
 }
 
 .transaction-item-info > .transaction-tag-item {
-  font-size: 1.45rem;
-  display: inline-block;
-  line-height: 1;
-  vertical-align: initial;
   margin: 0 0.14285714em;
-  background-color: #e8e8e8;
-  background-image: none;
-  padding: 0.4533em 0.833em;
   color: rgba(0, 0, 0, 0.6);
-  text-transform: none;
-  font-weight: 500;
-  border: 0 solid transparent;
-  border-radius: 0.28571429rem;
-  -webkit-transition: background 0.1s ease;
-  transition: background 0.1s ease;
-  box-shadow: inset 0 0 0 1px rgba(34, 36, 38, 0.15);
+  background-color: #e8e8e8;
+  font-size: 1.5rem;
+  padding: 0.7rem 0.9996rem;
 }
 
 .transaction-item-info-note {
