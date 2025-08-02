@@ -75,9 +75,10 @@
 .account-item-container input {
   border: 1px solid var(--grey-300);
   width: 100%;
-  padding: 1.074rem;
+  padding: 1.1rem;
   border-radius: 7px;
   outline: none;
+  height: 4.1167rem;
 }
 
 .account-item-container input:focus,
@@ -94,10 +95,6 @@
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 0.5rem;
-}
-.account-type-container .items-container {
-  padding: 0.945rem;
-  align-items: center;
 }
 
 .check-txt-container {
@@ -169,6 +166,7 @@
   text-align: end;
   border-radius: 7px 0 0 7px;
   outline: none;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .account-amt-container p {
@@ -272,15 +270,13 @@ th {
 
 #saved-account-container {
   margin-top: 1.5rem;
+  border-top: 1px solid var(--grey-300);
 }
 
-.account-type-group:last-of-type {
-  border-bottom: 1px solid var(--grey-300);
-}
 .account-type-header {
   padding: 1.2rem 1.6rem;
   background-color: var(--grey-100);
-  border: 1px solid var(--grey-300);
+  border-bottom: 1px solid var(--grey-300);
   border-left: 0;
   border-right: 0;
   justify-content: space-between;
@@ -293,9 +289,9 @@ th {
 }
 
 .account-type-header .account-header-num {
-  font-size: 1.6rem;
-  font-weight: 400;
   color: var(--light-green);
+  font-family: 'Roboto Mono', monospace;
+  font-size: 2rem;
 }
 
 .account-body-cons {
@@ -303,10 +299,6 @@ th {
   justify-content: space-between;
   flex: 1;
   border-bottom: 1px solid var(--grey-300);
-}
-
-.account-body-cons:last-of-type {
-  border-bottom: none;
 }
 
 .account-body-cons > .account-body-name {
@@ -330,13 +322,9 @@ th {
 
 .account-body-txt p {
   color: var(--light-green);
-  font-weight: 400;
-  font-size: 1.6rem;
-  margin-bottom: 0.3rem;
-}
-
-.account-body-txt p:last-of-type {
-  margin-bottom: 0;
+  font-size: 1.8rem;
+  font-family: 'Roboto Mono', monospace;
+  text-align: end;
 }
 
 .account-btn-cons button {

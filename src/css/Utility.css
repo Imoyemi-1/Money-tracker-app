@@ -90,11 +90,13 @@ a {
 }
 
 .items-container {
-  padding: 1.1rem;
   z-index: 99;
   border: 1px solid var(--grey-300);
   border-radius: 7px;
   transition: border 0.2s ease;
+  height: 4.1167rem;
+  align-items: center;
+  padding: 1.1rem;
 }
 
 .items-container.open-border {
@@ -107,6 +109,7 @@ a {
   flex-wrap: wrap;
   gap: 0.8rem;
   width: 100%;
+  align-items: center;
 }
 
 .dropdown {
@@ -248,7 +251,6 @@ input::placeholder {
   font-weight: 700;
   font-size: 1.6rem;
   text-shadow: 1.2px 0;
-  margin-top: 0.1rem;
 }
 
 .add-selected-currencies > i:hover {
