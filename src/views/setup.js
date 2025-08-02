@@ -761,7 +761,9 @@ const handleSavedAccount = (e) => {
   const deleteBtn = e.target.closest('.delete-account-btn');
   const EditBtn = e.target.closest('.edit-account-btn');
   if (accountHeader) {
-    accountHeader.nextElementSibling.classList.toggle('dp-none');
+    accountHeader.parentElement
+      .querySelectorAll('.account-body-cons')
+      .forEach((item) => item.classList.toggle('dp-none'));
   }
 
   if (deleteBtn) {
