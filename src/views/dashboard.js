@@ -82,7 +82,7 @@ const createToSection = () => {
                 <ul class="dropdown transaction-dropdown"></ul>
               </div>
               <div class="transaction-amt-container flex">
-                <input type="number" id="input-amt" min="0.01" step="0.01" readOnly/>
+                <input type="number"  min="0.01" step="0.01" readOnly/>
                 <div class="currency-item-cons">
                   <div class="items-container flex">
                     <div class="select-input-wrapper">
@@ -358,6 +358,7 @@ const handleSection = (e) => {
       createToSection();
       displayAvailableAccount();
       displayTagDropdown();
+      checkInput();
     }
     displayTagDropdown();
   }

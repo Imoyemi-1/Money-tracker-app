@@ -206,7 +206,8 @@
   margin-bottom: 2rem;
 }
 
-.transaction-amt-container #input-amt {
+.transaction-amt-container #input-amt,
+.transaction-amt-container input:not(#input-amt) {
   flex: 1;
   text-align: end;
   outline: none;
