@@ -14,15 +14,12 @@ const body = document.querySelector('body');
 const sidebar = document.querySelector('.sidebar');
 const sidebarItem = document.querySelectorAll('.sidebar-item');
 const openSide = document.querySelector('.open-side');
-const section = document.querySelectorAll('.section');
-const transactionLabel = document.querySelector('.input-container-label');
-const addItemBtn = document.querySelector('#add-items');
+
 const inputTagContainer = document.querySelector('.input-tag-container');
 const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
 const form = document.querySelector('.set-transaction-container');
-const dateInput = document.querySelector(`input[type='date']`);
 const inputAmt = document.querySelector('#input-amt');
 const transactionContainerEl = document.querySelector('.transaction-container');
 
@@ -31,6 +28,7 @@ const rates = Storage.getExchangesRates();
 
 let createdTags = Storage.getTags() || [];
 let transactionStatus = 'expense';
+let isEditMode = false;
 // open side bar menu on mobil
 const openMenu = () => {
   hamburger.classList.toggle('active');
@@ -65,7 +63,7 @@ const createTag = () => {
 
 // create transaction to section for transfer section
 
-const createToSection = () => {
+const createToSection = (parentFormEl) => {
   const div = document.createElement('div');
   const toInputPa = document.createElement('div');
   toInputPa.className = 'toinput-container';
@@ -98,7 +96,10 @@ const createToSection = () => {
   inputTagContainer.classList.add('dp-none');
   toInputPa.appendChild(div);
   if (document.querySelector('.toinput-container')) return;
-  form.insertBefore(toInputPa, form.firstElementChild.nextElementSibling);
+  parentFormEl.insertBefore(
+    toInputPa,
+    parentFormEl.firstElementChild.nextElementSibling
+  );
   document
     .querySelectorAll('.items-container')
     .forEach((item) => item.addEventListener('click', toggleDropDown));
@@ -350,25 +351,34 @@ const handleSection = (e) => {
     accountWallet.nextElementSibling.classList.toggle('dp-none');
   }
   if (accountNav) {
+    const formEl = accountNav.parentElement.nextElementSibling;
+    const addItemBtn = formEl.querySelector(` #add-items`);
+    const transactionLabel = formEl.querySelector('.input-container-label');
+
+    console.log(formEl);
     accountNavEls.forEach((el) => (el.className = 'account-nav-txt'));
     accountNav.classList.add('active');
     if (accountNav.textContent === 'Expense') {
       transactionStatus = 'expense';
       accountNav.classList.add('danger');
       transactionLabel.textContent = 'From';
-      addItemBtn.textContent = 'Add Expense';
+      if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Expense';
+      else addItemBtn.textContent = 'Save Expense';
       createTag();
     } else if (accountNav.textContent === 'Income') {
       transactionStatus = 'income';
       accountNav.classList.add('success');
       transactionLabel.textContent = 'To';
-      addItemBtn.textContent = 'Add Income';
+      if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Income';
+      else addItemBtn.textContent = 'Save Income';
       createTag();
     } else {
       transactionStatus = 'transfer';
       transactionLabel.textContent = 'From';
-      addItemBtn.textContent = 'Add Transfer';
-      createToSection();
+      if (formEl.dataset.mode === 'add')
+        addItemBtn.textContent = 'Add Transfer';
+      else addItemBtn.textContent = 'Save Transfer';
+      createToSection(formEl);
       displayAvailableAccount();
       displayTagDropdown();
       checkInput();
@@ -576,6 +586,7 @@ const removeSelectedTag = (code) => {
 // add transaction for expense ,transfer and income
 
 const addTransactions = () => {
+  const dateInput = document.querySelectorAll(`input[type='date']`);
   const moneyTracker = new Tracker();
   const note = document.querySelector('#note');
   const accountDetails = document.querySelectorAll(
@@ -655,8 +666,11 @@ const addTransactions = () => {
 // display date
 
 const displayDate = () => {
+  const dateInput = document.querySelectorAll(`input[type='date']`);
   const todayDate = new Date().toISOString().split('T')[0];
-  dateInput.value = todayDate;
+  dateInput.forEach((item) => {
+    item.value = todayDate;
+  });
 };
 
 // check account price if negative or positive
@@ -820,7 +834,93 @@ const resetAccount = () => {
 // display edit modal
 
 const editTransactionMode = () => {
-  e.stopPropagation();
+  isEditMode = true;
+  const editModalEl = document.createElement('div');
+  editModalEl.className = 'edit-container';
+  editModalEl.innerHTML = `
+  <div class="edit-card">
+    <i aria-hidden="true" class="fas fa-close" id="close-edit-btn"></i>
+    <div class="edit-header flex">
+      <i aria-hidden="true" class="fa-regular fa-file"></i>
+      <div class="content">Edit Transaction</div>
+    </div>
+    <div class="account-nav flex">
+      <p class="account-nav-txt active danger">Expense</p>
+      <p class="account-nav-txt">Transfer</p>
+      <p class="account-nav-txt">Income</p>
+    </div>
+    <form class="set-transaction-container" data-mode ='edit'>
+      <div class="input-container">
+        <label for="title" class="input-container-label">From</label>
+        <div class="input-dropdown-container flex">
+          <div class="currency-item-cons">
+            <div class="items-container flex">
+              <div class="select-input-wrapper">
+                <p class="transaction-selected flex"></p>
+              </div>
+              <i class="fas fa-caret-down" aria-hidden="true"></i>
+            </div>
+            <ul class="dropdown transaction-dropdown"></ul>
+          </div>
+          <div class="transaction-amt-container flex">
+            <input
+              type="number"
+              id="input-amt"
+              min="0.01"
+              step="0.01"
+              required
+            />
+            <div class="currency-item-cons">
+              <div class="items-container flex">
+                <div class="select-input-wrapper">
+                  <p class="transaction-selected flex"></p>
+                </div>
+                <i class="fas fa-caret-down" aria-hidden="true"></i>
+              </div>
+              <ul class="dropdown transaction-amt-dropdown"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="input-tag-container">
+        <label for="title">Tags</label>
+        <div class="input-dropdown-container flex">
+          <div class="currency-item-cons">
+            <div class="items-container flex tag-container">
+              <div class="select-input-wrapper flex">
+                <div class="selected label-add" id="tag-selected">
+                  Choose existing tags or add new
+                </div>
+                <input type="text" id="tag-input" autocomplete="off" />
+              </div>
+              <i class="fas fa-caret-down" aria-hidden="true"></i>
+            </div>
+            <ul class="dropdown tag-dropdown"></ul>
+          </div>
+        </div>
+      </div>
+      <input type="text" placeholder="Note" id="note" autocomplete="off" />
+      <div class="transaction-input-container flex">
+        <input type="date" required />
+        <button id="add-items">Save Expense</button>
+      </div>
+    </form>
+    <div class="actions flex">
+      <button class="del-button">
+        <span>Delete</span>
+        <i aria-hidden="true" class="fas fa-trash"></i>
+      </button>
+    </div>
+  </div>`;
+  document.getElementById('root').append(editModalEl);
+  document
+    .querySelectorAll('.items-container')
+    .forEach((item) => item.addEventListener('click', toggleDropDown));
+  displayAvailableAccount();
+  displayTagList();
+  displayTagDropdown();
+  handleTagInput();
+  displayDate();
 };
 
 // eventlistener
