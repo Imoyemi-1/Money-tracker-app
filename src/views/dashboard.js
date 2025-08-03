@@ -103,38 +103,48 @@ const createToSection = () => {
 
 // open and close of dropdown if the input is click
 const toggleDropDown = (e) => {
-  const dropDownWrapper = e.target.closest('.items-container');
+  const dropDownWrapper = e.currentTarget;
   const dropDownEl = document.querySelectorAll('.dropdown');
   const itemContainerEl = document.querySelectorAll('.items-container');
   const tagInput = document.querySelector('#tag-input');
   const selectedTag = e.target.closest('.add-selected-currencies');
   const noresult = document.querySelector('.noresult');
+  const parent = dropDownWrapper.parentElement;
+  const dropDownPa = parent.querySelector('.dropdown');
+  const isOpen = dropDownPa.classList.contains('show');
 
-  if (dropDownWrapper) {
-    e.stopPropagation();
-    if (selectedTag) {
-      if (e.target.tagName === 'I') {
-        selectedTag.remove();
-        checkSelectedAdd();
-        removeSelectedTag(selectedTag.querySelector('p').textContent);
-        if (noresult) noresult.remove();
-      }
-      return;
+  e.stopPropagation();
+
+  if (selectedTag) {
+    if (e.target.tagName === 'I') {
+      selectedTag.remove();
+      checkSelectedAdd();
+      removeSelectedTag(selectedTag.querySelector('p').textContent);
+      if (noresult) noresult.remove();
     }
-    const parent = dropDownWrapper.parentElement;
-    dropDownEl.forEach((el) => {
-      el.classList.remove('show');
-      el.classList.remove('border');
-    });
+    return;
+  }
 
-    itemContainerEl.forEach((item) => item.classList.remove('open-border'));
-
-    parent.querySelector('.dropdown')?.classList.add('show');
+  dropDownEl.forEach((el) => {
+    el.classList.remove('show');
+    el.classList.remove('border');
+  });
+  itemContainerEl.forEach((item) => item.classList.remove('open-border'));
+  if (!isOpen) {
+    dropDownPa.classList.add('show');
     dropDownWrapper.classList.add('open-border');
-    parent.querySelector('.dropdown').classList.add('border');
+    dropDownPa.classList.add('border');
     if (dropDownWrapper.classList.contains('tag-container')) {
       tagInput.focus();
     }
+  } else if (isOpen && e.target.tagName === 'INPUT') {
+    dropDownPa.classList.add('show');
+    dropDownWrapper.classList.add('open-border');
+    dropDownPa.classList.add('border');
+  } else {
+    dropDownPa.classList.remove('show');
+    dropDownWrapper.classList.remove('open-border');
+    dropDownPa.classList.remove('border');
   }
 };
 
@@ -362,7 +372,7 @@ const handleSection = (e) => {
     }
     displayTagDropdown();
   }
-  toggleDropDown(e);
+
   selectListItem(e);
 };
 
@@ -805,11 +815,13 @@ hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
 sidebar.addEventListener('click', openMenu);
 sidebarItem.forEach((item) => item.addEventListener('click', navToPage));
-section.forEach((el) => el.addEventListener('click', handleSection));
 displayNetworth();
 displayAccount();
 checkAccount();
 updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
+document
+  .querySelectorAll('.items-container')
+  .forEach((item) => item.addEventListener('click', toggleDropDown));
 document.addEventListener('click', (e) => {
   const selectedEl = document.querySelectorAll('.selected');
   const dropDownEl = document.querySelectorAll('.dropdown');
@@ -817,8 +829,12 @@ document.addEventListener('click', (e) => {
   const createTagLi = document.querySelector('.create-tag-item');
 
   const tagSelected = e.target.closest('.add-selected-currencies');
+
+  handleSection(e);
+
   if (tagSelected) return;
 
+  console.log('body was click');
   dropDownEl.forEach((el) => {
     el.classList.remove('show');
     el.classList.remove('border');
