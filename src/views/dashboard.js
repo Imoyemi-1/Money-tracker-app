@@ -179,38 +179,24 @@ const displayAccountGroupSelected = () => {
   const transactionDropdownEl = document.querySelectorAll(
     '.transaction-dropdown'
   );
-  const firstSelected = transactionDropdownEl[0].parentElement.querySelector(
-    '.transaction-selected'
-  );
-  const secondSelected = transactionDropdownEl[1]?.parentElement.querySelector(
-    '.transaction-selected'
-  );
-  const secondActive =
-    transactionDropdownEl[1]?.querySelectorAll('.dropdown-item');
 
-  const alreadyExist = [
-    ...transactionDropdownEl[0].querySelectorAll('.dropdown-item'),
-  ].some((item) => item.classList.contains('active'));
+  transactionDropdownEl.forEach((item, index) => {
+    const selected = item.parentElement.querySelector('.transaction-selected');
 
-  transactionDropdownEl[1]?.firstChild.nextElementSibling.classList.add(
-    'active'
-  );
-
-  if (secondSelected) {
-    secondSelected.textContent =
-      secondActive[1].querySelector('.list-account-name').textContent;
-    secondSelected.setAttribute('data-id', secondActive[1].dataset.id);
-  }
-  if (alreadyExist) return;
-  transactionDropdownEl[0].firstChild.classList.add('active');
-
-  const firstActive = transactionDropdownEl[0].querySelector(
-    '.dropdown-item.active'
-  );
-
-  firstSelected.textContent =
-    firstActive.querySelector('.list-account-name').textContent;
-  firstSelected.setAttribute('data-id', firstActive.dataset.id);
+    if (index % 2 === 0) {
+      const alreadyExist = [...item.querySelectorAll('.dropdown-item')].some(
+        (item) => item.classList.contains('active')
+      );
+      if (alreadyExist && !isEditMode) return;
+      item.firstChild.classList.add('active');
+    } else {
+      item.firstChild.nextElementSibling.classList.add('active');
+    }
+    const active = item.querySelector('.dropdown-item.active');
+    selected.textContent =
+      active.querySelector('.list-account-name').textContent;
+    selected.setAttribute('data-id', active.dataset.id);
+  });
 };
 
 const defaultTransactionAmt = () => {
