@@ -99,6 +99,9 @@ const createToSection = () => {
   toInputPa.appendChild(div);
   if (document.querySelector('.toinput-container')) return;
   form.insertBefore(toInputPa, form.firstElementChild.nextElementSibling);
+  document
+    .querySelectorAll('.items-container')
+    .forEach((item) => item.addEventListener('click', toggleDropDown));
 };
 
 // open and close of dropdown if the input is click
@@ -773,6 +776,10 @@ const displayTransaction = () => {
     transactionContainerEl.appendChild(transactionItemDiv);
   });
   checkTransaction();
+
+  document
+    .querySelectorAll('.edit-btn')
+    .forEach((item) => item.addEventListener('click', editTransactionMode));
 };
 
 // check if theres no transaction available
@@ -808,6 +815,12 @@ const resetAccount = () => {
       active.querySelector('.list-account-name').textContent;
     selected.setAttribute('data-id', active.dataset.id);
   });
+};
+
+// display edit modal
+
+const editTransactionMode = () => {
+  e.stopPropagation();
 };
 
 // eventlistener
