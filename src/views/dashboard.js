@@ -15,13 +15,10 @@ const sidebar = document.querySelector('.sidebar');
 const sidebarItem = document.querySelectorAll('.sidebar-item');
 const openSide = document.querySelector('.open-side');
 
-const inputTagContainer = document.querySelector('.input-tag-container');
 const networthEl = document.querySelector(
   '#networth-section .section-header-amt'
 );
-const form = document.querySelector('.set-transaction-container');
-const inputAmt = document.querySelector('#input-amt');
-const transactionContainerEl = document.querySelector('.transaction-container');
+let form = document.querySelector('.set-transaction-container');
 
 const baseCurrencyCode = Storage.getBaseCurrency();
 const rates = Storage.getExchangesRates();
@@ -55,7 +52,8 @@ const navToPage = (e) => {
 // create tag section
 
 const createTag = () => {
-  const toInputPa = document.querySelector('.toinput-container');
+  const inputTagContainer = form.querySelector('.input-tag-container');
+  const toInputPa = form.querySelector('.toinput-container');
 
   if (toInputPa) toInputPa.remove();
   inputTagContainer.classList.remove('dp-none');
@@ -64,6 +62,7 @@ const createTag = () => {
 // create transaction to section for transfer section
 
 const createToSection = (parentFormEl) => {
+  const inputTagContainer = form.querySelector('.input-tag-container');
   const div = document.createElement('div');
   const toInputPa = document.createElement('div');
   toInputPa.className = 'toinput-container';
@@ -95,7 +94,7 @@ const createToSection = (parentFormEl) => {
 
   inputTagContainer.classList.add('dp-none');
   toInputPa.appendChild(div);
-  if (document.querySelector('.toinput-container')) return;
+  if (form.querySelector('.toinput-container')) return;
   parentFormEl.insertBefore(
     toInputPa,
     parentFormEl.firstElementChild.nextElementSibling
@@ -110,7 +109,7 @@ const toggleDropDown = (e) => {
   const dropDownWrapper = e.currentTarget;
   const dropDownEl = document.querySelectorAll('.dropdown');
   const itemContainerEl = document.querySelectorAll('.items-container');
-  const tagInput = document.querySelector('#tag-input');
+  const tagInput = form.querySelector('#tag-input');
   const selectedTag = e.target.closest('.add-selected-currencies');
   const noresult = document.querySelector('.noresult');
   const parent = dropDownWrapper.parentElement;
@@ -341,7 +340,6 @@ const handleSection = (e) => {
     const addItemBtn = formEl.querySelector(` #add-items`);
     const transactionLabel = formEl.querySelector('.input-container-label');
 
-    console.log(formEl);
     accountNavEls.forEach((el) => (el.className = 'account-nav-txt'));
     accountNav.classList.add('active');
     if (accountNav.textContent === 'Expense') {
@@ -450,8 +448,8 @@ function updateAllGroupTotals(groupedAccounts, baseCurrency, rates) {
 // add tag dropdown item to tag
 
 const displayTagDropdown = () => {
-  const tagDropdown = document.querySelector('.tag-dropdown');
-  const noresult = document.querySelector('.noresult');
+  const tagDropdown = form.querySelector('.tag-dropdown');
+  const noresult = form.querySelector('.noresult');
 
   if (!tagDropdown) return;
   if (tagDropdown.querySelectorAll('.dropdown-item:not(.dp-none)').length < 1) {
@@ -468,9 +466,9 @@ const displayTagDropdown = () => {
 // handle tag currency  input
 
 const handleTagInput = () => {
-  const input = document.querySelector('#tag-input');
-  const selected = document.querySelector('#tag-selected');
-  const tagDropdown = document.querySelector('.tag-dropdown');
+  const input = form.querySelector('#tag-input');
+  const selected = form.querySelector('#tag-selected');
+  const tagDropdown = form.querySelector('.tag-dropdown');
   const tagDropdownLi = tagDropdown.querySelectorAll('.dropdown-item');
 
   input.addEventListener('input', () => {
@@ -496,9 +494,12 @@ const handleTagInput = () => {
           el.classList.add('display-none');
         else el.classList.remove('display-none');
       });
-      if (document.querySelector('.noresult'))
-        document.querySelector('.noresult').remove();
+      if (form.querySelector('.noresult'))
+        form.querySelector('.noresult').remove();
     } else {
+      tagDropdownLi?.forEach((el) => {
+        el.classList.remove('display-none');
+      });
       selected.classList.remove('display-none');
       createTagLi.remove();
       displayTagDropdown();
@@ -530,7 +531,7 @@ const selectedTag = (code) => {
 // display tag list
 
 const displayTagList = () => {
-  const tagDropdown = document.querySelector('.tag-dropdown');
+  const tagDropdown = form.querySelector('.tag-dropdown');
   tagDropdown.innerHTML = '';
   createdTags.forEach((item) => {
     const li = document.createElement('li');
@@ -541,7 +542,7 @@ const displayTagList = () => {
 };
 
 const displaySelectTag = (code) => {
-  const tagInput = document.querySelector('#tag-input');
+  const tagInput = form.querySelector('#tag-input');
   const parentEl = tagInput.parentElement;
   const div = document.createElement('div');
   div.className = 'add-selected-currencies flex';
@@ -552,10 +553,8 @@ const displaySelectTag = (code) => {
   checkSelectedAdd();
 };
 const checkSelectedAdd = () => {
-  const selectedAddition = document.querySelectorAll(
-    '.add-selected-currencies'
-  );
-  const selected = document.querySelector('#tag-selected');
+  const selectedAddition = form.querySelectorAll('.add-selected-currencies');
+  const selected = form.querySelector('#tag-selected');
   if (selectedAddition.length < 1) selected.style.visibility = 'visible';
   else selected.style.visibility = 'hidden';
 };
@@ -572,8 +571,8 @@ const removeSelectedTag = (code) => {
 // add transaction for expense ,transfer and income
 
 const addTransactions = () => {
-  const dateInput = document.querySelectorAll(`input[type='date']`);
   const moneyTracker = new Tracker();
+  const dateInput = document.querySelector(`input[type='date']`);
   const note = document.querySelector('#note');
   const accountDetails = document.querySelectorAll(
     '.input-dropdown-container '
@@ -642,7 +641,6 @@ const addTransactions = () => {
 
   amountInput.value = '';
   note.value = '';
-  checkInput();
   if (selectedTagPa) selectedTagPa.forEach((item) => item.remove());
   displayTagList();
   checkSelectedAdd();
@@ -671,33 +669,53 @@ const checkAccountPrice = () => {
   });
 };
 
-// check transaction input
-const checkInput = () => {
-  const transactionInput = document.querySelectorAll(
-    '.transaction-amt-container '
-  );
+// check transaction input and update the second one automatically
 
-  if (transactionInput[1]?.querySelector('.transaction-selected')) {
-    let convertedAmount = convertCurrency(
-      transactionInput[0].querySelector('.transaction-selected').textContent,
-      transactionInput[1].querySelector('.transaction-selected').textContent,
-      +transactionInput[0].querySelector('input').value
-    );
-    transactionInput[1].querySelector('input').value =
-      convertedAmount >= 1
-        ? convertedAmount.toFixed(2)
-        : convertedAmount.toPrecision(2);
+const updateConvertedInput = (item, nextInput) => {
+  const fromCurrency = item.querySelector('.transaction-selected').textContent;
+  const toCurrency = nextInput.querySelector(
+    '.transaction-selected'
+  ).textContent;
+  const amount = item.querySelector('input').value;
 
-    if (transactionInput[0].querySelector('input').value === '') {
-      transactionInput[1].querySelector('input').value = '';
-    }
+  if (amount === '') {
+    nextInput.querySelector('input').value = '';
+    return;
   }
+
+  const convertedAmount = convertCurrency(fromCurrency, toCurrency, +amount);
+  nextInput.querySelector('input').value =
+    convertedAmount >= 1
+      ? convertedAmount.toFixed(2)
+      : convertedAmount.toPrecision(2);
+};
+
+const checkInput = () => {
+  const transactionInput = form.querySelectorAll('.transaction-amt-container');
+  transactionInput.forEach((item, index) => {
+    if (index % 2 === 0) {
+      const nextInput = transactionInput[index + 1];
+      const inputField = item.querySelector('input');
+
+      if (nextInput) {
+        updateConvertedInput(item, nextInput);
+
+        inputField.addEventListener('input', () => {
+          updateConvertedInput(item, nextInput);
+        });
+      }
+    }
+  });
 };
 
 // display all recent transaction
 
 const displayTransaction = () => {
   const transactions = Storage.getTransactions();
+
+  const transactionContainerEl = document.querySelector(
+    '.transaction-container'
+  );
 
   transactionContainerEl.innerHTML = '';
   transactions.forEach((item) => {
@@ -786,6 +804,9 @@ const displayTransaction = () => {
 
 const checkTransaction = () => {
   const transactions = Storage.getTransactions();
+  const transactionContainerEl = document.querySelector(
+    '.transaction-container'
+  );
 
   if (transactions.length < 1)
     transactionContainerEl.innerHTML = ` <p class="notransaction flex">No transactions found.</p>`;
@@ -899,6 +920,7 @@ const editTransactionMode = () => {
     </div>
   </div>`;
   document.getElementById('root').append(editModalEl);
+  form = document.querySelectorAll('.set-transaction-container')[1];
   document
     .querySelectorAll('.items-container')
     .forEach((item) => item.addEventListener('click', toggleDropDown));
@@ -941,8 +963,8 @@ document.addEventListener('click', (e) => {
   selectedEl[0]?.classList.remove('dp-none');
   if (createTagLi) {
     createTagLi.remove();
-    document.querySelector('#tag-input').value = '';
-    document.querySelector('#tag-selected').classList.remove('display-none');
+    form.querySelector('#tag-input').value = '';
+    form.querySelector('#tag-selected').classList.remove('display-none');
   }
   itemContainerEl.forEach((item) => item.classList.remove('open-border'));
   selectedEl.forEach((item) => item.classList.remove('blur'));
@@ -960,5 +982,4 @@ form.addEventListener('submit', (e) => {
   e.preventDefault();
   addTransactions();
 });
-inputAmt.addEventListener('input', checkInput);
 displayTransaction();
