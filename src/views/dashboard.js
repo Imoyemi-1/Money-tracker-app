@@ -639,7 +639,6 @@ const addTransactions = () => {
   displayAccount();
   updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
 
-  amountInput.value = '';
   note.value = '';
   if (selectedTagPa) selectedTagPa.forEach((item) => item.remove());
   displayTagList();
@@ -815,8 +814,9 @@ const checkTransaction = () => {
 // reset all account to default
 
 const resetAccount = () => {
-  const transactionDropdownEl = document.querySelectorAll(
-    '.transaction-dropdown'
+  const transactionDropdownEl = form.querySelectorAll('.transaction-dropdown');
+  const amountInput = document.querySelectorAll(
+    '.transaction-amt-container input[type="number"]'
   );
 
   transactionDropdownEl.forEach((item) => {
@@ -836,6 +836,7 @@ const resetAccount = () => {
       active.querySelector('.list-account-name').textContent;
     selected.setAttribute('data-id', active.dataset.id);
   });
+  amountInput.forEach((item) => (item.value = ''));
 };
 
 // display edit modal
