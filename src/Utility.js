@@ -75,9 +75,10 @@ const checkValue = (num, el) => {
 
 const convertCurrency = (fromCode, toCode, amount) => {
   const rates = Storage.getExchangesRates();
+  const baseCurrency = Storage.getBaseCurrency();
 
   let amountInUSD;
-  if (fromCode === 'USD') {
+  if (fromCode === baseCurrency) {
     amountInUSD = amount;
   } else {
     const fromRate = rates[fromCode];
@@ -85,7 +86,7 @@ const convertCurrency = (fromCode, toCode, amount) => {
     amountInUSD = amount / fromRate;
   }
 
-  if (toCode === 'USD') {
+  if (toCode === baseCurrency) {
     return amountInUSD;
   }
 
