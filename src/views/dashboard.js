@@ -650,11 +650,10 @@ const addTransactions = () => {
 // display date
 
 const displayDate = () => {
-  const dateInput = document.querySelectorAll(`input[type='date']`);
+  const dateInput = document.querySelector(`input[type='date']`);
   const todayDate = new Date().toISOString().split('T')[0];
-  dateInput.forEach((item) => {
-    item.value = todayDate;
-  });
+
+  dateInput.value = todayDate;
 };
 
 // check account price if negative or positive
@@ -722,8 +721,10 @@ const displayTransaction = () => {
     const [year, month, day] = item.date.split('-'); //format date correctly
     const transactionItemDiv = document.createElement('div');
     transactionItemDiv.className = 'transaction-item grid';
+    transactionItemDiv.setAttribute('data-id', item.transactionID);
+    transactionItemDiv.setAttribute('data-type', item.type);
+
     if (item.type !== 'transfer') {
-      transactionItemDiv.setAttribute('data-id', item.accountId);
       transactionItemDiv.innerHTML = `
           <div class="transaction-item-date">${new Intl.DateTimeFormat(
             'en-Us',
@@ -764,8 +765,6 @@ const displayTransaction = () => {
           </div>
     `;
     } else {
-      transactionItemDiv.setAttribute('data-fromID', item.fromAccountId);
-      transactionItemDiv.setAttribute('data-toID', item.toAccountId);
       transactionItemDiv.innerHTML = `   
           <div class="transaction-item-date">${new Intl.DateTimeFormat(
             'en-Us',
@@ -841,6 +840,7 @@ const resetAccount = () => {
     selected.setAttribute('data-id', active.dataset.id);
   });
   amountInput.forEach((item) => (item.value = ''));
+  displayDate();
 };
 
 // edit mode
@@ -850,6 +850,8 @@ const editTransactionMode = (e) => {
 
   isEditMode = true;
   displayEditModal();
+  const editContainer = document.querySelector('.edit-container');
+  body.style.overflow = 'hidden';
   form = document.querySelectorAll('.set-transaction-container')[1];
   document
     .querySelectorAll('.items-container')
@@ -857,9 +859,45 @@ const editTransactionMode = (e) => {
 
   displayTagList();
   displayTagDropdown();
-  displayEditInfo(transactionEl);
+  displayEditInfo(transactionEl.dataset.id);
   handleTagInput();
-  displayDate();
+  if (transactionEl.dataset.type !== 'transfer') {
+    const transferEl = editContainer.querySelectorAll('.account-nav-txt ')[1];
+    transferEl.remove();
+  }
+};
+
+// display edit account info
+const displayEditInfo = (transactionId) => {
+  const transactions = Storage.getTransactions();
+  const targetTransaction = transactions.filter(
+    (item) => item.transactionID === transactionId
+  );
+  const transactionDropdownEl = form.querySelectorAll('.transaction-dropdown');
+  const dateInput = form.querySelector(`input[type='date']`);
+
+  displayAvailableAccount();
+  console.log(targetTransaction);
+  transactionDropdownEl.forEach((item) => {
+    const dropDownlist = item.children;
+    [...dropDownlist].forEach((el) => {
+      if (
+        targetTransaction[0].accountName ===
+        el.querySelector('.list-account-name').textContent
+      ) {
+        el.classList.add('active');
+      }
+    });
+    defaultTransactionAmt();
+    const selected = item.parentElement.querySelector('.transaction-selected');
+    const active = item.querySelector('.dropdown-item.active');
+    selected.textContent =
+      active.querySelector('.list-account-name').textContent;
+    selected.setAttribute('data-id', active.dataset.id);
+  });
+
+  // display transaction date
+  dateInput.value = targetTransaction[0].date;
 };
 
 // display edit modal
@@ -943,31 +981,6 @@ const displayEditModal = () => {
     </div>
   </div>`;
   document.getElementById('root').append(editModalEl);
-};
-
-// display edit account info
-const displayEditInfo = (account) => {
-  const transactionDropdownEl = form.querySelectorAll('.transaction-dropdown');
-  displayAvailableAccount();
-  console.log(account);
-  transactionDropdownEl.forEach((item) => {
-    const dropDownlist = item.children;
-    [...dropDownlist].forEach((el) => {
-      const accountName = account.querySelector(
-        '.transaction-item-acc-name'
-      ).textContent;
-
-      if (accountName == el.querySelector('.list-account-name').textContent) {
-        el.classList.add('active');
-      }
-    });
-    defaultTransactionAmt();
-    const selected = item.parentElement.querySelector('.transaction-selected');
-    const active = item.querySelector('.dropdown-item.active');
-    selected.textContent =
-      active.querySelector('.list-account-name').textContent;
-    selected.setAttribute('data-id', active.dataset.id);
-  });
 };
 
 // eventlistener
