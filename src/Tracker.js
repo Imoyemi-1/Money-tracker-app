@@ -41,6 +41,7 @@ export class Tracker {
         note,
         tags,
         accountName,
+        transactionID: crypto.randomUUID().slice(-5),
       });
 
       Storage.setTransactions(this.transactions);
@@ -89,6 +90,7 @@ export class Tracker {
         note,
         tags,
         accountName,
+        transactionID: crypto.randomUUID().slice(-5),
       });
 
       Storage.setTransactions(this.transactions);
@@ -148,6 +150,7 @@ export class Tracker {
       note,
       fromAccountName,
       toAccountName,
+      transactionID: crypto.randomUUID().slice(-5),
     });
     Storage.setAccountData(this.accounts);
     Storage.setTransactions(this.transactions);
