@@ -1020,6 +1020,21 @@ const displayEditInfo = (transaction) => {
   if (dateInput) dateInput.value = transaction.date || '';
 };
 
+// close edit modal
+
+const closeEditModal = () => {
+  const editContainer = document.querySelector('.edit-container');
+  if (editContainer) {
+    editContainer.remove();
+  }
+  body.style.overflow = 'auto';
+  isEditMode = false;
+  form = document.querySelector('.set-transaction-container');
+  resetAccount();
+  transactionStatus = 'expense';
+  // handleAccountNav(document.querySelector('.account-nav-txt'));
+};
+
 // display edit modal
 
 const displayEditModal = () => {
