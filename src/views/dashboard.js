@@ -99,6 +99,7 @@ const createToSection = (parentFormEl) => {
     toInputPa,
     parentFormEl.firstElementChild.nextElementSibling
   );
+  displayAvailableAccount();
   document
     .querySelectorAll('.items-container')
     .forEach((item) => item.addEventListener('click', toggleDropDown));
@@ -154,71 +155,94 @@ const toggleDropDown = (e) => {
 // display account available in dropdown
 
 const displayAvailableAccount = () => {
-  const transactionDropdownCon = document.querySelectorAll(
-    '.transaction-dropdown'
-  );
+  const dropdowns = document.querySelectorAll('.transaction-dropdown');
   const storedAccount = Storage.getAccountData();
-  Object.entries(storedAccount).forEach(([type, account]) => {
-    account.forEach((item) => {
-      const li = document.createElement('li');
-      li.className = 'dropdown-item flex';
-      li.setAttribute('data-id', item.id);
-      li.innerHTML = `  <p class="list-account-name">${item.name}</p>
-                    <p class="list-account-type">${type}</p>`;
-      transactionDropdownCon.forEach((item) => item.appendChild(li));
-    });
+
+  if (!storedAccount) return;
+
+  dropdowns.forEach((dropdown) => {
+    dropdown.innerHTML = '';
+
+    for (const [type, accounts] of Object.entries(storedAccount)) {
+      accounts.forEach((account) => {
+        const li = document.createElement('li');
+        li.className = 'dropdown-item flex';
+        li.setAttribute('data-id', account.id);
+        li.innerHTML = `
+          <p class="list-account-name">${account.name}</p>
+          <p class="list-account-type">${type}</p>
+        `;
+        dropdown.appendChild(li);
+      });
+    }
   });
-  displayAccountGroupSelected();
-  if (isEditMode) return;
-  defaultTransactionAmt();
+
+  if (!isEditMode) {
+    displayAccountGroupSelected();
+    defaultTransactionAmt();
+  }
 };
 
-// select item and display from dropdown
-
 const displayAccountGroupSelected = () => {
-  const transactionDropdownEl = form.querySelectorAll('.transaction-dropdown');
+  const transactionDropdownEls = form.querySelectorAll('.transaction-dropdown');
 
-  transactionDropdownEl.forEach((item, index) => {
-    const selected = item.parentElement.querySelector('.transaction-selected');
+  transactionDropdownEls.forEach((dropdown, index) => {
+    const selectedDisplay = dropdown.parentElement.querySelector(
+      '.transaction-selected'
+    );
+
+    // Get the first list item
+    const firstItem = dropdown.querySelector('.dropdown-item');
+
+    // Guard if no list item exists
+    if (!firstItem) return;
+
+    // Remove all active classes
+    dropdown
+      .querySelectorAll('.dropdown-item')
+      .forEach((item) => item.classList.remove('active'));
+
+    // Add active to the first item or its sibling depending on the index
     if (index % 2 === 0) {
-      const alreadyExist = [...item.querySelectorAll('.dropdown-item')].some(
-        (item) => item.classList.contains('active')
-      );
-      if (isEditMode) return;
-      if (alreadyExist) return;
-      item.firstChild.classList.add('active');
+      firstItem.classList.add('active'); // First dropdown
     } else {
-      item.firstChild.nextElementSibling.classList.add('active');
+      firstItem.nextElementSibling.classList.add('active'); // Second dropdown — same rule for both now
     }
 
-    const active = item.querySelector('.dropdown-item.active');
-    selected.textContent =
-      active.querySelector('.list-account-name').textContent;
-    selected.setAttribute('data-id', active.dataset.id);
+    // Update selected text display
+    selectedDisplay.textContent = dropdown
+      .querySelector('.dropdown-item.active')
+      .querySelector('.list-account-name').textContent;
+    selectedDisplay.setAttribute('data-id', firstItem.dataset.id);
   });
 };
 
 const defaultTransactionAmt = () => {
-  const transactionDropdownEl = document.querySelectorAll(
+  const transactionDropdownEls = document.querySelectorAll(
     '.transaction-dropdown'
   );
-  const transactionAmtDropdownEl = document.querySelectorAll(
+  const transactionAmtDropdownEls = document.querySelectorAll(
     '.transaction-amt-dropdown'
   );
 
-  transactionDropdownEl.forEach((item) => {
-    const active = item.querySelector('.dropdown-item.active ');
-    if (!active) return;
-    const transactionAmtDropDown =
-      item.parentElement.nextElementSibling.querySelector('.dropdown');
-    transactionAmtDropDown.innerHTML = '';
-    displayAmtCode(active.dataset.id, transactionAmtDropDown);
+  transactionDropdownEls.forEach((dropdown) => {
+    const activeItem = dropdown.querySelector('.dropdown-item.active');
+    if (!activeItem) return;
+
+    const amtDropdown =
+      dropdown.parentElement.nextElementSibling.querySelector('.dropdown');
+    amtDropdown.innerHTML = '';
+    displayAmtCode(activeItem.dataset.id, amtDropdown);
   });
-  transactionAmtDropdownEl.forEach((item) => {
-    item.firstChild.classList.add('active');
-    item.previousElementSibling.querySelector(
+
+  transactionAmtDropdownEls.forEach((dropdown) => {
+    const firstItem = dropdown.querySelector('.dropdown-item');
+    if (!firstItem) return;
+
+    firstItem.classList.add('active');
+    dropdown.previousElementSibling.querySelector(
       '.transaction-selected'
-    ).textContent = item.querySelector('.active').textContent;
+    ).textContent = firstItem.textContent;
   });
 };
 
@@ -324,7 +348,7 @@ const handleAccountNav = (accountNav) => {
   const formEl = accountNav.parentElement.nextElementSibling;
   const addItemBtn = formEl.querySelector(` #add-items`);
   const transactionLabel = formEl.querySelector('.input-container-label');
-  console.log(transactionStatus);
+
   if (transactionStatus === 'expense') {
     accountNav.classList.add('danger');
     transactionLabel.textContent = 'From';
@@ -342,7 +366,6 @@ const handleAccountNav = (accountNav) => {
     if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Transfer';
     else addItemBtn.textContent = 'Save Transfer';
     createToSection(formEl);
-    displayAvailableAccount();
     displayTagDropdown();
     checkInput();
   }
@@ -852,73 +875,101 @@ const resetAccount = () => {
   displayDate();
 };
 
-// edit mode
+// edit mode  when clicking to edit a transaction
 
 const editTransactionMode = (e) => {
   const transactionEl = e.currentTarget.closest('.transaction-item');
   const transactions = Storage.getTransactions();
-  const targetTransaction = transactions.filter(
+  const targetTransaction = transactions.find(
     (item) => item.transactionID === transactionEl.dataset.id
   );
+
+  if (!targetTransaction) return;
 
   isEditMode = true;
   displayEditModal();
 
   const editContainer = document.querySelector('.edit-container');
-
   body.style.overflow = 'hidden';
+
   form = document.querySelectorAll('.set-transaction-container')[1];
 
-  const accountNav = editContainer.querySelectorAll('.account-nav-txt');
+  displayAvailableAccount();
 
-  document
-    .querySelectorAll('.items-container')
-    .forEach((item) => item.addEventListener('click', toggleDropDown));
+  // Highlight correct transaction type in the nav (expense, income, transfer)
+  const accountNav = editContainer.querySelectorAll('.account-nav-txt');
   accountNav.forEach((item) => {
-    if (item.textContent.toLowerCase() === targetTransaction[0].type) {
-      transactionStatus = targetTransaction[0].type;
-      item.classList.add('active');
+    const isMatch = item.textContent.toLowerCase() === targetTransaction.type;
+    item.classList.toggle('active', isMatch);
+
+    if (isMatch) {
+      transactionStatus = targetTransaction.type;
       handleAccountNav(item);
     }
   });
 
+  // Remove the second nav option if not a transfer
+  if (targetTransaction.type !== 'transfer') {
+    const transferNavEl = editContainer.querySelectorAll('.account-nav-txt')[1];
+    if (transferNavEl) transferNavEl.remove();
+  }
+
+  document
+    .querySelectorAll('.items-container')
+    .forEach((item) => item.addEventListener('click', toggleDropDown));
+
+  displayEditInfo(targetTransaction); // Use updated data
   displayTagList();
   displayTagDropdown();
-  displayEditInfo(targetTransaction);
   handleTagInput();
-
-  if (transactionEl.dataset.type !== 'transfer') {
-    const transferEl = editContainer.querySelectorAll('.account-nav-txt ')[1];
-    transferEl.remove();
-  }
 };
 
-// display edit account info
-const displayEditInfo = (targetTransaction) => {
+// Display edit info inside the modal form
+const displayEditInfo = (transaction) => {
   const transactionDropdownEl = form.querySelectorAll('.transaction-dropdown');
   const dateInput = form.querySelector(`input[type='date']`);
+  const amountInput = form.querySelector(`input[name='amount']`);
+  const noteInput = form.querySelector(`input[name='note']`);
 
-  displayAvailableAccount();
-  transactionDropdownEl.forEach((item) => {
-    const dropDownlist = item.children;
-    [...dropDownlist].forEach((el) => {
-      if (
-        targetTransaction[0].accountName ===
-        el.querySelector('.list-account-name').textContent
-      ) {
-        el.classList.add('active');
+  transactionDropdownEl.forEach((dropdown, index) => {
+    const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach((item) => item.classList.remove('active'));
+
+    dropdownItems.forEach((item) => {
+      const accountName = item.querySelector('.list-account-name')?.textContent;
+
+      if (transaction.type === 'transfer') {
+        if (
+          (index === 0 && accountName === transaction.fromAccountName) ||
+          (index === 1 && accountName === transaction.toAccountName)
+        ) {
+          item.classList.add('active');
+        }
+      } else {
+        if (accountName === transaction.accountName) {
+          item.classList.add('active');
+        }
       }
     });
-    defaultTransactionAmt();
-    const selected = item.parentElement.querySelector('.transaction-selected');
-    const active = item.querySelector('.dropdown-item.active');
-    selected.textContent =
-      active.querySelector('.list-account-name').textContent;
-    selected.setAttribute('data-id', active.dataset.id);
+
+    // Set the selected label
+    const selected = dropdown.parentElement.querySelector(
+      '.transaction-selected'
+    );
+    const activeItem = dropdown.querySelector('.dropdown-item.active');
+    if (activeItem) {
+      selected.textContent =
+        activeItem.querySelector('.list-account-name').textContent;
+      selected.setAttribute('data-id', activeItem.dataset.id);
+    }
   });
 
-  // display transaction date
-  dateInput.value = targetTransaction[0].date;
+  // Fill in amount and note
+  if (amountInput) amountInput.value = transaction.amount;
+  if (noteInput) noteInput.value = transaction.note || '';
+  if (dateInput) dateInput.value = transaction.date || '';
+
+  defaultTransactionAmt(); // Update converted display if needed
 };
 
 // display edit modal
