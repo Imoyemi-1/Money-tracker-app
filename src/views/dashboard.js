@@ -318,6 +318,36 @@ const displayAmtCode = (id, el) => {
   checkTransactionAmt();
 };
 
+// handle account nav
+
+const handleAccountNav = (accountNav) => {
+  const formEl = accountNav.parentElement.nextElementSibling;
+  const addItemBtn = formEl.querySelector(` #add-items`);
+  const transactionLabel = formEl.querySelector('.input-container-label');
+  console.log(transactionStatus);
+  if (transactionStatus === 'expense') {
+    accountNav.classList.add('danger');
+    transactionLabel.textContent = 'From';
+    if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Expense';
+    else addItemBtn.textContent = 'Save Expense';
+    createTag();
+  } else if (transactionStatus === 'income') {
+    accountNav.classList.add('success');
+    transactionLabel.textContent = 'To';
+    if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Income';
+    else addItemBtn.textContent = 'Save Income';
+    createTag();
+  } else {
+    transactionLabel.textContent = 'From';
+    if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Transfer';
+    else addItemBtn.textContent = 'Save Transfer';
+    createToSection(formEl);
+    displayAvailableAccount();
+    displayTagDropdown();
+    checkInput();
+  }
+};
+
 // handle section click
 
 const handleSection = (e) => {
@@ -336,37 +366,16 @@ const handleSection = (e) => {
     accountWallet.nextElementSibling.classList.toggle('dp-none');
   }
   if (accountNav) {
-    const formEl = accountNav.parentElement.nextElementSibling;
-    const addItemBtn = formEl.querySelector(` #add-items`);
-    const transactionLabel = formEl.querySelector('.input-container-label');
-
     accountNavEls.forEach((el) => (el.className = 'account-nav-txt'));
     accountNav.classList.add('active');
     if (accountNav.textContent === 'Expense') {
       transactionStatus = 'expense';
-      accountNav.classList.add('danger');
-      transactionLabel.textContent = 'From';
-      if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Expense';
-      else addItemBtn.textContent = 'Save Expense';
-      createTag();
     } else if (accountNav.textContent === 'Income') {
       transactionStatus = 'income';
-      accountNav.classList.add('success');
-      transactionLabel.textContent = 'To';
-      if (formEl.dataset.mode === 'add') addItemBtn.textContent = 'Add Income';
-      else addItemBtn.textContent = 'Save Income';
-      createTag();
     } else {
       transactionStatus = 'transfer';
-      transactionLabel.textContent = 'From';
-      if (formEl.dataset.mode === 'add')
-        addItemBtn.textContent = 'Add Transfer';
-      else addItemBtn.textContent = 'Save Transfer';
-      createToSection(formEl);
-      displayAvailableAccount();
-      displayTagDropdown();
-      checkInput();
     }
+    handleAccountNav(accountNav);
     displayTagDropdown();
   }
 
@@ -847,20 +856,37 @@ const resetAccount = () => {
 
 const editTransactionMode = (e) => {
   const transactionEl = e.currentTarget.closest('.transaction-item');
+  const transactions = Storage.getTransactions();
+  const targetTransaction = transactions.filter(
+    (item) => item.transactionID === transactionEl.dataset.id
+  );
 
   isEditMode = true;
   displayEditModal();
+
   const editContainer = document.querySelector('.edit-container');
+
   body.style.overflow = 'hidden';
   form = document.querySelectorAll('.set-transaction-container')[1];
+
+  const accountNav = editContainer.querySelectorAll('.account-nav-txt');
+
   document
     .querySelectorAll('.items-container')
     .forEach((item) => item.addEventListener('click', toggleDropDown));
+  accountNav.forEach((item) => {
+    if (item.textContent.toLowerCase() === targetTransaction[0].type) {
+      transactionStatus = targetTransaction[0].type;
+      item.classList.add('active');
+      handleAccountNav(item);
+    }
+  });
 
   displayTagList();
   displayTagDropdown();
-  displayEditInfo(transactionEl.dataset.id);
+  displayEditInfo(targetTransaction);
   handleTagInput();
+
   if (transactionEl.dataset.type !== 'transfer') {
     const transferEl = editContainer.querySelectorAll('.account-nav-txt ')[1];
     transferEl.remove();
@@ -868,16 +894,11 @@ const editTransactionMode = (e) => {
 };
 
 // display edit account info
-const displayEditInfo = (transactionId) => {
-  const transactions = Storage.getTransactions();
-  const targetTransaction = transactions.filter(
-    (item) => item.transactionID === transactionId
-  );
+const displayEditInfo = (targetTransaction) => {
   const transactionDropdownEl = form.querySelectorAll('.transaction-dropdown');
   const dateInput = form.querySelector(`input[type='date']`);
 
   displayAvailableAccount();
-  console.log(targetTransaction);
   transactionDropdownEl.forEach((item) => {
     const dropDownlist = item.children;
     [...dropDownlist].forEach((el) => {
@@ -913,7 +934,7 @@ const displayEditModal = () => {
       <div class="content">Edit Transaction</div>
     </div>
     <div class="account-nav flex">
-      <p class="account-nav-txt active danger">Expense</p>
+      <p class="account-nav-txt">Expense</p>
       <p class="account-nav-txt">Transfer</p>
       <p class="account-nav-txt">Income</p>
     </div>
