@@ -604,7 +604,7 @@ const removeSelectedTag = (code) => {
 
 // add transaction for expense ,transfer and income
 
-const addTransactions = () => {
+const addTransactions = (transactionID) => {
   const moneyTracker = new Tracker();
   const dateInput = form.querySelector(`input[type='date']`);
   const note = form.querySelector('#note');
@@ -624,7 +624,7 @@ const addTransactions = () => {
   const transactionInfo = {
     accountId: accountDetails[0].querySelector('.transaction-selected').dataset
       .id,
-    curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
+    currency: curCodeEl[0].querySelector('.transaction-selected').textContent,
     amount: +amountInput.value ?? 0,
     date: dateInput.value,
     note: note.value.trim(),
@@ -635,11 +635,17 @@ const addTransactions = () => {
 
   if (transactionStatus === 'expense') {
     isEditMode
-      ? console.log(transactionInfo)
+      ? moneyTracker.editTransaction(transactionID, {
+          ...transactionInfo,
+          ...{ type: 'expense' },
+        })
       : moneyTracker.addExpense(transactionInfo);
   } else if (transactionStatus === 'income') {
     isEditMode
-      ? console.log(transactionInfo)
+      ? moneyTracker.editTransaction(transactionID, {
+          ...transactionInfo,
+          ...{ type: 'income' },
+        })
       : moneyTracker.addIncome(transactionInfo);
   } else {
     // transaction detail for transfer
@@ -664,7 +670,10 @@ const addTransactions = () => {
       sentCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
     };
     isEditMode
-      ? console.log(transactionInfoTransfer)
+      ? moneyTracker.editTransaction(transactionID, {
+          ...transactionInfoTransfer,
+          ...{ type: 'transfer' },
+        })
       : moneyTracker.addTransfer(transactionInfoTransfer);
   }
 
@@ -925,7 +934,8 @@ const editTransactionMode = (e) => {
   handleTagInput();
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    addTransactions();
+    addTransactions(transactionEl.dataset.id);
+    closeEditModal();
   });
 };
 

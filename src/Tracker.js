@@ -10,7 +10,7 @@ export class Tracker {
 
   addExpense({
     accountId,
-    curCode,
+    currency,
     amount,
     date,
     note,
@@ -22,11 +22,11 @@ export class Tracker {
       .flat()
       .find((acc) => acc.id === accountId);
 
-    if (curCode === account.baseCurrency.currencyName) {
+    if (currency === account.baseCurrency.currencyName) {
       account.baseCurrency.amount -= amount;
     } else {
       const additional = account.additionalCurrencies.find(
-        (acc) => acc.code === curCode
+        (acc) => acc.code === currency
       );
       additional.amount -= amount;
     }
@@ -35,7 +35,7 @@ export class Tracker {
       this.#saveTransactions({
         type: 'expense',
         accountId,
-        currency: curCode,
+        currency: currency,
         amount,
         date,
         note,
@@ -47,7 +47,7 @@ export class Tracker {
       Storage.setTransactions(this.transactions);
     }
     let convertedAmount = convertCurrency(
-      curCode,
+      currency,
       Storage.getBaseCurrency(),
       amount
     );
@@ -59,7 +59,7 @@ export class Tracker {
 
   addIncome({
     accountId,
-    curCode,
+    currency,
     amount,
     date,
     note,
@@ -71,11 +71,11 @@ export class Tracker {
       .flat()
       .find((acc) => acc.id === accountId);
 
-    if (curCode === account.baseCurrency.currencyName) {
+    if (currency === account.baseCurrency.currencyName) {
       account.baseCurrency.amount += amount;
     } else {
       const additional = account.additionalCurrencies.find(
-        (acc) => acc.code === curCode
+        (acc) => acc.code === currency
       );
       additional.amount += amount;
     }
@@ -84,7 +84,7 @@ export class Tracker {
       this.#saveTransactions({
         type: 'income',
         accountId,
-        currency: curCode,
+        currency: currency,
         amount,
         date,
         note,
@@ -96,7 +96,7 @@ export class Tracker {
       Storage.setTransactions(this.transactions);
     }
     let convertedAmount = convertCurrency(
-      curCode,
+      currency,
       Storage.getBaseCurrency(),
       amount
     );
@@ -121,7 +121,7 @@ export class Tracker {
   }) {
     this.addExpense({
       accountId: fromAccountId,
-      curCode: fromCurCode,
+      currency: fromCurCode,
       amount,
       skipLog: true,
     });
@@ -133,7 +133,7 @@ export class Tracker {
 
     this.addIncome({
       accountId: toAccountId,
-      curCode: toCurCode,
+      currency: toCurCode,
       amount: convertedAmount,
       skipLog: true,
     });
@@ -158,5 +158,76 @@ export class Tracker {
 
   #saveTransactions(transactions) {
     this.transactions.unshift(transactions);
+  }
+
+  editTransaction(transactionID, updatedData) {
+    const index = this.transactions.findIndex(
+      (tx) => tx.transactionID === transactionID
+    );
+
+    if (index === -1) {
+      console.warn(`Transaction with ID ${transactionID} not found.`);
+      return;
+    }
+
+    const oldTransaction = this.transactions[index];
+
+    // Step 1: Reverse the old transaction
+    if (oldTransaction.type === 'expense') {
+      this.addIncome({
+        accountId: oldTransaction.accountId,
+        currency: oldTransaction.currency,
+        amount: oldTransaction.amount,
+        skipLog: true,
+      });
+    } else if (oldTransaction.type === 'income') {
+      this.addExpense({
+        accountId: oldTransaction.accountId,
+        currency: oldTransaction.currency,
+        amount: oldTransaction.amount,
+        skipLog: true,
+      });
+    } else if (oldTransaction.type === 'transfer') {
+      this.addExpense({
+        accountId: oldTransaction.toAccountId,
+        currency: oldTransaction.receivedCode,
+        amount: oldTransaction.receivedAmount,
+        skipLog: true,
+      });
+
+      this.addIncome({
+        accountId: oldTransaction.fromAccountId,
+        currency: oldTransaction.sentCode,
+        amount: oldTransaction.sentAmount,
+        skipLog: true,
+      });
+    }
+
+    // Step 2: Apply the updated transaction (use new type!)
+    const newType = updatedData.type;
+
+    if (newType === 'expense') {
+      this.addExpense({ ...updatedData, skipLog: true });
+    } else if (newType === 'income') {
+      this.addIncome({ ...updatedData, skipLog: true });
+    } else if (newType === 'transfer') {
+      this.addTransfer({ ...updatedData, skipLog: true });
+    } else {
+      console.warn(`Unknown type: ${newType}`);
+      return;
+    }
+
+    // Step 3: Replace with new transaction (keep ID, use updated type + values)
+    const updatedTransaction = {
+      ...updatedData,
+      transactionID, // Keep original ID
+    };
+
+    this.transactions[index] = updatedTransaction;
+
+    // Step 4: Save changes
+    Storage.setTransactions(this.transactions);
+    Storage.setAccountData(this.accounts);
+    Storage.setNetWorth(this.networth);
   }
 }
