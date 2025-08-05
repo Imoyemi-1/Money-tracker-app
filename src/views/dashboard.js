@@ -606,66 +606,66 @@ const removeSelectedTag = (code) => {
 
 const addTransactions = () => {
   const moneyTracker = new Tracker();
-  const dateInput = document.querySelector(`input[type='date']`);
-  const note = document.querySelector('#note');
-  const accountDetails = document.querySelectorAll(
-    '.input-dropdown-container '
-  );
-  const selectedTagPa = document.querySelectorAll('.add-selected-currencies');
-  const amountInput = document.querySelector(
+  const dateInput = form.querySelector(`input[type='date']`);
+  const note = form.querySelector('#note');
+  const accountDetails = form.querySelectorAll('.input-dropdown-container ');
+  const selectedTagPa = form.querySelectorAll('.add-selected-currencies');
+  const amountInput = form.querySelector(
     '.transaction-amt-container input[type="number"]'
   );
-  const curCodeEl = document.querySelectorAll('.transaction-amt-container');
+  const curCodeEl = form.querySelectorAll('.transaction-amt-container');
   const tags = [];
   selectedTagPa.forEach((item) =>
     tags.push(item.querySelector('p').textContent)
   );
 
+  // transaction detail for expense and income
+
+  const transactionInfo = {
+    accountId: accountDetails[0].querySelector('.transaction-selected').dataset
+      .id,
+    curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
+    amount: +amountInput.value ?? 0,
+    date: dateInput.value,
+    note: note.value.trim(),
+    tags,
+    accountName: accountDetails[0].querySelector('.transaction-selected')
+      .textContent,
+  };
+
   if (transactionStatus === 'expense') {
-    moneyTracker.addExpense({
-      accountId: accountDetails[0].querySelector('.transaction-selected')
-        .dataset.id,
-      curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
-      amount: +amountInput.value ?? 0,
-      date: dateInput.value,
-      note: note.value.trim(),
-      tags,
-      accountName: accountDetails[0].querySelector('.transaction-selected')
-        .textContent,
-    });
+    isEditMode
+      ? console.log(transactionInfo)
+      : moneyTracker.addExpense(transactionInfo);
   } else if (transactionStatus === 'income') {
-    moneyTracker.addIncome({
-      accountId: accountDetails[0].querySelector('.transaction-selected')
-        .dataset.id,
-      curCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
-      amount: +amountInput.value ?? 0,
-      date: dateInput.value,
-      note: note.value.trim(),
-      tags,
-      accountName: accountDetails[0].querySelector('.transaction-selected')
-        .textContent,
-    });
+    isEditMode
+      ? console.log(transactionInfo)
+      : moneyTracker.addIncome(transactionInfo);
   } else {
-    moneyTracker.addTransfer({
+    // transaction detail for transfer
+    const transactionInfoTransfer = {
       fromAccountId: accountDetails[0].querySelector('.transaction-selected')
         .dataset.id,
-      toAccountId: accountDetails[1].querySelector('.transaction-selected')
+      toAccountId: accountDetails[1]?.querySelector('.transaction-selected')
         .dataset.id,
       fromCurCode: curCodeEl[0].querySelector('.transaction-selected')
         .textContent,
-      toCurCode: curCodeEl[1].querySelector('.transaction-selected')
+      toCurCode: curCodeEl[1]?.querySelector('.transaction-selected')
         .textContent,
       amount: +amountInput.value ?? 0,
       date: dateInput.value,
       note: note.value.trim(),
       fromAccountName: accountDetails[0].querySelector('.transaction-selected')
         .textContent,
-      toAccountName: accountDetails[1].querySelector('.transaction-selected')
+      toAccountName: accountDetails[1]?.querySelector('.transaction-selected')
         .textContent,
-      receivedCode: curCodeEl[1].querySelector('.transaction-selected')
+      receivedCode: curCodeEl[1]?.querySelector('.transaction-selected')
         .textContent,
       sentCode: curCodeEl[0].querySelector('.transaction-selected').textContent,
-    });
+    };
+    isEditMode
+      ? console.log(transactionInfoTransfer)
+      : moneyTracker.addTransfer(transactionInfoTransfer);
   }
 
   displayTransaction();
@@ -923,6 +923,10 @@ const editTransactionMode = (e) => {
   displayTagList();
   displayEditInfo(targetTransaction); // Use updated data
   handleTagInput();
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    addTransactions();
+  });
 };
 
 // Display edit info inside the modal form
@@ -1045,7 +1049,16 @@ const closeEditModal = () => {
   form = document.querySelector('.set-transaction-container');
   resetAccount();
   transactionStatus = 'expense';
-  // handleAccountNav(document.querySelector('.account-nav-txt'));
+  displayTagDropdown();
+  displayTagList();
+  const accountNav = document.querySelectorAll('.account-nav-txt');
+  accountNav.forEach((item) => {
+    item.className = 'account-nav-txt';
+    if (item.textContent === 'Expense') {
+      item.classList.add('active');
+      handleAccountNav(item);
+    }
+  });
 };
 
 // display edit modal
