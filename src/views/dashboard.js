@@ -234,7 +234,7 @@ const defaultTransactionAmt = () => {
     amtDropdown.innerHTML = '';
     displayAmtCode(activeItem.dataset.id, amtDropdown);
   });
-
+  if (isEditMode) return;
   transactionAmtDropdownEls.forEach((dropdown) => {
     const firstItem = dropdown.querySelector('.dropdown-item');
     if (!firstItem) return;
@@ -891,7 +891,7 @@ const editTransactionMode = (e) => {
 
   const editContainer = document.querySelector('.edit-container');
   body.style.overflow = 'hidden';
-
+  isEditMode = true;
   form = document.querySelectorAll('.set-transaction-container')[1];
 
   displayAvailableAccount();
@@ -928,11 +928,12 @@ const editTransactionMode = (e) => {
 const displayEditInfo = (transaction) => {
   const transactionDropdownEl = form.querySelectorAll('.transaction-dropdown');
   const dateInput = form.querySelector(`input[type='date']`);
-  const amountInput = form.querySelector(`input[name='amount']`);
-  const noteInput = form.querySelector(`input[name='note']`);
+  const amountInput = form.querySelectorAll(`input[type='number']`);
+  const noteInput = form.querySelector('#note');
 
   transactionDropdownEl.forEach((dropdown, index) => {
     const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+
     dropdownItems.forEach((item) => item.classList.remove('active'));
 
     dropdownItems.forEach((item) => {
@@ -952,7 +953,48 @@ const displayEditInfo = (transaction) => {
       }
     });
 
-    // Set the selected label
+    defaultTransactionAmt();
+
+    const transactionAmtDropDownPa = dropdown.parentElement.nextElementSibling;
+    const transactionAmtDropDown = transactionAmtDropDownPa.querySelector(
+      '.transaction-amt-dropdown'
+    );
+
+    if (transaction.type === 'transfer') {
+      transactionAmtDropDown
+        .querySelectorAll('.dropdown-item')
+        .forEach((item) => {
+          if (
+            (index === 0 && item.textContent === transaction.sentCode) ||
+            (index === 1 && item.textContent === transaction.receivedCode)
+          ) {
+            item.classList.add('active');
+          }
+        });
+
+      amountInput[0].value =
+        +transaction.sentAmount >= 1
+          ? +transaction.sentAmount.toFixed(2)
+          : +transaction.sentAmount.toPrecision(2);
+      amountInput[1].value =
+        +transaction.receivedAmount >= 1
+          ? +transaction.receivedAmount.toFixed(2)
+          : +transaction.receivedAmount.toPrecision(2);
+    } else {
+      transactionAmtDropDown
+        .querySelectorAll('.dropdown-item')
+        .forEach((item) => {
+          if (item.textContent === transaction.currency) {
+            item.classList.add('active');
+          }
+        });
+
+      amountInput[0].value =
+        +transaction.amount >= 1
+          ? +transaction.amount.toFixed(2)
+          : +transaction.amount.toPrecision(2);
+    }
+
     const selected = dropdown.parentElement.querySelector(
       '.transaction-selected'
     );
@@ -962,14 +1004,20 @@ const displayEditInfo = (transaction) => {
         activeItem.querySelector('.list-account-name').textContent;
       selected.setAttribute('data-id', activeItem.dataset.id);
     }
+
+    const currencySelected = transactionAmtDropDownPa.querySelector(
+      '.transaction-selected'
+    );
+    const activeCurrency = transactionAmtDropDown.querySelector(
+      '.dropdown-item.active'
+    );
+    if (currencySelected && activeCurrency) {
+      currencySelected.textContent = activeCurrency.textContent;
+    }
   });
 
-  // Fill in amount and note
-  if (amountInput) amountInput.value = transaction.amount;
   if (noteInput) noteInput.value = transaction.note || '';
   if (dateInput) dateInput.value = transaction.date || '';
-
-  defaultTransactionAmt(); // Update converted display if needed
 };
 
 // display edit modal
@@ -1053,6 +1101,9 @@ const displayEditModal = () => {
     </div>
   </div>`;
   document.getElementById('root').append(editModalEl);
+  document
+    .querySelector('#close-edit-btn')
+    .addEventListener('click', closeEditModal);
 };
 
 // eventlistener
