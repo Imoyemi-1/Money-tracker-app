@@ -585,6 +585,7 @@ const displaySelectTag = (code) => {
   parentEl.insertBefore(div, tagInput);
   checkSelectedAdd();
 };
+
 const checkSelectedAdd = () => {
   const selectedAddition = form.querySelectorAll('.add-selected-currencies');
   const selected = form.querySelector('#tag-selected');
@@ -918,9 +919,9 @@ const editTransactionMode = (e) => {
     .querySelectorAll('.items-container')
     .forEach((item) => item.addEventListener('click', toggleDropDown));
 
-  displayEditInfo(targetTransaction); // Use updated data
-  displayTagList();
   displayTagDropdown();
+  displayTagList();
+  displayEditInfo(targetTransaction); // Use updated data
   handleTagInput();
 };
 
@@ -1015,6 +1016,18 @@ const displayEditInfo = (transaction) => {
       currencySelected.textContent = activeCurrency.textContent;
     }
   });
+
+  if (transaction.tags) {
+    const tagDropdown = document.querySelectorAll(
+      '.tag-dropdown .dropdown-item'
+    );
+    tagDropdown.forEach((item) => {
+      if (transaction.tags.includes(item.textContent)) {
+        item.classList.add('dp-none');
+      }
+    });
+    transaction.tags.forEach((item) => displaySelectTag(item));
+  }
 
   if (noteInput) noteInput.value = transaction.note || '';
   if (dateInput) dateInput.value = transaction.date || '';
