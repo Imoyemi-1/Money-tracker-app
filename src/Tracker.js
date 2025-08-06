@@ -230,4 +230,110 @@ export class Tracker {
     Storage.setAccountData(this.accounts);
     Storage.setNetWorth(this.networth);
   }
+  deleteTransaction(transactionID) {
+    const index = this.transactions.findIndex(
+      (tx) => tx.transactionID === transactionID
+    );
+
+    if (index === -1) {
+      console.warn(`Transaction with ID ${transactionID} not found.`);
+      return;
+    }
+
+    const tx = this.transactions[index];
+
+    if (tx.type === 'expense') {
+      // Reverse: Add amount back to the account
+      const account = Object.values(this.accounts)
+        .flat()
+        .find((acc) => acc.id === tx.accountId);
+
+      if (tx.currency === account.baseCurrency.currencyName) {
+        account.baseCurrency.amount += tx.amount;
+      } else {
+        const additional = account.additionalCurrencies.find(
+          (acc) => acc.code === tx.currency
+        );
+        if (additional) additional.amount += tx.amount;
+      }
+
+      // Reverse net worth
+      const convertedAmount = convertCurrency(
+        tx.currency,
+        Storage.getBaseCurrency(),
+        tx.amount
+      );
+      this.networth += convertedAmount;
+    } else if (tx.type === 'income') {
+      // Reverse: Remove amount from the account
+      const account = Object.values(this.accounts)
+        .flat()
+        .find((acc) => acc.id === tx.accountId);
+
+      if (tx.currency === account.baseCurrency.currencyName) {
+        account.baseCurrency.amount -= tx.amount;
+      } else {
+        const additional = account.additionalCurrencies.find(
+          (acc) => acc.code === tx.currency
+        );
+        if (additional) additional.amount -= tx.amount;
+      }
+
+      // Reverse net worth
+      const convertedAmount = convertCurrency(
+        tx.currency,
+        Storage.getBaseCurrency(),
+        tx.amount
+      );
+      this.networth -= convertedAmount;
+    } else if (tx.type === 'transfer') {
+      // Reverse: Move money back from 'to' to 'from'
+      const fromAccount = Object.values(this.accounts)
+        .flat()
+        .find((acc) => acc.id === tx.fromAccountId);
+
+      const toAccount = Object.values(this.accounts)
+        .flat()
+        .find((acc) => acc.id === tx.toAccountId);
+
+      // Reverse received (toAccount)
+      if (tx.receivedCode === toAccount.baseCurrency.currencyName) {
+        toAccount.baseCurrency.amount -= tx.receivedAmount;
+      } else {
+        const additional = toAccount.additionalCurrencies.find(
+          (acc) => acc.code === tx.receivedCode
+        );
+        if (additional) additional.amount -= tx.receivedAmount;
+      }
+
+      // Reverse sent (fromAccount)
+      if (tx.sentCode === fromAccount.baseCurrency.currencyName) {
+        fromAccount.baseCurrency.amount += tx.sentAmount;
+      } else {
+        const additional = fromAccount.additionalCurrencies.find(
+          (acc) => acc.code === tx.sentCode
+        );
+        if (additional) additional.amount += tx.sentAmount;
+      }
+
+      // Adjust net worth
+      const converted = convertCurrency(
+        tx.sentCode,
+        Storage.getBaseCurrency(),
+        tx.sentAmount
+      );
+      this.networth -= converted;
+    } else {
+      console.warn(`Unknown transaction type: ${tx.type}`);
+      return;
+    }
+
+    // Remove the transaction
+    this.transactions.splice(index, 1);
+
+    // Save updated state
+    Storage.setTransactions(this.transactions);
+    Storage.setAccountData(this.accounts);
+    Storage.setNetWorth(this.networth);
+  }
 }

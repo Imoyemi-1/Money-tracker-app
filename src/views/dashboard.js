@@ -937,6 +937,16 @@ const editTransactionMode = (e) => {
     addTransactions(transactionEl.dataset.id);
     closeEditModal();
   });
+  document.querySelector('.del-button').addEventListener('click', () => {
+    const moneyTracker = new Tracker();
+    moneyTracker.deleteTransaction(transactionEl.dataset.id);
+    closeEditModal();
+
+    displayTransaction();
+    displayNetworth();
+    displayAccount();
+    updateAllGroupTotals(Storage.getAccountData(), baseCurrencyCode, rates);
+  });
 };
 
 // Display edit info inside the modal form
