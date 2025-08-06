@@ -1,5 +1,4 @@
 import '../css/main.css';
-import { loadView } from '../router/loader';
 import Storage from '../Storage';
 import {
   formatCurrency,
@@ -12,7 +11,6 @@ import { Tracker } from '../Tracker';
 const hamburger = document.querySelector('.hamburger');
 const body = document.querySelector('body');
 const sidebar = document.querySelector('.sidebar');
-const sidebarItem = document.querySelectorAll('.sidebar-item');
 const openSide = document.querySelector('.open-side');
 
 const networthEl = document.querySelector(
@@ -40,13 +38,6 @@ const openMenu = () => {
     sidebar.classList.remove('open');
     openSide.classList.add('closed');
   }
-};
-
-//  handle click event on the page nav
-
-const navToPage = (e) => {
-  e.preventDefault();
-  const viewName = e.currentTarget.querySelector('p').textContent.toLowerCase();
 };
 
 // create tag section
@@ -1171,7 +1162,6 @@ const displayEditModal = () => {
 hamburger.addEventListener('click', openMenu);
 openSide.addEventListener('click', openMenu);
 sidebar.addEventListener('click', openMenu);
-sidebarItem.forEach((item) => item.addEventListener('click', navToPage));
 displayNetworth();
 displayAccount();
 checkAccount();
