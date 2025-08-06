@@ -36,5 +36,77 @@
     </button>
     <h1>Transactions</h1>
   </header>
-  <main></main>
+  <main>
+    <div class="container-header flex">
+      <button class="add-new-container flex">
+        <i class="fas fa-plus" aria-hidden="true"></i>
+        <span>New</span>
+      </button>
+      <div class="filter-date-container flex">
+        <i class="fas fa-calendar" aria-hidden="true"></i>
+        <div aria-live="polite" aria-atomic="true" class="selected-date">
+          30 Jul - 06 Aug
+        </div>
+        <div class="drop-menu hidden">
+          <div
+            role="option"
+            aria-checked="false"
+            aria-selected="false"
+            class="item"
+            style="pointer-events: all"
+          >
+            <span class="text">Today</span>
+          </div>
+          <div
+            role="option"
+            aria-checked="false"
+            aria-selected="false"
+            class="item"
+            style="pointer-events: all"
+          >
+            <span class="text">Yesterday</span>
+          </div>
+          <div
+            role="option"
+            aria-checked="false"
+            aria-selected="false"
+            class="item active"
+            style="pointer-events: all"
+          >
+            <span class="text">Last 7 days</span>
+          </div>
+          <div
+            role="option"
+            aria-checked="false"
+            aria-selected="false"
+            class="item"
+            style="pointer-events: all"
+          >
+            <span class="text">Last 30 days</span>
+          </div>
+          <div
+            role="option"
+            aria-checked="false"
+            aria-selected="false"
+            class="item"
+            style="pointer-events: all"
+          >
+            <span class="text">This month</span>
+          </div>
+          <div
+            role="option"
+            aria-checked="false"
+            aria-selected="false"
+            class="item"
+            style="pointer-events: all"
+          >
+            <span class="text">Custom date</span>
+          </div>
+        </div>
+      </div>
+      <button class="filter-container">
+        <i class="fas fa-filter" aria-hidden="true"></i>
+      </button>
+    </div>
+  </main>
 </div>
