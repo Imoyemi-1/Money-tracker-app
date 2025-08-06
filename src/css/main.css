@@ -517,6 +517,117 @@
 .del-button i {
   margin-left: 2rem;
 }
+
+/* for  transaction page*/
+
+.container-header {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--grey-300);
+  color: #686869;
+}
+
+.add-new-container {
+  height: 100%;
+  width: 20rem;
+  color: inherit;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.add-new-container i {
+  background-color: var(--grey-300);
+  padding: 0.997rem 1.097rem;
+  text-shadow: 1.2px 0;
+}
+
+.add-new-container:hover,
+.filter-date-container:hover,
+.filter-date-container:hover,
+.add-new-container.active,
+.filter-date-container.active,
+.filter-date-container.active {
+  color: var(--light-black);
+}
+
+.add-new-container span {
+  padding: 0.995rem 0;
+  width: 100%;
+  text-align: center;
+}
+
+.filter-date-container {
+  flex: 1;
+  position: relative;
+  border-left: 1px solid var(--grey-300);
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.filter-date-container i {
+  padding: 1.1rem;
+  background-color: var(--grey-300);
+  padding: 1.1rem 1.2rem;
+  text-shadow: 1.2px 0;
+}
+
+.selected-date {
+  padding: 0.8rem 3rem;
+  width: 100%;
+}
+
+.drop-menu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  color: var(--light-black);
+  background-color: var(--White);
+  text-align: left;
+  box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-radius: 0.28571429rem;
+  transition: opacity 0.1s ease;
+  z-index: 11;
+  will-change: transform, opacity;
+}
+
+.drop-menu.hidden {
+  opacity: 0;
+}
+
+.drop-menu .item {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  height: auto;
+  text-align: left;
+  border: none;
+  line-height: 1em;
+  color: rgba(0, 0, 0, 0.87);
+  padding: 1.2rem 1.5rem;
+  font-size: 1.6rem;
+  text-transform: none;
+  font-weight: 400;
+  box-shadow: none;
+  -webkit-touch-callout: none;
+  transition: background 0.2s ease;
+}
+
+.drop-menu .item:hover {
+  background-color: var(--grey-100);
+}
+
+.drop-menu .item.active {
+  background-color: var(--grey-100);
+  font-weight: 600;
+}
+
+.filter-container {
+  border-left: 1px solid var(--grey-300);
+  color: inherit;
+  padding: 0.997rem 4.5rem;
+  cursor: pointer;
+}
 /* General style */
 
 button {
